@@ -8,7 +8,7 @@ function LoadingDataSpinner() {
         aria-label="Large spinner example"
         size="lg"
       />
-      <small className='text-sm m-2'>Loading data...</small>
+      <small className='text-sm mt-2'>Loading data...</small>
     </div>
   )
 }

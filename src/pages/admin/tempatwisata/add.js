@@ -16,6 +16,19 @@ const AddTempatWisataPage = () => {
   const methods = useForm({ mode: 'onBlur' })
   const router = useRouter()
   const [isSubmitSuccess, setIsSubmitSuccess] = useState(false)
+  const [picture, setPicture] = useState(null);
+  const [imageArray, setImageArray] = useState([])
+  const [progresspercent, setProgresspercent] = useState(0);
+
+  const onChangePicture = (e) => {
+    let imgObject = URL.createObjectURL(e.target.files[0])
+    setImageArray(olditem => [{
+      name: e.target.files[0].name,
+      url: imgObject,
+      blob: e.target.files[0]
+    }, ...olditem])
+    console.log(e.target.files[0].name)
+  };
 
   const {
     register,
@@ -33,31 +46,32 @@ const AddTempatWisataPage = () => {
   async function submitForm(data, e) {
     e.preventDefault()
     setIsSubmitSuccess(false)
+    data['images'] = imageArray
     const result = addTempatWisata(data)
-      result.then(success => {
-        if (success) {
-          setIsSubmitSuccess(true)
-          Swal.fire({
-            title: "Sukses!",
-            text: "Berhasil menambah data tempat wisata",
-            icon: 'success',
-            showConfirmButton: true,
-            confirmButtonText: "Baik",
-            showCloseButton: true,
-            showCancelButton: true
-          }).then(({isConfirmed}) => {
-            if (isConfirmed) {
-              router.push(router.asPath + '/..')
-            }
-          })
-        } else {
-          Swal.fire({
-            title: "Gagal!",
-            text: "Gagal menambah data. Cek kembali inputan!",
-            icon: 'error'
-          })
-        }
-      })
+    result.then(success => {
+      if (success) {
+        setIsSubmitSuccess(true)
+        Swal.fire({
+          title: "Sukses!",
+          text: "Berhasil menambah data tempat wisata",
+          icon: 'success',
+          showConfirmButton: true,
+          confirmButtonText: "Baik",
+          showCloseButton: true,
+          showCancelButton: true
+        }).then(({ isConfirmed }) => {
+          if (isConfirmed) {
+            router.push(router.asPath + '/..')
+          }
+        })
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          text: "Gagal menambah data. Cek kembali inputan!",
+          icon: 'error'
+        })
+      }
+    })
       .catch(error => {
 
       })
@@ -78,9 +92,9 @@ const AddTempatWisataPage = () => {
       <div className="wrapper px-5">
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(submitForm)} >
-            <div className="relative overflow-x-auto border sm:rounded-lg p-4 flex flex-wrap gap-4">
+            <div className="relative overflow-x-auto border rounded-xl flex flex-wrap bg-white">
 
-              <div id='kiri' className='md:w-1/2'>
+              <div id='kiri' className='md:w-1/2 p-4 '>
                 <div className="mb-2 block">
                   <Label
                     htmlFor="nama"
@@ -159,16 +173,26 @@ const AddTempatWisataPage = () => {
                   />
                 </div>
               </div>
-              <div id="kanan" className='flex-grow'>
+              <div id="kanan" className='md:w-1/2 p-4 '>
                 <div className="mb-2 block">
                   <div className='text-sm font-medium text-gray-900 dark:text-gray-300 mb-2 inline-block'>Gambar</div>
                   <ImageUpload>
-                    <ImageUploadItem>
-                      <img src="https://www.unfe.org/wp-content/uploads/2019/04/SM-placeholder.png" alt="" className='h-full object-cover' />
-                    </ImageUploadItem>
-                    <ImageUploadBox>
+                    {imageArray.map((item, index) => (
+                      <ImageUploadItem key={index}>
+                        <img src={item.url && item.url} alt="" className='h-full object-cover' />
+                      </ImageUploadItem>
+                    ))}
+
+                    <ImageUploadBox labelFor='uploadimgbtn'>
                       <Icons.tambahGambar className="h-6 w-6 text-gray-700" />
                     </ImageUploadBox>
+                    <input
+                      type="file"
+                      id='uploadimgbtn'
+                      hidden={true}
+                      
+                      onChange={onChangePicture}
+                    />
                   </ImageUpload>
                 </div>
               </div>

@@ -1,4 +1,5 @@
 import AdminLayout from '@/components/dashboard/Layout'
+import { Icons } from '@/components/Icons'
 import Href from '@/components/Link'
 import LoadingDataSpinner from '@/components/LoadingDataSpinner'
 import { database } from '@/lib/firebase'
@@ -42,8 +43,8 @@ const TempatWisataPage = () => {
       <h3 className='p-5 text-xl text-gray-800 font-semibold'>Tempat Wisata</h3>
       <div className="wrapper px-5">
         <div className="actionbutton space-x-2 flex flex-row mb-4">
-          <Button color="dark" type='submit' className='rounded-md' size="sm" onClick={() => router.push(`${router.asPath}/add`)}>
-            Tambah
+          <Button type='submit' className='rounded-md bg-blue-700' size="sm" onClick={() => router.push(`${router.asPath}/add`)}>
+            <Icons.tambah className='h-4 w-4' /> Tambah
           </Button>
           <Button color="gray" type='submit' className='rounded-md' size="sm">
             Tambah
@@ -53,7 +54,7 @@ const TempatWisataPage = () => {
           </Button>
         </div>
 
-        <div className="relative overflow-x-auto border sm:rounded-lg">
+        <div className="relative overflow-x-auto border rounded-lg bg-white">
           {loading ? <LoadingDataSpinner /> : (
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -88,7 +89,7 @@ const TempatWisataPage = () => {
                       {index + 1}
                     </th>
                     <td className='w-11'>
-                      <img src="https://www.unfe.org/wp-content/uploads/2019/04/SM-placeholder.png" alt="Image" className='mx-auto w-10 h-10 object-cover' />
+                      <img src={item.foto.at(0).url} alt={item.foto.at(0).nama} className='mx-auto w-10 h-10 object-cover rounded' />
                     </td>
                     <td className="px-4 py-4">
 

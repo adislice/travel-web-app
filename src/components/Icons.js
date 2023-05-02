@@ -1,4 +1,4 @@
-import { AlignLeft, ChevronLeft, Compass, Fingerprint, Gauge, ImagePlus, Layers, LineChart, Search, Text, Wallet } from "lucide-react"; 
+import { AlignLeft, ChevronLeft, Compass, Fingerprint, Gauge, ImagePlus, Layers, LineChart, Plus, Search, Text, Wallet } from "lucide-react"; 
 
 export const Icons = {
   dashboard: Gauge,
@@ -10,5 +10,6 @@ export const Icons = {
   cari: Search,
   tempatwisata: Compass,
   back: ChevronLeft,
-  tambahGambar: ImagePlus
+  tambahGambar: ImagePlus,
+  tambah: Plus
 }

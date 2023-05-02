@@ -15,6 +15,11 @@
   input,textarea {
     @apply !bg-transparent;
   }
+
+  .bg-main-container {
+    background-color: #EFF2FB!important;
+    min-height: calc(100vh - 3.5rem);
+  }
 }
 
 .swal2-container {
