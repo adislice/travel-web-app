@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .text-muted {
+    @apply text-gray-500;
+  }
+
+}
+
+@layer components {
+  input,textarea {
+    @apply !bg-transparent;
+  }
+}
+
+.swal2-container {
+  padding: 1.5rem!important;
+}
+.swal2-title {
+  font-size: 1.5em!important;
+}
+.swal2-html-container {
+  font-size: 1em!important;
+}
