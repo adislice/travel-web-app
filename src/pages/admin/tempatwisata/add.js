@@ -82,17 +82,17 @@ const AddTempatWisataPage = () => {
       <Head>
         <title>Tambah Tempat Wisata</title>
       </Head>
-      <div className='flex gap-2 items-center p-5 '>
+      <div className='flex gap-2 items-center pb-5 '>
         <Link href={'./'}>
           <Icons.back className='h-6 w-6 rounded-full hover:bg-gray-200' />
         </Link>
         <h3 className='text-xl text-gray-800 font-semibold'>Tambah Tempat Wisata</h3>
 
       </div>
-      <div className="wrapper px-5">
+      <div className="wrapper">
         <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(submitForm)} >
-            <div className="relative overflow-x-auto border rounded-xl flex flex-wrap bg-white">
+          <form onSubmit={handleSubmit(submitForm)} className="md:p-4 border rounded-xl bg-white">
+            <div className="relative overflow-x-auto flex flex-wrap">
 
               <div id='kiri' className='md:w-1/2 p-4 '>
                 <div className="mb-2 block">
@@ -198,7 +198,7 @@ const AddTempatWisataPage = () => {
               </div>
 
             </div>
-            <Button color="dark" type='submit' className='rounded-md mt-4' size="sm">Submit</Button>
+            <Button color="dark" type='submit' className='rounded-md mb-4 mr-4 ml-4' size="sm">Submit</Button>
           </form>
         </FormProvider>
       </div>

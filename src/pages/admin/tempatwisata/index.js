@@ -25,9 +25,9 @@ const TempatWisataPage = () => {
     }).catch(error => {
       console.log(error)
     })
-    .finally(() => {
-      setLoading(false)
-    })
+      .finally(() => {
+        setLoading(false)
+      })
 
   }, [])
 
@@ -40,19 +40,22 @@ const TempatWisataPage = () => {
       <Head>
         <title>Tempat Wisata</title>
       </Head>
-      <h3 className='p-5 text-xl text-gray-800 font-semibold'>Tempat Wisata</h3>
-      <div className="wrapper px-5">
-        <div className="actionbutton space-x-2 flex flex-row mb-4">
-          <Button type='submit' className='rounded-md bg-blue-700' size="sm" onClick={() => router.push(`${router.asPath}/add`)}>
-            <Icons.tambah className='h-4 w-4' /> Tambah
-          </Button>
-          <Button color="gray" type='submit' className='rounded-md' size="sm">
-            Tambah
-          </Button>
-          <Button color="gray" type='submit' className='rounded-md' size="sm">
-            Tambah
-          </Button>
+      <div className='p-5 flex justify-between items-center'>
+      <h3 className='text-xl md:text-2xl text-gray-800 font-semibold'>Tempat Wisata</h3>
+
+        <div className="actionbutton space-x-2 flex flex-row">
+          <button
+            type="button"
+            className="inline-flex items-center gap-x-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm py-2.5 px-3.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+            onClick={() => router.push(`${router.asPath}/add`)}
+          >
+            <Icons.tambah className='h-5 w-5' /> Tambah
+          </button>
+          
         </div>
+      </div>
+      <div className="wrapper px-5">
+        
 
         <div className="relative overflow-x-auto border rounded-lg bg-white">
           {loading ? <LoadingDataSpinner /> : (
