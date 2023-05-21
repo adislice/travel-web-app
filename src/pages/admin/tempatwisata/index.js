@@ -3,7 +3,7 @@ import { Icons } from '@/components/Icons'
 import Href from '@/components/Link'
 import LoadingDataSpinner from '@/components/LoadingDataSpinner'
 import { database } from '@/lib/firebase'
-import { getTempatWisata } from '@/services/tempat-wisata-service'
+import { deleteTempatWisata, getTempatWisata } from '@/services/tempat-wisata-service'
 import { collection, getDocs } from 'firebase/firestore'
 import { initFlowbite } from 'flowbite'
 import { Button, Spinner } from 'flowbite-react'
@@ -11,6 +11,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import Swal from 'sweetalert2'
 
 const TempatWisataPage = () => {
   const [loading, setLoading] = useState(true)
@@ -24,10 +25,9 @@ const TempatWisataPage = () => {
       setDatas(data)
     }).catch(error => {
       console.log(error)
+    }).finally(() => {
+      setLoading(false)
     })
-      .finally(() => {
-        setLoading(false)
-      })
 
   }, [])
 
@@ -35,28 +35,67 @@ const TempatWisataPage = () => {
     console.log(datas)
   }, [datas])
 
+  const handleHapus = (id) => {
+    Swal.fire({
+      title: 'Anda Yakin?',
+      text: "Anda yakin ingin menghapus data ini?",
+      icon: 'warning',
+      showCancelButton: true,
+      cancelButtonText: "Batal",
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'Yakin!'
+    }).then((result) => {
+      if (result.value) {
+        deleteTempatWisata(id)
+          .then(data => {
+            Swal.fire({
+              'title': 'Sukses',
+              'icon': 'success',
+              'text': 'Data berhasil dihapus!'
+            })
+            let result = getTempatWisata()
+            result.then((data) => {
+              setDatas(data)
+            }).catch(error => {
+              console.log(error)
+            })
+          })
+          .catch(error => {
+            Swal.fire({
+              title: "Gagal!",
+              text: "Gagal menghapus data!",
+              icon: 'error'
+            })
+          })
+
+      }
+    });
+
+
+
+  }
+
   return (
     <AdminLayout>
       <Head>
         <title>Tempat Wisata</title>
       </Head>
       <div className='p-5 flex justify-between items-center'>
-      <h3 className='text-xl md:text-2xl text-gray-800 font-semibold'>Tempat Wisata</h3>
+        <h3 className='text-xl md:text-2xl text-gray-800 font-semibold'>Tempat Wisata</h3>
 
         <div className="actionbutton space-x-2 flex flex-row">
           <button
             type="button"
-            className="inline-flex items-center gap-x-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm py-2.5 px-3.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+            className="inline-flex items-center gap-x-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm py-2 px-3.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
             onClick={() => router.push(`${router.asPath}/add`)}
           >
-            <Icons.tambah className='h-5 w-5' /> Tambah
+            <Icons.tambah className='h-5 w-5' />
+            Tambah
           </button>
-          
+
         </div>
       </div>
       <div className="wrapper px-5">
-        
-
         <div className="relative overflow-x-auto border rounded-lg bg-white">
           {loading ? <LoadingDataSpinner /> : (
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -92,24 +131,27 @@ const TempatWisataPage = () => {
                       {index + 1}
                     </th>
                     <td className='w-11'>
-                      <img src={item.foto.at(0).url} alt={item.foto.at(0).nama} className='mx-auto w-10 h-10 object-cover rounded' />
+                      <img src={item.foto?.at(0)?.url} alt={item.foto?.at(0)?.nama} className='mx-auto w-12 h-12 my-2 object-cover rounded' />
                     </td>
                     <td className="px-4 py-4">
 
-                      <Href href={`${router.asPath}/${item.id}`} className="text-gray-900">
+                      <Href href={`${router.asPath}/${item.id}/show`} className="text-gray-900">
                         {item.nama}
                       </Href>
 
                     </td>
                     <td className="px-4 py-4">{item.alamat}</td>
-                    <td className="px-4 py-4">{item.coordinate?.latitude}, {item.coordinate?.longitude}</td>
-                    <td className="px-4 py-4 text-right">
-                      <a
-                        href="#"
+                    <td className="px-4 py-4">{item.latitude}, {item.longitude}</td>
+                    <td className="px-4 py-4 text-right space-x-2">
+                      <Link
+                        href={`/admin/tempatwisata/${item.id}/edit`}
                         className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                       >
                         Edit
-                      </a>
+                      </Link>
+                      <button onClick={() => handleHapus(item.id)} className="text-red-600 hover:underline">
+                        Hapus
+                      </button>
                     </td>
                   </tr>
                 ))}

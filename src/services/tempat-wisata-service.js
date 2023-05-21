@@ -1,6 +1,6 @@
 import { database, storage } from "@/lib/firebase"
 import { async } from "@firebase/util"
-import { addDoc, collection, doc, GeoPoint, getDocs, setDoc } from "firebase/firestore"
+import { addDoc, collection, deleteDoc, doc, FieldValue, GeoPoint, getDoc, getDocs, serverTimestamp, setDoc, updateDoc } from "firebase/firestore"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 import { useState } from "react"
 
@@ -45,7 +45,9 @@ export async function addTempatWisata(formData) {
       nama: formData.nama,
       deskripsi: formData.deskripsi,
       alamat: formData.alamat,
-      coordinate: coords
+      latitude: formData.latitude,
+      longitude: formData.longitude,
+      created_at: serverTimestamp(),
     }
 
     let result = await addDoc(dbInstance, data)
@@ -75,20 +77,118 @@ export async function addTempatWisata(formData) {
   }
 }
 
+export async function editTempatWisata(id, formData) {
+  console.log(formData)
+  try {
+    let imgData = formData.images
+    let imgUpResult = await uploadFiles(formData.images)
+    console.log(imgUpResult)
+    
+
+    const dbInstance = collection(database, 'tempat_wisata')
+    const docRef = doc(dbInstance, id)
+
+    const data = {
+      nama: formData.nama,
+      deskripsi: formData.deskripsi,
+      alamat: formData.alamat,
+      latitude: formData.latitude,
+      longitude: formData.longitude
+    }
+
+    let res = await updateDoc(docRef, data)
+    const fotoColRef = collection(docRef, 'foto')
+    let docs = await getDocs(fotoColRef)
+
+    for (const elem of docs.docs) {
+      await deleteDoc(elem.ref)
+    }
+
+    for (const item of imgUpResult) {
+      console.log('adding ' + item.name + ', url: ' + item.url)
+      await addDoc(fotoColRef, {
+        nama: item.name,
+        url: item.url
+      })
+    }
+
+
+    
+    return true
+  } catch (error) {
+    throw error
+  }
+}
+
 export async function uploadFiles(images) {
   const promises = images.map((file) => {
     const storageRef = ref(storage, `images/tempat_wisata/${file.name}`);
-    return uploadBytes(storageRef, file.blob);
+    if (file.blob instanceof File) {
+      return uploadBytes(storageRef, file.blob);
+    } else {
+      return file.blob
+    }
+    
   });
 
   const res = await Promise.all(promises);
 
   const links = await Promise.all(res.map(async (r, index) => {
-    return {
-      name: images[index].name,
-      url: await getDownloadURL(r.ref)
+
+    if (images[index].blob instanceof File) {
+      return {
+        name: images[index].name,
+        url: await getDownloadURL(r.ref)
+      }
+    } else {
+      return {
+        name: images[index].name,
+        url: images[index].blob
+      }
     }
+    
   }
   ));
   return links
+}
+
+export async function getDetailTempatWisata(id) {
+  try {
+    const dbInstance = collection(database, 'tempat_wisata')
+    const docRef = doc(database, 'tempat_wisata', id)
+    const docSnap = await getDoc(docRef)
+    const fotoRef = collection(docRef, 'foto')
+    const fotoSnap = await getDocs(fotoRef)
+    let fotoArray = fotoSnap.docs.map(foto => {
+      return foto.data()
+    })
+    
+    const result = {
+      ...docSnap.data(),
+      foto: fotoArray
+    }
+
+    console.log(result)
+    
+    return result
+  } catch (e) {
+    throw e
+  }
+}
+
+export async function deleteTempatWisata(id) {
+  try {
+  const dbInstance = collection(database, 'tempat_wisata')
+  const docRef = doc(dbInstance, id)
+  const fotoColRef = collection(docRef, 'foto')
+  let fotoDocs = await getDocs(fotoColRef)
+
+  for (const elem of fotoDocs.docs) {
+    await deleteDoc(elem.ref)
+  }
+
+  return await deleteDoc(docRef)
+} catch (e) {
+  throw e
+}
 }

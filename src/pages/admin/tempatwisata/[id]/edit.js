@@ -3,80 +3,48 @@ import { Icons } from '@/components/Icons'
 import ImageUpload from '@/components/ImageUpload'
 import ImageUploadBox from '@/components/ImageUploadBox'
 import ImageUploadItem from '@/components/ImageUploadItem'
-import { addTempatWisata } from '@/services/tempat-wisata-service'
+import { addTempatWisata, editTempatWisata, getDetailTempatWisata } from '@/services/tempat-wisata-service'
 import { Button, Label, Textarea, TextInput } from 'flowbite-react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import Swal from 'sweetalert2'
 
-const AddTempatWisataPage = () => {
-  const methods = useForm({ mode: 'onBlur' })
+const EditTempatWisataPage = () => {
   const router = useRouter()
+  const { id } = router.query
   const [isSubmitSuccess, setIsSubmitSuccess] = useState(false)
   const [imageArray, setImageArray] = useState([])
-
-  const onChangePicture = (e) => {
-    if (e.target.files[0] == undefined) {
-      return
-    }
-    let imgObject = URL.createObjectURL(e.target.files[0])
-    setImageArray(olditem => [...olditem, {
-      name: e.target.files[0].name,
-      url: imgObject,
-      blob: e.target.files[0]
-    }])
-    console.log(e.target.files[0].name)
-  };
-
+  const methods = useForm({ mode: 'onBlur' })
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    setValue
   } = methods
 
   useEffect(() => {
-    if (isSubmitSuccess) {
-      reset()
-    }
-  }, [isSubmitSuccess])
-
-  async function submitForm(data, e) {
-    e.preventDefault()
-    setIsSubmitSuccess(false)
-    data['images'] = imageArray
-    const result = addTempatWisata(data)
-    result.then(success => {
-      if (success) {
-        setIsSubmitSuccess(true)
-        Swal.fire({
-          title: "Sukses!",
-          text: "Berhasil menambah data tempat wisata",
-          icon: 'success',
-          showConfirmButton: true,
-          confirmButtonText: "Baik",
-          showCloseButton: true,
-          showCancelButton: true
-        }).then(({ isConfirmed }) => {
-          if (isConfirmed) {
-            router.push(router.asPath + '/..')
-          }
+    getDetailTempatWisata(id)
+    .then(data => {
+      setValue('nama', data.nama)
+      setValue('alamat', data.alamat)
+      setValue('latitude', data.latitude)
+      setValue('longitude', data.longitude)
+      setValue('deskripsi', data.deskripsi)
+      let imgArr = []
+      data?.foto?.map(foto => {
+        imgArr.push({
+          name: foto.nama,
+          url: foto.url,
+          blob: foto.url
         })
-      } else {
-        Swal.fire({
-          title: "Gagal!",
-          text: "Gagal menambah data. Cek kembali inputan!",
-          icon: 'error'
-        })
-      }
-    })
-      .catch(error => {
-
       })
-  }
+      setImageArray(imgArr)
+    })
+  }, [])
 
   const deleteImage = (index) => {
     const temp = [...imageArray]
@@ -85,17 +53,56 @@ const AddTempatWisataPage = () => {
     console.log(imageArray)
   }
 
-  const check = () => {
-    console.log('a')
-  }
+  const submitForm = (data, e) => {
+    e.preventDefault()
+    setIsSubmitSuccess(false)
+    data['images'] = imageArray
+    editTempatWisata(id, data)
+      .then(success => {
+        if (success) {
+          setIsSubmitSuccess(true)
+          Swal.fire({
+            title: "Sukses!",
+            text: "Berhasil mengubah data!",
+            icon: 'success',
+            showConfirmButton: true,
+            confirmButtonText: "Baik",
+            showCloseButton: true,
+            showCancelButton: true
+          }).then(({ isConfirmed }) => {
+            if (isConfirmed) {
+              router.push('/admin/tempatwisata')
+            }
+          })
+        } else {
+          Swal.fire({
+            title: "Gagal!",
+            text: "Gagal mengubah data!",
+            icon: 'error'
+          })
+        }
+      })
+  } 
+  const onChangePicture = (e) => {
+    if (e.target.files[0] == undefined) {
+      return
+    }
+    let imgObject = URL.createObjectURL(e.target.files[0])
+    setImageArray(olditem => [ ...olditem, {
+      name: e.target.files[0].name,
+      url: imgObject,
+      blob: e.target.files[0]
+    }])
+    console.log(e.target.files[0].name)
+  };
 
   return (
     <AdminLayout>
       <Head>
-        <title>Tambah Tempat Wisata</title>
+        <title>Edit Tempat Wisata</title>
       </Head>
       <div className='flex gap-2 items-center pb-5 '>
-        <Link href={'./'}>
+        <Link href={'./../'}>
           <Icons.back className='h-6 w-6 rounded-full hover:bg-gray-200' />
         </Link>
         <h3 className='text-xl text-gray-800 font-semibold'>Tambah Tempat Wisata</h3>
@@ -209,7 +216,7 @@ const AddTempatWisataPage = () => {
               </div>
 
             </div>
-            <Button color="dark" type='submit' className='rounded-md mb-4 mr-4 ml-4' size="sm">Simpan</Button>
+            <Button color="dark" type='submit' className='rounded-md mb-4 mr-4 ml-4' size="sm">Submit</Button>
           </form>
         </FormProvider>
       </div>
@@ -217,4 +224,4 @@ const AddTempatWisataPage = () => {
   )
 }
 
-export default AddTempatWisataPage
+export default EditTempatWisataPage
