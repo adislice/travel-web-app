@@ -3,7 +3,7 @@ import { Icons } from '@/components/Icons'
 import Href from '@/components/Link'
 import LoadingDataSpinner from '@/components/LoadingDataSpinner'
 import { database } from '@/lib/firebase'
-import { deleteTempatWisata, getTempatWisata } from '@/services/tempat-wisata-service'
+import { deleteTempatWisata, getTempatWisata } from '@/services/TempatWisataService'
 import { collection, getDocs } from 'firebase/firestore'
 import { initFlowbite } from 'flowbite'
 import { Button, Spinner } from 'flowbite-react'
@@ -80,13 +80,13 @@ const TempatWisataPage = () => {
       <Head>
         <title>Tempat Wisata</title>
       </Head>
-      <div className='p-5 flex justify-between items-center'>
+      <div className='md:px-5 py-5 flex justify-between items-center'>
         <h3 className='text-xl md:text-2xl text-gray-800 font-semibold'>Tempat Wisata</h3>
 
         <div className="actionbutton space-x-2 flex flex-row">
           <button
             type="button"
-            className="inline-flex items-center gap-x-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm py-2 px-3.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+            className="inline-flex items-center gap-x-1 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm py-2 px-3.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
             onClick={() => router.push(`${router.asPath}/add`)}
           >
             <Icons.tambah className='h-5 w-5' />
@@ -95,7 +95,7 @@ const TempatWisataPage = () => {
 
         </div>
       </div>
-      <div className="wrapper px-5">
+      <div className="wrapper md:px-5">
         <div className="relative overflow-x-auto border rounded-lg bg-white">
           {loading ? <LoadingDataSpinner /> : (
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">

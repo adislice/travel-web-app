@@ -12,13 +12,22 @@
 }
 
 @layer components {
-  input,textarea {
+  input[type='text'],textarea {
     @apply !bg-transparent;
   }
 
   .bg-main-container {
     background-color: #EFF2FB!important;
     min-height: calc(100vh - 3.5rem);
+  }
+  .dashboard-card .arrow {
+    opacity: 0;
+    transform: translateX(-5px);
+    transition: all 0.3s ease;
+  }
+  .dashboard-card:hover .arrow {
+    opacity: 1;
+    transform: translateX(5px);
   }
 }
 
@@ -30,4 +39,12 @@
 }
 .swal2-html-container {
   font-size: 1em!important;
+}
+
+.label-custom > input:checked + div { /* (RADIO CHECKED) DIV STYLES */
+  @apply border-blue-600
+}
+
+.label-custom > input[type='radio']:focus { /* (RADIO CHECKED) DIV STYLES */
+  --tw-ring-color: transparent;
 }

@@ -7,6 +7,7 @@ import Navbar from './Navbar'
 import Sidebar from './Sidebar'
 
 const AdminLayout = ({ children }) => {
+  const [sidebarOpened, setSidebarOpened] = useState(false)
   const router = useRouter()
   const { authUser, loading } = useAuth();
 
@@ -22,8 +23,8 @@ const AdminLayout = ({ children }) => {
 
   return (!authUser) ? null : (
     <div className=''>
-      <Navbar />
-      <Sidebar />
+      <Navbar sidebarOpened={sidebarOpened} setSidebarOpened={setSidebarOpened} />
+      <Sidebar sidebarOpened={sidebarOpened} setSidebarOpened={setSidebarOpened} />
       <div className="sm:ml-64 mt-14 bg-main-container p-5">
         {/* <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14"> */}
           {children}

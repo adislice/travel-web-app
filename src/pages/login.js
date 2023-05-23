@@ -1,6 +1,8 @@
 import { Icons } from '@/components/Icons'
 import { useAuth } from '@/context/authContext'
+import { auth } from '@/lib/firebase'
 import signIn from '@/lib/signIn'
+import { onAuthStateChanged } from 'firebase/auth'
 import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react'
 import { Inter } from 'next/font/google'
 import Link from 'next/link'
@@ -15,14 +17,21 @@ function LoginPage() {
   const methods = useForm({ mode: 'onBlur' })
   const router = useRouter()
   const { authUser } = useAuth();
+  const [done, setDone] = useState(false)
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.push('/admin/dashboard')
+      }
+    })
     console.log(authUser)
-    if (authUser) {
-      router.push('/admin/dashboard')
-    }
-    return
+    // if (authUser) {
+    //   router.push('/admin/dashboard')
+    // }
+    return unsubscribe
   }, [])
+  
   const {
     register,
     handleSubmit,

@@ -8,7 +8,7 @@ const SidebarLink = ({children, to = '#', active = false}) => {
     <li>
       <Link
         href={to}
-        className={`flex items-center px-3 py-2.5 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ${active ? 'bg-gray-200' : ''}`}
+        className={`flex items-center px-4 py-3 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ${active ? 'bg-blue-100 text-sky-600' : 'text-gray-900'}`}
       >
         {children}
         

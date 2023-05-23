@@ -1,6 +1,6 @@
 import AdminLayout from '@/components/dashboard/Layout'
 import { Icons } from '@/components/Icons'
-import { getDetailTempatWisata } from '@/services/tempat-wisata-service'
+import { getDetailTempatWisata } from '@/services/TempatWisataService'
 // import FsLightbox from 'fslightbox-react'
 import Head from 'next/head'
 import Link from 'next/link'

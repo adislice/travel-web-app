@@ -10,7 +10,7 @@ export async function getTempatWisata() {
     const dbInstance = collection(database, 'tempat_wisata')
     let result = []
     let docs = await getDocs(dbInstance)
-    
+
     for (let index = 0; index < docs.docs.length; index++) {
       const element = docs.docs[index];
       let fotosRef = collection(element.ref, 'foto')
@@ -24,9 +24,9 @@ export async function getTempatWisata() {
         ...element.data(),
         foto: fotosArray
       })
-      
+
     }
-    
+
     return result
   } catch (e) {
     throw e
@@ -47,6 +47,7 @@ export async function addTempatWisata(formData) {
       alamat: formData.alamat,
       latitude: formData.latitude,
       longitude: formData.longitude,
+      thumbnail_foto: imgUpResult[0].url,
       created_at: serverTimestamp(),
     }
 
@@ -83,7 +84,6 @@ export async function editTempatWisata(id, formData) {
     let imgData = formData.images
     let imgUpResult = await uploadFiles(formData.images)
     console.log(imgUpResult)
-    
 
     const dbInstance = collection(database, 'tempat_wisata')
     const docRef = doc(dbInstance, id)
@@ -113,7 +113,7 @@ export async function editTempatWisata(id, formData) {
     }
 
 
-    
+
     return true
   } catch (error) {
     throw error
@@ -122,13 +122,13 @@ export async function editTempatWisata(id, formData) {
 
 export async function uploadFiles(images) {
   const promises = images.map((file) => {
-    const storageRef = ref(storage, `images/tempat_wisata/${file.name}`);
+    const storageRef = ref(storage, `images/tempat_wisata/${file.name}`)
     if (file.blob instanceof File) {
       return uploadBytes(storageRef, file.blob);
     } else {
       return file.blob
     }
-    
+
   });
 
   const res = await Promise.all(promises);
@@ -146,7 +146,7 @@ export async function uploadFiles(images) {
         url: images[index].blob
       }
     }
-    
+
   }
   ));
   return links
@@ -162,14 +162,14 @@ export async function getDetailTempatWisata(id) {
     let fotoArray = fotoSnap.docs.map(foto => {
       return foto.data()
     })
-    
+
     const result = {
       ...docSnap.data(),
       foto: fotoArray
     }
 
     console.log(result)
-    
+
     return result
   } catch (e) {
     throw e
@@ -178,17 +178,17 @@ export async function getDetailTempatWisata(id) {
 
 export async function deleteTempatWisata(id) {
   try {
-  const dbInstance = collection(database, 'tempat_wisata')
-  const docRef = doc(dbInstance, id)
-  const fotoColRef = collection(docRef, 'foto')
-  let fotoDocs = await getDocs(fotoColRef)
+    const dbInstance = collection(database, 'tempat_wisata')
+    const docRef = doc(dbInstance, id)
+    const fotoColRef = collection(docRef, 'foto')
+    let fotoDocs = await getDocs(fotoColRef)
 
-  for (const elem of fotoDocs.docs) {
-    await deleteDoc(elem.ref)
+    for (const elem of fotoDocs.docs) {
+      await deleteDoc(elem.ref)
+    }
+
+    return await deleteDoc(docRef)
+  } catch (e) {
+    throw e
   }
-
-  return await deleteDoc(docRef)
-} catch (e) {
-  throw e
-}
 }

@@ -3,7 +3,7 @@ import { Icons } from '@/components/Icons'
 import ImageUpload from '@/components/ImageUpload'
 import ImageUploadBox from '@/components/ImageUploadBox'
 import ImageUploadItem from '@/components/ImageUploadItem'
-import { addTempatWisata } from '@/services/tempat-wisata-service'
+import { addTempatWisata } from '@/services/TempatWisataService'
 import { Button, Label, Textarea, TextInput } from 'flowbite-react'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -72,10 +72,9 @@ const AddTempatWisataPage = () => {
           icon: 'error'
         })
       }
-    })
-      .catch(error => {
+    }).catch(error => {
 
-      })
+    })
   }
 
   const deleteImage = (index) => {
@@ -201,7 +200,7 @@ const AddTempatWisataPage = () => {
                       type="file"
                       id='uploadimgbtn'
                       hidden={true}
-                      
+
                       onChange={onChangePicture}
                     />
                   </ImageUpload>
