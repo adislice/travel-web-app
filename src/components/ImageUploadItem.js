@@ -5,7 +5,7 @@ const ImageUploadItem = ({children, onDeleteClicked}) => {
   return (
     <div className='relative h-24 w-24 border border-gray-300 overflow-hidden rounded-md grid place-items-center object-cover'>
       {children}
-      <button type='button' className='absolute opacity-0 z-30 hover:opacity-100 bg-white shadow p-1 rounded-full' onClick={onDeleteClicked}><Icons.hapus className='text-red-500' /></button>
+      <button type='button' className='absolute opacity-50 transition-opacity duration-200 z-30 hover:opacity-100 bg-white shadow p-1 rounded-full' onClick={onDeleteClicked}><Icons.hapus className='text-red-500' /></button>
     </div>
   )
 }

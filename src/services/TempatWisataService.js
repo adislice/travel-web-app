@@ -1,6 +1,6 @@
 import { database, storage } from "@/lib/firebase"
 import { async } from "@firebase/util"
-import { addDoc, collection, deleteDoc, doc, FieldValue, GeoPoint, getDoc, getDocs, serverTimestamp, setDoc, updateDoc } from "firebase/firestore"
+import { addDoc, and, collection, deleteDoc, doc, FieldValue, GeoPoint, getDoc, getDocs, onSnapshot, or, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 import { useState } from "react"
 
@@ -13,16 +13,10 @@ export async function getTempatWisata() {
 
     for (let index = 0; index < docs.docs.length; index++) {
       const element = docs.docs[index];
-      let fotosRef = collection(element.ref, 'foto')
-      let fotos = await getDocs(fotosRef, 'foto')
-      let fotosArray = fotos.docs.map(foto => {
-        return foto.data()
-      })
 
       result.push({
         id: element.id,
         ...element.data(),
-        foto: fotosArray
       })
 
     }
@@ -31,6 +25,52 @@ export async function getTempatWisata() {
   } catch (e) {
     throw e
   }
+}
+
+export function getTempatWisataRealtime(dataState, setDataState, searchQuery, setLoading = null) {
+  const twCol = collection(database, 'tempat_wisata')
+
+  searchQuery = searchQuery ?? ""
+  const q = query(twCol,
+    or(
+      // query as-is:
+      and(
+        where('nama', '>=', searchQuery),
+        where('nama', '<=', searchQuery + '\uf8ff')
+      ),
+      // capitalize first letter:
+      and(
+        where('nama', '>=', searchQuery.charAt(0).toUpperCase() + searchQuery.slice(1)),
+        where('nama', '<=', searchQuery.charAt(0).toUpperCase() + searchQuery.slice(1) + '\uf8ff')
+      ),
+      // lowercase:
+      and(
+        where('nama', '>=', searchQuery.toLowerCase()),
+        where('nama', '<=', searchQuery.toLowerCase() + '\uf8ff')
+      )
+    ))
+  console.log("searcing " + searchQuery)
+
+  const unsub = onSnapshot(q, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      console.log(change.doc.data())
+      if (change.type === "added") {
+
+        if (!dataState.some(e => e.id === change.doc.id)) {
+          const newData = {
+            id: change.doc.id,
+            ...change.doc.data()
+          }
+          setDataState(oldData => [...oldData, newData])
+          console.log("added ")
+          setLoading == null ?? setLoading(false)
+        }
+
+      }
+    })
+  })
+
+  return unsub
 }
 
 export async function addTempatWisata(formData) {

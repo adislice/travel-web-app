@@ -256,7 +256,7 @@ const AddPaketWisataPage = () => {
                     {tujuanWisata.map((item, index) => (
                       <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                         <td className='w-11'>
-                          <img src={item.thumbnail_image} alt={item.nama} className='mx-auto w-12 h-12 my-2 object-cover rounded' />
+                          <img src={item.thumbnail_foto} alt={item.nama} className='mx-auto w-12 h-12 my-2 object-cover rounded' />
                         </td>
                         <td className="px-4 py-4">
                           {/* <Href href={`${router.asPath}/${item.id}/show`} className="text-gray-900"> */}

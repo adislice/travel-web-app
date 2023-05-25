@@ -1,5 +1,6 @@
 import { Trash2 } from "lucide-react";
 import { ArrowRight } from "lucide-react";
+import { Edit } from "lucide-react";
 import { Users } from "lucide-react";
 import { X } from "lucide-react";
 import { AlignLeft, ChevronLeft, Compass, Fingerprint, Gauge, ImagePlus, Layers, LineChart, Plus, Search, Text, Wallet, XCircle } from "lucide-react"; 
@@ -20,5 +21,7 @@ export const Icons = {
   close: X,
   sampah: Trash2,
   users: Users,
-  arrowRight: ArrowRight
+  arrowRight: ArrowRight,
+  hapus: Trash2,
+  edit: Edit,
 }
