@@ -1,21 +1,26 @@
 import { useAuth } from '@/context/authContext'
+import { NavigationContext } from '@/context/navigationContext'
 import { auth } from '@/lib/firebase'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { useContext } from 'react'
 import { Icons } from '../Icons'
 
-const Navbar = ({setSidebarOpened}) => {
+const Navbar = ({ setSidebarOpened }) => {
   const router = useRouter()
   const { authUser, loading } = useAuth();
+  const [navigation, setNavigation] = useContext(NavigationContext)
+  console.log(navigation)
+
   function logout() {
     auth.signOut()
-    .then(() => router.push('/'))
+      .then(() => router.push('/'))
   }
   // console.log(authUser?.displayName)
   return (
-    <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-      <div className="px-3 py-3 lg:px-5 lg:pl-3">
-        <div className="flex items-center justify-between">
+    <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+      <div className="px-3 py-3 lg:px-5 ">
+        <div className="flex items-center">
           <div className="flex items-center justify-start">
             <button
               type="button"
@@ -25,14 +30,19 @@ const Navbar = ({setSidebarOpened}) => {
               <span className="sr-only">Open sidebar</span>
               <Icons.menu className='w-6 h-6' />
             </button>
-            <a href="https://flowbite.com" className="flex ml-2 md:mr-24">
-              
-              <span className="self-center text-lg font-semibold sm:text-xl whitespace-nowrap dark:text-white">
-                Kencana Admin
-              </span>
-            </a>
           </div>
-          <div className="flex items-center">
+
+          <div className="self-center whitespace-nowrap dark:text-white text-sm overflow-auto">
+              {navigation.map((item, index, navigation) => (
+                <>
+                  <Link key={index} href={item.url} className={navigation.length != index + 1 ? "text-gray-600" : ""}>{item.title}</Link>
+                  {navigation.length == index + 1 ? null : (
+                    <span className='mx-2'>/</span>
+                  )}
+                </>
+              ))}
+            </div>
+          <div className="ml-auto flex items-center shrink-0">
             <div className="flex items-center ml-3">
               <div>
                 <button
@@ -97,7 +107,7 @@ const Navbar = ({setSidebarOpened}) => {
                   </li>
                   <li>
                     <a
-                    href='#'
+                      href='#'
                       onClick={logout}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"

@@ -3,6 +3,7 @@ import { Icons } from '@/components/Icons'
 import ImageUpload from '@/components/ImageUpload'
 import ImageUploadBox from '@/components/ImageUploadBox'
 import ImageUploadItem from '@/components/ImageUploadItem'
+import { useNav } from '@/context/navigationContext'
 import { addTempatWisata } from '@/services/TempatWisataService'
 import { Button, Label, Textarea, TextInput } from 'flowbite-react'
 import Head from 'next/head'
@@ -17,6 +18,20 @@ const AddTempatWisataPage = () => {
   const router = useRouter()
   const [isSubmitSuccess, setIsSubmitSuccess] = useState(false)
   const [imageArray, setImageArray] = useState([])
+  const [navigation, setNavigation] = useNav()
+
+  useEffect(() => {
+    setNavigation([
+      {
+        title: "Tempat Wisata",
+        url: "/admin/tempatwisata"
+      },
+      {
+        title: "Tambah Tempat Wisata",
+        url: "/admin/tempatwisata/add"
+      }
+    ])
+  }, [])
 
   const onChangePicture = (e) => {
     if (e.target.files[0] == undefined) {

@@ -1,7 +1,7 @@
 import { database } from '@/lib/firebase'
 import { collection, collectionGroup, getDoc, getDocs, onSnapshot, query } from 'firebase/firestore'
 
-export function getAllTransaksiRealtime(state, setState, filter) {
+export function getAllTransaksiRealtime(state, setState, filter, setLoading) {
   const queryTransaksi = query(collectionGroup(database, 'transaksi'))
   const unsubscribe = onSnapshot(queryTransaksi, (snapshot) => {
     snapshot.docChanges().forEach(async (change) => {
@@ -22,6 +22,7 @@ export function getAllTransaksiRealtime(state, setState, filter) {
             ...change.doc.data()
           }
           setState(oldData => [...oldData, newData])
+          setLoading(false)
         }
       }
     })

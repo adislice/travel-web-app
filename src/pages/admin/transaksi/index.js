@@ -16,7 +16,8 @@ const TransaksiPage = () => {
   const router = useRouter()
 
   useEffect(() => {
-    const unsubs = getAllTransaksiRealtime(dataTransaksi, setDataTransaksi, "")
+    setLoading(true)
+    const unsubs = getAllTransaksiRealtime(dataTransaksi, setDataTransaksi, "", setLoading)
 
     return () => {
       console.log('unsubscribe get all transaksi')

@@ -1,4 +1,5 @@
 import { useAuth } from '@/context/authContext'
+import { NavigationContextProvider } from '@/context/navigationContext'
 import TestPage from '@/pages/test'
 import { initFlowbite } from 'flowbite'
 import { useRouter } from 'next/router'
@@ -12,7 +13,7 @@ const AdminLayout = ({ children }) => {
   const { authUser, loading } = useAuth();
 
   useEffect(() => {
-    if (!loading && !authUser){
+    if (!loading && !authUser) {
       router.push('/login')
     }
   }, [authUser, loading])
@@ -22,17 +23,20 @@ const AdminLayout = ({ children }) => {
   }, [])
 
   return (!authUser) ? null : (
-    <div className=''>
-      <Navbar sidebarOpened={sidebarOpened} setSidebarOpened={setSidebarOpened} />
-      <Sidebar sidebarOpened={sidebarOpened} setSidebarOpened={setSidebarOpened} />
-      <div className="sm:ml-64 mt-14 bg-main-container p-5">
-        {/* <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14"> */}
-          {children}
-        {/* </div> */}
+      <div>
+
+        <Sidebar sidebarOpened={sidebarOpened} setSidebarOpened={setSidebarOpened} />
+        <div className="sm:ml-64 bg-main-container">
+          <Navbar sidebarOpened={sidebarOpened} setSidebarOpened={setSidebarOpened} />
+          <div className='p-5'>
+            {/* <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14"> */}
+            {children}
+            {/* </div> */}
+          </div>
+
+        </div>
 
       </div>
-
-    </div>
   )
 }
 

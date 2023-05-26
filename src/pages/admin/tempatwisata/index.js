@@ -2,6 +2,7 @@ import AdminLayout from '@/components/dashboard/Layout'
 import { Icons } from '@/components/Icons'
 import Href from '@/components/Link'
 import LoadingDataSpinner from '@/components/LoadingDataSpinner'
+import { NavigationContext } from '@/context/navigationContext'
 import { database } from '@/lib/firebase'
 import { deleteTempatWisata, getTempatWisata, getTempatWisataRealtime } from '@/services/TempatWisataService'
 import { collection, getDocs } from 'firebase/firestore'
@@ -10,7 +11,7 @@ import { Button, Spinner } from 'flowbite-react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 
 const TempatWisataPage = () => {
@@ -18,9 +19,25 @@ const TempatWisataPage = () => {
   const [datas, setDatas] = useState([])
   const [searchQuery, setSearchQuery] = useState("")
   const [tempSearch, setTempSearch] = useState("")
+  const [navigation, setNavigation] = useContext(NavigationContext)
   const router = useRouter()
 
+  // setNavigation([
+  //   {
+  //     title: "Tempat Wisata",
+  //     url: "/admin/dashboard/tempatwisata"
+  //   }
+  // ])
+  console.log(navigation)
+
   useEffect(() => {
+    setNavigation([
+      {
+        title: "Tempat Wisata",
+        url: "/admin/tempatwisata"
+      }
+    ])
+
     console.log(searchQuery)
     setLoading(true)
     const replace = searchQuery == "" ? false : true

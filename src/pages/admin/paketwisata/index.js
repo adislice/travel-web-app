@@ -1,6 +1,7 @@
 import AdminLayout from '@/components/dashboard/Layout'
 import { Icons } from '@/components/Icons'
 import Href from '@/components/Link'
+import LoadingDataSpinner from '@/components/LoadingDataSpinner'
 import { database } from '@/lib/firebase'
 import { getAllPaketWisata } from '@/services/PaketWisataService'
 import { getTempatWisata } from '@/services/TempatWisataService'
@@ -18,7 +19,10 @@ const PaketWisataPage = () => {
   const router = useRouter()
 
   useEffect(() => {
-    let result = getAllPaketWisata().then((data) => setDataPaket(data))
+    setLoading(true)
+    let result = getAllPaketWisata().then((data) => {
+      setDataPaket(data)
+    }).finally(() => setLoading(false))
     
   }, [])
 
