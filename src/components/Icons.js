@@ -1,6 +1,7 @@
 import { Trash2 } from "lucide-react";
 import { ArrowRight } from "lucide-react";
 import { ChevronDown } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Edit } from "lucide-react";
 import { Users } from "lucide-react";
 import { X } from "lucide-react";
@@ -25,5 +26,6 @@ export const Icons = {
   arrowRight: ArrowRight,
   hapus: Trash2,
   edit: Edit,
-  chevronDown: ChevronDown
+  chevronDown: ChevronDown,
+  logout: LogOut
 }

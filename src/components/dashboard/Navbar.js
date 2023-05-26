@@ -3,14 +3,14 @@ import { NavigationContext } from '@/context/navigationContext'
 import { auth } from '@/lib/firebase'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
+import CurrentTime from '../CurrentTime'
 import { Icons } from '../Icons'
 
 const Navbar = ({ setSidebarOpened }) => {
   const router = useRouter()
   const { authUser, loading } = useAuth();
   const [navigation, setNavigation] = useContext(NavigationContext)
-  console.log(navigation)
 
   function logout() {
     auth.signOut()
@@ -19,8 +19,8 @@ const Navbar = ({ setSidebarOpened }) => {
   // console.log(authUser?.displayName)
   return (
     <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-      <div className="px-3 py-3 lg:px-5 ">
-        <div className="flex items-center">
+      <div className="px-3 py-3">
+        <div className="flex items-center gap-3">
           <div className="flex items-center justify-start">
             <button
               type="button"
@@ -47,20 +47,22 @@ const Navbar = ({ setSidebarOpened }) => {
               <div>
                 <button
                   type="button"
-                  className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                  className="flex text-sm items-center gap-2"
                   aria-expanded="false"
                   data-dropdown-toggle="dropdown-user"
                 >
                   <span className="sr-only">Open user menu</span>
                   <img
-                    className="w-8 h-8 rounded-full"
+                    className="w-8 h-8 rounded-full bg-gray-800 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                     src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
                     alt="user photo"
                   />
+                  <div className='hidden md:block'>{authUser?.displayName}</div>
+                  <Icons.chevronDown className='h-4 w-4' />
                 </button>
               </div>
               <div
-                className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
+                className="z-50 border border-gray-100 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-xl dark:bg-gray-700 dark:divide-gray-600"
                 id="dropdown-user"
               >
                 <div className="px-4 py-3" role="none">
@@ -71,12 +73,24 @@ const Navbar = ({ setSidebarOpened }) => {
                     {authUser?.displayName}
                   </p>
                   <p
-                    className="text-sm font-medium text-gray-900 truncate dark:text-gray-300"
+                    className="text-sm text-gray-600 truncate dark:text-gray-300"
                     role="none"
                   >
                     {authUser?.email}
                   </p>
+                  
                 </div>
+                <ul className="py-1" role="none">
+                <li>
+                    <div
+                      href="#"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                      role="menuitem"
+                    >
+                      <CurrentTime />
+                    </div>
+                  </li>
+                </ul>
                 <ul className="py-1" role="none">
                   <li>
                     <a
@@ -109,10 +123,11 @@ const Navbar = ({ setSidebarOpened }) => {
                     <a
                       href='#'
                       onClick={logout}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                      className="flex gap-2 px-4 py-2 text-sm text-red-700 hover:bg-red-700 hover:text-white dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
                     >
-                      Sign out
+                      <Icons.logout className='h-5 w-5' />
+                      <span>Sign out</span>
                     </a>
                   </li>
                 </ul>

@@ -35,7 +35,7 @@ function DashboardIndexPage() {
       <Head>
         <title>Dashboard</title>
       </Head>
-      <h3 className='p-5 text-2xl text-gray-800 font-semibold'>Dashboard</h3>
+      <h3 className='md:px-0 px-5 py-5 text-2xl text-gray-800 font-semibold'>Dashboard</h3>
 
       <div className='p-5 rounded-lg bg-white'>
         <div className='mb-4'>Selamat datang, {authUser?.displayName} 👋</div>

@@ -63,7 +63,7 @@ export function getTempatWisataRealtime(dataState, setDataState, searchQuery, se
           }
           setDataState(oldData => [...oldData, newData])
           console.log("added ")
-          setLoading == null ?? setLoading(false)
+          setLoading(false)
         }
 
       }

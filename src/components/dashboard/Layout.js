@@ -26,9 +26,9 @@ const AdminLayout = ({ children }) => {
       <div>
 
         <Sidebar sidebarOpened={sidebarOpened} setSidebarOpened={setSidebarOpened} />
-        <div className="sm:ml-64 bg-main-container">
+        <div className="sm:ml-64 bg-main-container min-h-screen">
           <Navbar sidebarOpened={sidebarOpened} setSidebarOpened={setSidebarOpened} />
-          <div className='p-5'>
+          <div className='sm:px-5'>
             {/* <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14"> */}
             {children}
             {/* </div> */}

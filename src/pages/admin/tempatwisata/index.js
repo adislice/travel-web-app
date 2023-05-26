@@ -42,7 +42,6 @@ const TempatWisataPage = () => {
     setLoading(true)
     const replace = searchQuery == "" ? false : true
     const unsubscribe = getTempatWisataRealtime(datas, setDatas, searchQuery, setLoading)
-    setLoading(false)
     
     // return () => unsubscribe()
     return () => {
@@ -108,7 +107,7 @@ const TempatWisataPage = () => {
       <Head>
         <title>Tempat Wisata</title>
       </Head>
-      <div className='md:px-5 py-5 flex justify-between items-center'>
+      <div className='px-5 md:px-0 py-5 flex justify-between items-center'>
         <h3 className='text-xl md:text-2xl text-gray-800 font-semibold'>Tempat Wisata</h3>
 
         <div className="actionbutton space-x-2 flex flex-row">
@@ -124,7 +123,7 @@ const TempatWisataPage = () => {
 
         </div>
       </div>
-      <div className="wrapper md:px-5 ">
+      <div className="wrapper  ">
         <div className="bg-white border rounded-xl">
           <div className='flex justify-end'>
             <div className="relative w-full lg:w-80 m-4">
@@ -195,14 +194,14 @@ const TempatWisataPage = () => {
                       </td>
                       <td className="px-4 py-4">{item.alamat}</td>
                       <td className="px-4 py-4">{item.latitude}, {item.longitude}</td>
-                      <td className="px-4 py-4 text-right space-x-4">
+                      <td className="px-4 py-4 text-right space-x-2 flex">
                         <Link
                           href={`/admin/tempatwisata/${item.id}/edit`}
-                          className="inline-block font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                          className="p-2 border border-gray-200 rounded-lg inline-block font-medium text-blue-600 dark:text-blue-500 hover:bg-gray-100 hover:underline"
                         >
                           <Icons.edit className='h-5 w-5' />
                         </Link>
-                        <button onClick={() => handleHapus(item.id)} className="text-red-600 hover:underline">
+                        <button onClick={() => handleHapus(item.id)} className="p-2 border border-gray-200 rounded-lg text-red-600 hover:bg-gray-100 hover:underline">
                           <Icons.hapus className='h-5 w-5' />
                         </button>
                       </td>
