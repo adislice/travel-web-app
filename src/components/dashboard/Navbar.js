@@ -1,9 +1,11 @@
 import { useAuth } from '@/context/authContext'
 import { NavigationContext } from '@/context/navigationContext'
 import { auth } from '@/lib/firebase'
+import { logOut } from '@/services/AuthService'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useContext, useEffect, useState } from 'react'
+import Swal from 'sweetalert2'
 import CurrentTime from '../CurrentTime'
 import { Icons } from '../Icons'
 
@@ -13,8 +15,33 @@ const Navbar = ({ setSidebarOpened }) => {
   const [navigation, setNavigation] = useContext(NavigationContext)
 
   function logout() {
-    auth.signOut()
-      .then(() => router.push('/'))
+    Swal.fire({
+      title: 'Anda Yakin?',
+      text: "Anda yakin ingin keluar?",
+      icon: 'question',
+      showCancelButton: true,
+      cancelButtonText: "Batal",
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'Yakin!'
+    }).then((result) => {
+      if (result.value) {
+        logOut().then(() => {
+            Swal.fire({
+              'title': 'Sukses',
+              'icon': 'success',
+              'text': 'Berhasil keluar!'
+            })
+            router.push('/login')
+          }).catch(() => {
+            Swal.fire({
+              title: "Gagal!",
+              text: "Gagal logout!",
+              icon: 'error'
+            })
+          })
+
+      }
+    })
   }
   // console.log(authUser?.displayName)
   return (
@@ -33,15 +60,15 @@ const Navbar = ({ setSidebarOpened }) => {
           </div>
 
           <div className="flex whitespace-nowrap dark:text-white text-sm overflow-auto items-center">
-              {navigation.map((item, index, navigation) => (
-                <div key={`nav-${index}`}>
-                  <Link href={item.url} className={navigation.length != index + 1 ? "text-gray-600" : ""}>{item.title}</Link>
-                  {navigation.length == index + 1 ? null : (
-                    <span className='mx-2'>/</span>
-                  )}
-                </div>
-              ))}
-            </div>
+            {navigation.map((item, index, navigation) => (
+              <div key={`nav-${index}`}>
+                <Link href={item.url} className={navigation.length != index + 1 ? "text-gray-600" : ""}>{item.title}</Link>
+                {navigation.length == index + 1 ? null : (
+                  <span className='mx-2'>/</span>
+                )}
+              </div>
+            ))}
+          </div>
           <div className="ml-auto flex items-center shrink-0">
             <div className="flex items-center ml-3">
               <div>
@@ -78,10 +105,10 @@ const Navbar = ({ setSidebarOpened }) => {
                   >
                     {authUser?.email}
                   </p>
-                  
+
                 </div>
                 <ul className="py-1" role="none">
-                <li>
+                  <li>
                     <div
                       href="#"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"

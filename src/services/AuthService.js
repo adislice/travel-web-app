@@ -1,8 +1,7 @@
+import { auth } from '@/lib/firebase'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import React from 'react'
-import { auth } from './firebase'
 
-async function signIn(email, password) {
+export async function logIn(email, password) {
   let result = null, error = null
   try {
     result = await signInWithEmailAndPassword(auth, email, password)
@@ -13,4 +12,7 @@ async function signIn(email, password) {
   return { result, error }
 }
 
-export default signIn
+export async function logOut() {
+  const result = auth.signOut()
+  return result
+}

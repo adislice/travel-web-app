@@ -1,7 +1,7 @@
 import { Icons } from '@/components/Icons'
 import { useAuth } from '@/context/authContext'
 import { auth } from '@/lib/firebase'
-import signIn from '@/lib/signIn'
+import { logIn } from '@/services/AuthService'
 import { onAuthStateChanged } from 'firebase/auth'
 import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react'
 import { Inter } from 'next/font/google'
@@ -40,7 +40,7 @@ function LoginPage() {
 
   async function onSubmit(data) {
     setLoading(true)
-    const { result, error } = await signIn(data.email, data.password)
+    const { result, error } = await logIn(data.email, data.password)
     if (result) {
       Swal.fire({
         title: 'Sukses',
@@ -49,6 +49,7 @@ function LoginPage() {
         timer: '2500',
       })
       router.push('/admin/dashboard')
+      setLoading(true)
     }
 
     if (error) {
@@ -56,13 +57,6 @@ function LoginPage() {
       console.log(code)
       switch (code) {
         case 'auth/user-not-found':
-          Swal.fire({
-            title: 'Login gagal!',
-            text: 'Pengguna tidak ditemukan!',
-            icon: 'error',
-            confirmButtonText: 'Tutup'
-          })
-          break;
         case 'auth/wrong-password':
           Swal.fire({
             title: 'Login gagal!',
@@ -80,9 +74,8 @@ function LoginPage() {
           })
           break;
       }
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   return (
