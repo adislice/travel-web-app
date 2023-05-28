@@ -34,16 +34,25 @@ const AddTempatWisataPage = () => {
   }, [])
 
   const onChangePicture = (e) => {
-    if (e.target.files[0] == undefined) {
-      return
-    }
-    let imgObject = URL.createObjectURL(e.target.files[0])
-    setImageArray(olditem => [...olditem, {
-      name: e.target.files[0].name,
-      url: imgObject,
-      blob: e.target.files[0]
-    }])
-    console.log(e.target.files[0].name)
+    // if (e.target.files[0] == undefined) {
+    //   return
+    // }
+    // let imgObject = URL.createObjectURL(e.target.files[0])
+    // setImageArray(olditem => [...olditem, {
+    //   name: e.target.files[0].name,
+    //   url: imgObject,
+    //   blob: e.target.files[0]
+    // }])
+    // console.log(e.target.files[0].name)
+    const inputArray = e.target.files
+    Array.from(inputArray).forEach((file) => {
+      let imgObject = URL.createObjectURL(file)
+      setImageArray(olditem => [...olditem, {
+        name: file.name,
+        url: imgObject,
+        blob: file
+      }])
+    });
   };
 
   const {
@@ -108,7 +117,7 @@ const AddTempatWisataPage = () => {
       <Head>
         <title>Tambah Tempat Wisata</title>
       </Head>
-      <div className='flex gap-2 items-center pb-5 '>
+      <div className='flex gap-2 items-center md:px-0 p-5 '>
         <Link href={'./'}>
           <Icons.back className='h-6 w-6 rounded-full hover:bg-gray-200' />
         </Link>
@@ -215,7 +224,8 @@ const AddTempatWisataPage = () => {
                       type="file"
                       id='uploadimgbtn'
                       hidden={true}
-
+                      multiple={true}
+                      accept="image/*"
                       onChange={onChangePicture}
                     />
                   </ImageUpload>

@@ -43,9 +43,7 @@ const AuthUserContext = createContext({
 })
 
 export const AuthUserProvider = ({children}) => {
-  
   const auth = useFirebaseAuth()
-  console.log('authProvider')
   
   return <AuthUserContext.Provider value={auth}>
     {auth.loading ? <TestPage /> : children}

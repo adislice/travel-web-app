@@ -20,7 +20,7 @@ const Navbar = ({ setSidebarOpened }) => {
   return (
     <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
       <div className="px-3 py-3">
-        <div className="flex items-center gap-3">
+        <div className="flex items-stretch gap-3">
           <div className="flex items-center justify-start">
             <button
               type="button"
@@ -32,14 +32,14 @@ const Navbar = ({ setSidebarOpened }) => {
             </button>
           </div>
 
-          <div className="self-center whitespace-nowrap dark:text-white text-sm overflow-auto">
+          <div className="flex whitespace-nowrap dark:text-white text-sm overflow-auto items-center">
               {navigation.map((item, index, navigation) => (
-                <>
-                  <Link key={index} href={item.url} className={navigation.length != index + 1 ? "text-gray-600" : ""}>{item.title}</Link>
+                <div key={`nav-${index}`}>
+                  <Link href={item.url} className={navigation.length != index + 1 ? "text-gray-600" : ""}>{item.title}</Link>
                   {navigation.length == index + 1 ? null : (
                     <span className='mx-2'>/</span>
                   )}
-                </>
+                </div>
               ))}
             </div>
           <div className="ml-auto flex items-center shrink-0">

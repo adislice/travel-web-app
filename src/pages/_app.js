@@ -1,7 +1,7 @@
 import { AuthProvider, AuthUserProvider } from '@/context/authContext'
 import { NavigationContextProvider } from '@/context/navigationContext'
 import '@/styles/globals.css'
-import { Inter, Poppins } from 'next/font/google'
+import { Figtree, Inter, Noto_Sans, Plus_Jakarta_Sans, Poppins } from 'next/font/google'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -14,12 +14,30 @@ const poppins = Poppins({
   weight: ["400", "500", "600", "700", "800", "900"]
 })
 
+const figtree = Figtree({
+  subsets: ['latin'],
+  variable: "--font-sans"
+})
+
+const plusJkt = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: "--font-sans",
+  
+})
+
+const notoSans = Noto_Sans({
+  subsets: ['latin'],
+  variable: "--font-sans",
+  weight: ["400", "500", "600", "700", "800", "900"]
+})
+
 export default function App({ Component, pageProps }) {
   return <>
   <style jsx global>
   {`
     :root {
-      --font-sans: ${poppins.style.fontFamily};
+      --font-sans: ${notoSans.style.fontFamily};
+      --font-heading: ${poppins.style.fontFamily};
     }
   `}
   </style>
