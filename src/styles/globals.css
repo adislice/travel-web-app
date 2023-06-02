@@ -53,10 +53,10 @@
 
 .label-custom > input:checked + div {
   /* (RADIO CHECKED) DIV STYLES */
-  @apply border-blue-600;
+  @apply border-blue-400;
 }
 
-.label-custom > input[type="radio"]:focus {
+.label-custom > input[type="checkbox"]:focus {
   /* (RADIO CHECKED) DIV STYLES */
   --tw-ring-color: transparent;
 }

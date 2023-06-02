@@ -133,10 +133,40 @@ const AddPaketWisataPage = () => {
     setSelectedId(event.target.value)
   }
 
+  function handleCheckbox(e, id) {
+    if (e.target.checked) {
+      const check = tujuanWisata.find((item) => item.id == id)
+      if (check) {
+        return
+      }
+      const selData = dataTempatWisata.find((item) => item.id == id)
+      const dataNew = {
+        id: id,
+        nama: selData.nama,
+        thumbnail_foto: selData.thumbnail_foto,
+        tempat_wisata_id: selData.id,
+        alamat: selData.alamat,
+      }
+      setTujuanWisata((old) => [...old, dataNew])
+    } else {
+      console.log("unchecked " + id)
+      setTujuanWisata((value) => value.filter((it) => it.id !== id))
+    }
+  }
+
+  function findUrutan(id) {
+    const check = tujuanWisata.find((it) => it.id == id)
+    if (check) {
+      const idx = tujuanWisata.findIndex((x) => x.id == id)
+      return idx + 1
+    }
+    return
+  }
+
   return (
     <AdminLayout>
       <Head>
-        <title>Tambah Tempat Wisata</title>
+        <title>Tambah Paket Wisata</title>
       </Head>
 
       <div className="flex items-center gap-2 p-5 md:px-0 ">
@@ -230,7 +260,8 @@ const AddPaketWisataPage = () => {
           </form>
         </FormProvider>
 
-        <div className="rounded-xl bg-white md:p-4">
+        {/* Kelola tujuan tempat wisata */}
+        <div className="mb-5 rounded-xl bg-white md:p-4">
           <div className="mb-4 block">
             <div className="flex flex-row items-center">
               <h3 className="px-4 py-3 text-lg font-semibold text-gray-800">
@@ -239,13 +270,13 @@ const AddPaketWisataPage = () => {
               <button
                 type="button"
                 onClick={() => setDialogTambahOpened(true)}
-                className="mx-2 ml-auto flex w-fit items-center rounded border border-gray-300 bg-white py-1 px-2 text-sm text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+                className="mx-2 ml-auto flex w-fit items-center rounded-md border border-gray-300 bg-white px-3.5 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
               >
                 <Icons.tambah className="mr-1.5 h-4 w-4" />
                 Pilih Tempat Wisata
               </button>
             </div>
-            <div className="mt-2 flex flex-col gap-2">
+            <div className="mt-2 flex flex-col gap-2 px-4">
               <div className="relative overflow-x-auto rounded-lg border bg-white">
                 <table className="w-full text-left text-sm text-gray-800 dark:text-gray-400">
                   <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
@@ -272,6 +303,13 @@ const AddPaketWisataPage = () => {
                     </tr>
                   </thead>
                   <tbody>
+                    {tujuanWisata.length == 0 && (
+                      <tr className=" bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600">
+                        <td className="px-4 py-4 text-center" colSpan={5}>
+                          Tujuan Wisata Kosong
+                        </td>
+                      </tr>
+                    )}
                     {tujuanWisata.map((item, index) => (
                       <tr
                         key={index}
@@ -293,7 +331,7 @@ const AddPaketWisataPage = () => {
                         <td className="px-4 py-4">{item.alamat}</td>
                         {/* <td className="px-4 py-4">{item.latitude}, {item.longitude}</td> */}
                         <td className="px-4 py-4">
-                          <div className="mr-2 w-fit rounded bg-blue-100 py-0.5 px-2.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                          <div className="mr-2 w-fit rounded bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300">
                             Tujuan ke-{index + 1}
                           </div>
                         </td>
@@ -314,6 +352,62 @@ const AddPaketWisataPage = () => {
             </div>
           </div>
         </div>
+
+        {/* Kelola produk paket wisata */}
+        <div className="mb-5 rounded-xl bg-white md:p-4">
+          <div className="mb-4 block">
+            <div className="flex flex-row items-center">
+              <h3 className="px-4 py-3 text-lg font-semibold text-gray-800">
+                Produk Paket Wisata
+              </h3>
+              <button
+                type="button"
+                onClick={() => setDialogTambahOpened(true)}
+                className="mx-2 ml-auto flex w-fit items-center rounded-md border border-gray-300 bg-white px-3.5 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+              >
+                <Icons.tambah className="mr-1.5 h-4 w-4" />
+                Tambah Produk Paket Wisata
+              </button>
+            </div>
+            <div className="mt-2 flex flex-col gap-2 px-4">
+              <div className="relative overflow-x-auto rounded-lg border bg-white">
+                <table className="w-full text-left text-sm text-gray-800 dark:text-gray-400">
+                  <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                      <th scope="col" className="px-4 py-3">
+                        No.
+                      </th>
+                      <th scope="col" className="px-4 py-3">
+                        Nama Produk
+                      </th>
+
+                      <th scope="col" className="px-4 py-3">
+                        Harga
+                      </th>
+                      <th scope="col" className="px-4 py-3">
+                        Jenis Kendaraan/Armada
+                      </th>
+                      <th scope="col" className="px-4 py-3">
+                        Kapasitas Penumpang
+                      </th>
+                      <th scope="col" className="px-4 py-3">
+                        <span className="sr-only">Edit</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <td className="px-4 py-4">1</td>
+                    <td className="px-4 py-4">Paket Keluarga</td>
+                    <td className="px-4 py-4">Rp. 850.000</td>
+                    <td className="px-4 py-4">Mobil Minibus</td>
+                    <td className="px-4 py-4">Min: 1, Max: 5</td>
+                    <td className="px-4 py-4">Edit</td>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <Dialog.Root
@@ -322,7 +416,7 @@ const AddPaketWisataPage = () => {
       >
         <Dialog.Portal>
           <Dialog.Overlay className="data-[state=open]:animate-overlayShow fixed inset-0 z-[99] bg-black/60" />
-          <Dialog.Content className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] z-[100] flex max-h-[85vh] min-h-[60vh] w-[90vw] max-w-[60vw] translate-x-[-50%] translate-y-[-50%] flex-col rounded-[6px]  bg-white p-[25px] focus:outline-none ">
+          <Dialog.Content className="data-[state=open]:animate-contentShow fixed left-[50%] top-[50%] z-[100] flex max-h-[85vh] min-h-[60vh] w-[90vw] max-w-[60vw] translate-x-[-50%] translate-y-[-50%] flex-col rounded-[6px]  bg-white p-[25px] focus:outline-none ">
             <Dialog.Title className="text-mauve12 m-0 mb-4 text-[17px] font-medium">
               Tambah Tempat Wisata Tujuan
             </Dialog.Title>
@@ -331,7 +425,7 @@ const AddPaketWisataPage = () => {
               Pilih tempat wisata yang ingin ditambahkan, lalu klik Tambah.
             </Dialog.Description> */}
             <div className="flex-1 overflow-auto rounded border p-4">
-              <div className="flex flex-col gap-2" onChange={onChangeRadio}>
+              <div className="grid grid-cols-2 gap-2" onChange={onChangeRadio}>
                 {dataTempatWisata.map((item, index) => (
                   <label
                     key={`tw-${index}`}
@@ -339,19 +433,33 @@ const AddPaketWisataPage = () => {
                     className="label-custom relative flex flex-row items-center"
                   >
                     <input
-                      type="radio"
+                      type="checkbox"
                       name="pilih-tw"
                       id={`tw-${item.id}`}
                       value={item.id}
                       className="absolute right-4"
+                      checked={
+                        tujuanWisata.find((it) => it.id == item.id)
+                          ? true
+                          : false
+                      }
+                      onChange={(e) => handleCheckbox(e, item.id)}
                     />
 
                     <div className="flex w-full gap-2 rounded-lg border-2 border-transparent p-2">
-                      <img
-                        src={item.thumbnail_foto}
-                        alt=""
-                        className="h-14 w-14 rounded"
-                      />
+                      <div className="relative">
+                        <img
+                          src={item.thumbnail_foto}
+                          alt=""
+                          className="h-14 w-14 rounded"
+                        />
+                        {tujuanWisata.find((it) => it.id == item.id) ? (
+                          <div className="absolute left-[50%] top-[50%] flex h-6 w-6 translate-x-[-50%] translate-y-[-50%] items-center justify-center rounded-full bg-white text-sm font-semibold text-blue-700 shadow-lg">
+                            {findUrutan(item.id)}
+                          </div>
+                        ) : null}
+                      </div>
+
                       <div className="flex flex-col">
                         <div>{item.nama}</div>
                         <div className="text-sm text-gray-600">
@@ -365,16 +473,16 @@ const AddPaketWisataPage = () => {
             </div>
             <div className="mt-[25px] flex flex-shrink-0 flex-grow-0 basis-[auto] justify-end">
               <button
-                onClick={saveSelection}
+                onClick={() => setDialogTambahOpened(false)}
                 type="button"
-                className=" inline-flex items-center gap-x-1 rounded-md bg-blue-600 py-2 px-3.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className=" inline-flex items-center gap-x-1 rounded-md bg-blue-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Tambah
+                Simpan
               </button>
             </div>
             <Dialog.Close asChild>
               <button
-                className="text-violet11 focus:shadow-violet7 hover:bg-violet4 absolute top-[10px] right-[10px] inline-flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"
+                className="text-violet11 focus:shadow-violet7 hover:bg-violet4 absolute right-[10px] top-[10px] inline-flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"
                 aria-label="Close"
               >
                 <Icons.close />
