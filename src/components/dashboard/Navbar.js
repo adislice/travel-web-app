@@ -1,95 +1,103 @@
-import { useAuth } from '@/context/authContext'
-import { NavigationContext } from '@/context/navigationContext'
-import { auth } from '@/lib/firebase'
-import { logOut } from '@/services/AuthService'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React, { useContext, useEffect, useState } from 'react'
-import Swal from 'sweetalert2'
-import CurrentTime from '../CurrentTime'
-import { Icons } from '../Icons'
+import { useAuth } from "@/context/authContext"
+import { NavigationContext } from "@/context/navigationContext"
+import { auth } from "@/lib/firebase"
+import { logOut } from "@/services/AuthService"
+import Link from "next/link"
+import { useRouter } from "next/router"
+import React, { useContext, useEffect, useState } from "react"
+import Swal from "sweetalert2"
+import CurrentTime from "../CurrentTime"
+import { Icons } from "../Icons"
 
 const Navbar = ({ setSidebarOpened }) => {
   const router = useRouter()
-  const { authUser, loading } = useAuth();
+  const { authUser, loading } = useAuth()
   const [navigation, setNavigation] = useContext(NavigationContext)
 
   function logout() {
     Swal.fire({
-      title: 'Anda Yakin?',
+      title: "Anda Yakin?",
       text: "Anda yakin ingin keluar?",
-      icon: 'question',
+      icon: "question",
       showCancelButton: true,
       cancelButtonText: "Batal",
-      confirmButtonColor: '#d33',
-      confirmButtonText: 'Yakin!'
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Yakin!",
     }).then((result) => {
       if (result.value) {
-        logOut().then(() => {
+        logOut()
+          .then(() => {
             Swal.fire({
-              'title': 'Sukses',
-              'icon': 'success',
-              'text': 'Berhasil keluar!'
+              title: "Sukses",
+              icon: "success",
+              text: "Berhasil keluar!",
             })
-            router.push('/login')
-          }).catch(() => {
+            router.push("/login")
+          })
+          .catch(() => {
             Swal.fire({
               title: "Gagal!",
               text: "Gagal logout!",
-              icon: 'error'
+              icon: "error",
             })
           })
-
       }
     })
   }
   // console.log(authUser?.displayName)
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+    <nav className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
       <div className="px-3 py-3">
         <div className="flex items-stretch gap-3">
           <div className="flex items-center justify-start">
             <button
               type="button"
-              className="inline-flex items-center p-1 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+              className="inline-flex items-center rounded-lg p-1 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 sm:hidden"
               onClick={() => setSidebarOpened((oldValue) => !oldValue)}
             >
               <span className="sr-only">Open sidebar</span>
-              <Icons.menu className='w-6 h-6' />
+              <Icons.menu className="h-6 w-6" />
             </button>
           </div>
 
-          <div className="flex whitespace-nowrap dark:text-white text-sm overflow-auto items-center">
+          <div className="flex items-center overflow-auto whitespace-nowrap text-sm dark:text-white">
             {navigation.map((item, index, navigation) => (
               <div key={`nav-${index}`}>
-                <Link href={item.url} className={navigation.length != index + 1 ? "text-gray-600" : ""}>{item.title}</Link>
+                <Link
+                  href={item.url}
+                  className={
+                    navigation.length != index + 1 ? "text-gray-600" : ""
+                  }
+                >
+                  {item.title}
+                </Link>
                 {navigation.length == index + 1 ? null : (
-                  <span className='mx-2'>/</span>
+                  <span className="mx-2">/</span>
                 )}
               </div>
             ))}
           </div>
-          <div className="ml-auto flex items-center shrink-0">
-            <div className="flex items-center ml-3">
+          <div className="ml-auto flex shrink-0 items-center">
+            <div className="ml-3 flex items-center">
               <div>
                 <button
                   type="button"
-                  className="flex text-sm items-center gap-2"
+                  className="flex items-center gap-2 text-sm"
                   aria-expanded="false"
                   data-dropdown-toggle="dropdown-user"
                 >
                   <span className="sr-only">Open user menu</span>
                   <img
-                    className="w-8 h-8 rounded-full bg-gray-800 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                    className="h-8 w-8 rounded-full bg-gray-800 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                     src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
                     alt="user photo"
                   />
-                  <div className='hidden md:block'>{authUser?.displayName}</div>
-                  <Icons.chevronDown className='h-4 w-4' />
+                  <div className="hidden md:block">{authUser?.displayName}</div>
+                  <Icons.chevronDown className="h-4 w-4" />
                 </button>
               </div>
               <div
-                className="z-50 border border-gray-100 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-xl dark:bg-gray-700 dark:divide-gray-600"
+                className="z-50 my-4 hidden list-none divide-y divide-gray-100 rounded-lg border border-gray-100 bg-white text-base shadow-xl dark:divide-gray-600 dark:bg-gray-700"
                 id="dropdown-user"
               >
                 <div className="px-4 py-3" role="none">
@@ -100,12 +108,11 @@ const Navbar = ({ setSidebarOpened }) => {
                     {authUser?.displayName}
                   </p>
                   <p
-                    className="text-sm text-gray-600 truncate dark:text-gray-300"
+                    className="truncate text-sm text-gray-600 dark:text-gray-300"
                     role="none"
                   >
                     {authUser?.email}
                   </p>
-
                 </div>
                 <ul className="py-1" role="none">
                   <li>
@@ -148,12 +155,12 @@ const Navbar = ({ setSidebarOpened }) => {
                   </li>
                   <li>
                     <a
-                      href='#'
+                      href="#"
                       onClick={logout}
-                      className="flex gap-2 px-4 py-2 text-sm text-red-700 hover:bg-red-700 hover:text-white dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                      className="flex gap-2 py-2 px-4 text-sm text-red-700 hover:bg-red-700 hover:text-white dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
                     >
-                      <Icons.logout className='h-5 w-5' />
+                      <Icons.logout className="h-5 w-5" />
                       <span>Sign out</span>
                     </a>
                   </li>

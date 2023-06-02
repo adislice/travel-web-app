@@ -1,8 +1,8 @@
-import { auth } from "@/lib/firebase";
-import TestPage from "@/pages/test";
-import { onAuthStateChanged } from "firebase/auth";
-import { Router, useRouter } from "next/router";
-import { createContext, useContext, useEffect, useState } from "react";
+import { auth } from "@/lib/firebase"
+import TestPage from "@/pages/test"
+import { onAuthStateChanged } from "firebase/auth"
+import { Router, useRouter } from "next/router"
+import { createContext, useContext, useEffect, useState } from "react"
 
 export const AuthContext = createContext(undefined)
 
@@ -21,7 +21,6 @@ const useFirebaseAuth = () => {
     setLoading(true)
     setAuthUser(authState)
     setLoading(false)
-
   }
 
   useEffect(() => {
@@ -31,7 +30,7 @@ const useFirebaseAuth = () => {
 
   return {
     authUser,
-    loading
+    loading,
   }
 }
 
@@ -39,15 +38,17 @@ export default useFirebaseAuth
 
 const AuthUserContext = createContext({
   authUser: null,
-  loading: true
+  loading: true,
 })
 
-export const AuthUserProvider = ({children}) => {
+export const AuthUserProvider = ({ children }) => {
   const auth = useFirebaseAuth()
-  
-  return <AuthUserContext.Provider value={auth}>
-    {auth.loading ? <TestPage /> : children}
-  </AuthUserContext.Provider>
-} 
 
-export const useAuth = () => useContext(AuthUserContext);
+  return (
+    <AuthUserContext.Provider value={auth}>
+      {auth.loading ? <TestPage /> : children}
+    </AuthUserContext.Provider>
+  )
+}
+
+export const useAuth = () => useContext(AuthUserContext)

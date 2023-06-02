@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -8,22 +8,26 @@
   .text-muted {
     @apply text-gray-500;
   }
-
 }
 
 @layer base {
-  h1,h2,h3,h4,h5 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
     @apply font-heading;
   }
 }
 
 @layer components {
-  input[type='text'],textarea {
+  input[type="text"],
+  textarea {
     @apply !bg-transparent;
   }
 
   .bg-main-container {
-    background-color: #EFF2FB!important;
+    background-color: #eff2fb !important;
     min-height: calc(100vh - 3.5rem);
   }
   .dashboard-card .arrow {
@@ -38,19 +42,21 @@
 }
 
 .swal2-container {
-  padding: 1.5rem!important;
+  padding: 1.5rem !important;
 }
 .swal2-title {
-  font-size: 1.5em!important;
+  font-size: 1.5em !important;
 }
 .swal2-html-container {
-  font-size: 1em!important;
+  font-size: 1em !important;
 }
 
-.label-custom > input:checked + div { /* (RADIO CHECKED) DIV STYLES */
-  @apply border-blue-600
+.label-custom > input:checked + div {
+  /* (RADIO CHECKED) DIV STYLES */
+  @apply border-blue-600;
 }
 
-.label-custom > input[type='radio']:focus { /* (RADIO CHECKED) DIV STYLES */
+.label-custom > input[type="radio"]:focus {
+  /* (RADIO CHECKED) DIV STYLES */
   --tw-ring-color: transparent;
 }

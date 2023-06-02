@@ -1,9 +1,8 @@
-import { createContext, useContext, useState } from 'react'
-
+import { createContext, useContext, useState } from "react"
 
 export const NavigationContext = createContext()
 
-export function NavigationContextProvider({children}) {
+export function NavigationContextProvider({ children }) {
   const [navigation, setNavigation] = useState([])
 
   return (

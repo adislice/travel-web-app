@@ -1,9 +1,11 @@
-import Link from 'next/link'
-import React from 'react'
+import Link from "next/link"
+import React from "react"
 
 function Href(props) {
   return (
-    <Link {...props} className={`hover:underline ${props.className}`}>{props.children}</Link>
+    <Link {...props} className={`hover:underline ${props.className}`}>
+      {props.children}
+    </Link>
   )
 }
 

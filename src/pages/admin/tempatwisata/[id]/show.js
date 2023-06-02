@@ -1,12 +1,12 @@
-import AdminLayout from '@/components/dashboard/Layout'
-import { Icons } from '@/components/Icons'
-import { useNav } from '@/context/navigationContext'
-import { getDetailTempatWisata } from '@/services/TempatWisataService'
+import AdminLayout from "@/components/dashboard/Layout"
+import { Icons } from "@/components/Icons"
+import { useNav } from "@/context/navigationContext"
+import { getDetailTempatWisata } from "@/services/TempatWisataService"
 // import FsLightbox from 'fslightbox-react'
-import Head from 'next/head'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import Head from "next/head"
+import Link from "next/link"
+import { useRouter } from "next/router"
+import React, { useEffect, useState } from "react"
 
 const TempatWisataShowPage = () => {
   const [tempatWisata, setTempatWisata] = useState({})
@@ -14,95 +14,86 @@ const TempatWisataShowPage = () => {
   const [navigation, setNavigation] = useNav()
   const router = useRouter()
   const { id } = router.query
-  const [toggler, setToggler] = useState(false);
+  const [toggler, setToggler] = useState(false)
   const [imgSources, setImgSources] = useState([])
 
   useEffect(() => {
     setNavigation([
       {
         title: "Tempat Wisata",
-        url: "/admin/tempatwisata"
+        url: "/admin/tempatwisata",
       },
       {
         title: "Detail Tempat Wisata",
-        url: router.asPath
-      }
+        url: router.asPath,
+      },
     ])
 
-    getDetailTempatWisata(id)
-      .then(data => {
-        setTempatWisata(data)
-        let arr = []
-        data.foto.map(item => {
-          arr.push(item.url)
-        })
-        setImgSources(arr)
+    getDetailTempatWisata(id).then((data) => {
+      setTempatWisata(data)
+      let arr = []
+      data.foto.map((item) => {
+        arr.push(item.url)
       })
+      setImgSources(arr)
+    })
   }, [])
-
 
   return (
     <AdminLayout>
       <Head>
         <title>Detail Tempat Wisata</title>
       </Head>
-      <div className='flex gap-2 items-center px-5 py-5 '>
-        <Link href={'./../'}>
-          <Icons.back className='h-6 w-6 rounded-full hover:bg-gray-200' />
+      <div className="flex items-center gap-2 px-5 py-5 ">
+        <Link href={"./../"}>
+          <Icons.back className="h-6 w-6 rounded-full hover:bg-gray-200" />
         </Link>
-        <h3 className='text-xl text-gray-800 font-semibold'>Detail Tempat Wisata</h3>
-
+        <h3 className="text-xl font-semibold text-gray-800">
+          Detail Tempat Wisata
+        </h3>
       </div>
       <div className="wrapper md:px-5">
         <div className="rounded-xl bg-white ">
-          <div className='flex p-8 gap-8 flex-col sm:flex-row'>
-            <div className='flex-grow flex-shrink basis-1 space-y-6'>
+          <div className="flex flex-col gap-8 p-8 sm:flex-row">
+            <div className="flex-shrink flex-grow basis-1 space-y-6">
               <div>
-                <div className='font-bold mb-1'>
-                  Nama
-                </div>
-                <div className='text-gray-700'>
-                  {tempatWisata.nama}
-                </div>
+                <div className="mb-1 font-bold">Nama</div>
+                <div className="text-gray-700">{tempatWisata.nama}</div>
               </div>
               <div>
-                <div className='font-bold mb-1'>
-                  Deskripsi
-                </div>
-                <div className='text-gray-700'>
-                  {tempatWisata.deskripsi}
-                </div>
+                <div className="mb-1 font-bold">Deskripsi</div>
+                <div className="text-gray-700">{tempatWisata.deskripsi}</div>
               </div>
             </div>
-            <div className='flex-grow flex-shrink basis-1 space-y-6'>
+            <div className="flex-shrink flex-grow basis-1 space-y-6">
               <div>
-                <div className='font-bold mb-1'>
-                  Alamat
-                </div>
-                <div className='text-gray-700'>
-                  {tempatWisata.alamat}
-                </div>
+                <div className="mb-1 font-bold">Alamat</div>
+                <div className="text-gray-700">{tempatWisata.alamat}</div>
               </div>
               <div>
-                <div className='font-bold mb-1'>
-                  Lokasi Koordinat
-                </div>
-                <div className='text-gray-700'>
+                <div className="mb-1 font-bold">Lokasi Koordinat</div>
+                <div className="text-gray-700">
                   <p>Latitude: {tempatWisata.latitude}</p>
                   <p>Longitude: {tempatWisata.longitude}</p>
                 </div>
               </div>
             </div>
           </div>
-          <div className=''>
-            <div className='font-bold mb-1 px-8'>
-              Foto
-            </div>
-            <div className='flex pb-8 px-8'>
-              <div className='flex flex-wrap gap-2 border rounded-xl p-4 w-full'>
+          <div className="">
+            <div className="mb-1 px-8 font-bold">Foto</div>
+            <div className="flex px-8 pb-8">
+              <div className="flex w-full flex-wrap gap-2 rounded-xl border p-4">
                 {tempatWisata?.foto?.map((foto, index) => (
-                  <div className='w-72 aspect-video' key={index}>
-                    <img src={foto.url} alt={foto.nama} className="w-full h-full rounded-lg object-cover" onClick={() => {setImageIndex(index);setToggler(!toggler)}} />
+                  <div className="aspect-video w-72" key={index}>
+                    <img
+                      src={foto.url}
+                      alt={foto.nama}
+                      className="h-full w-full rounded-lg object-cover"
+                      onClick={() => {
+                        setImageIndex(index)
+                        setToggler(!toggler)
+                      }}
+                    />
                   </div>
                 ))}
               </div>

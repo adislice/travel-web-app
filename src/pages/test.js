@@ -1,15 +1,15 @@
-import { Icons } from '@/components/Icons'
-import { useEffect } from 'react'
+import { Icons } from "@/components/Icons"
+import { useEffect } from "react"
 
 const TestPage = () => {
   return (
-    <div className='flex h-screen items-center justify-center flex-col'>
+    <div className="flex h-screen flex-col items-center justify-center">
       {/* <Icons.login className='animate-pulse h-[4.5rem] w-[4.5rem] mb-2 text-gray-700' />
       <div>...</div> */}
       <div role="status">
         <svg
           aria-hidden="true"
-          className="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+          className="mr-2 h-8 w-8 animate-spin fill-blue-600 text-gray-200 dark:text-gray-600"
           viewBox="0 0 100 101"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -25,9 +25,7 @@ const TestPage = () => {
         </svg>
         <span className="sr-only">Loading...</span>
       </div>
-
     </div>
-
   )
 }
 

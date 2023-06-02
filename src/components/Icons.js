@@ -1,11 +1,25 @@
-import { Trash2 } from "lucide-react";
-import { ArrowRight } from "lucide-react";
-import { ChevronDown } from "lucide-react";
-import { LogOut } from "lucide-react";
-import { Edit } from "lucide-react";
-import { Users } from "lucide-react";
-import { X } from "lucide-react";
-import { AlignLeft, ChevronLeft, Compass, Fingerprint, Gauge, ImagePlus, Layers, LineChart, Plus, Search, Text, Wallet, XCircle } from "lucide-react"; 
+import { Trash2 } from "lucide-react"
+import { ArrowRight } from "lucide-react"
+import { ChevronDown } from "lucide-react"
+import { LogOut } from "lucide-react"
+import { Edit } from "lucide-react"
+import { Users } from "lucide-react"
+import { X } from "lucide-react"
+import {
+  AlignLeft,
+  ChevronLeft,
+  Compass,
+  Fingerprint,
+  Gauge,
+  ImagePlus,
+  Layers,
+  LineChart,
+  Plus,
+  Search,
+  Text,
+  Wallet,
+  XCircle,
+} from "lucide-react"
 
 export const Icons = {
   dashboard: Gauge,
@@ -27,5 +41,5 @@ export const Icons = {
   hapus: Trash2,
   edit: Edit,
   chevronDown: ChevronDown,
-  logout: LogOut
+  logout: LogOut,
 }

@@ -1,53 +1,57 @@
-import { useRouter } from 'next/router'
-import React from 'react'
-import { Icons } from '../Icons'
-import Navbar from './Navbar'
-import SidebarLink from './SidebarLink'
+import { useRouter } from "next/router"
+import React from "react"
+import { Icons } from "../Icons"
+import Navbar from "./Navbar"
+import SidebarLink from "./SidebarLink"
 
 const links = [
   {
     title: "Dashboard",
-    url: '/admin/dashboard',
-    icon: Icons.dashboard
+    url: "/admin/dashboard",
+    icon: Icons.dashboard,
   },
   {
     title: "Tempat Wisata",
-    url: '/admin/tempatwisata',
-    icon: Icons.tempatwisata
+    url: "/admin/tempatwisata",
+    icon: Icons.tempatwisata,
   },
   {
     title: "Paket Wisata",
-    url: '/admin/paketwisata',
-    icon: Icons.paketwisata
+    url: "/admin/paketwisata",
+    icon: Icons.paketwisata,
   },
   {
     title: "Transaksi",
-    url: '/admin/transaksi',
-    icon: Icons.transaksi
+    url: "/admin/transaksi",
+    icon: Icons.transaksi,
   },
   {
     title: "Laporan",
-    url: '/admin/laporan',
-    icon: Icons.laporan
-  }
+    url: "/admin/laporan",
+    icon: Icons.laporan,
+  },
 ]
 
-const Sidebar = ({sidebarOpened, setSidebarOpened}) => {
+const Sidebar = ({ sidebarOpened, setSidebarOpened }) => {
   const router = useRouter()
   return (
     <>
       <aside
-        className={`fixed top-0 left-0 z-40 w-64 pt-16 sm:pt-0 h-screen transition-transform bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700 ${sidebarOpened ? 'transform-none' : '-translate-x-full'}`}
+        className={`fixed left-0 top-0 z-40 h-screen w-64 border-r border-gray-200 bg-white pt-16 transition-transform dark:border-gray-700 dark:bg-gray-800 sm:translate-x-0 sm:pt-0 ${
+          sidebarOpened ? "transform-none" : "-translate-x-full"
+        }`}
         aria-label="Sidebar"
       >
-        <div className='px-5 py-3.5 font-bold text-xl'>
-          Kencana Admin
-        </div>
-        <div className="h-full px-3 pb-4 pt-4 overflow-y-auto bg-white dark:bg-gray-800">
+        <div className="px-5 py-3.5 text-xl font-bold">Kencana Admin</div>
+        <div className="h-full overflow-y-auto bg-white px-3 pb-4 pt-4 dark:bg-gray-800">
           <ul className="space-y-2">
             {links.map((item, index) => (
-              <SidebarLink key={index} to={item.url} active={router.asPath.startsWith(item.url) ? true : false} >
-                {<item.icon className='h-5 w-5 mr-4' />}
+              <SidebarLink
+                key={index}
+                to={item.url}
+                active={router.asPath.startsWith(item.url) ? true : false}
+              >
+                {<item.icon className="mr-4 h-5 w-5" />}
                 <span className="m">{item.title}</span>
               </SidebarLink>
             ))}
