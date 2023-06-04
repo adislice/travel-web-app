@@ -115,7 +115,9 @@ export async function addTempatWisata(formData) {
     const data = {
       nama: formData.nama,
       deskripsi: formData.deskripsi,
-      alamat: formData.alamat,
+      provinsi: formData.provinsi,
+      kota: formData.kota,
+      alamat: `${formData.kota}, ${formData.provinsi}`,
       latitude: formData.latitude,
       longitude: formData.longitude,
       thumbnail_foto: imgUpResult[0].url,

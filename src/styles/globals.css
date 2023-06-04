@@ -60,3 +60,16 @@
   /* (RADIO CHECKED) DIV STYLES */
   --tw-ring-color: transparent;
 }
+
+.ReactModal__Body--open {
+  overflow: hidden;
+}
+
+.ReactModal__Overlay--after-open {
+  z-index: 999;
+}
+
+.ReactModal__Content--after-open {
+  padding: 0px!important;
+  margin: 20px!important;
+}

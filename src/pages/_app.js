@@ -8,6 +8,7 @@ import {
   Plus_Jakarta_Sans,
   Poppins,
 } from "next/font/google"
+import Modal from "react-modal"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,6 +36,8 @@ const notoSans = Noto_Sans({
   variable: "--font-sans",
   weight: ["400", "500", "600", "700", "800", "900"],
 })
+
+Modal.setAppElement('#__next');
 
 export default function App({ Component, pageProps }) {
   return (

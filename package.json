@@ -17,7 +17,7 @@
     "bcryptjs": "^2.4.3",
     "firebase": "^9.22.1",
     "flowbite": "^1.6.5",
-    "flowbite-react": "^0.4.6",
+    "flowbite-react": "^0.4.7",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.0",
     "lucide-react": "^0.180.0",
@@ -27,7 +27,9 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.44.0",
+    "react-modal": "^3.16.1",
     "sweetalert2": "^11.7.5",
+    "tailwind-merge": "^1.13.0",
     "tailwindcss": "3.3.2"
   },
   "devDependencies": {

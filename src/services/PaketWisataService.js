@@ -50,6 +50,21 @@ export async function addPaketWisata(formData) {
         url: item.url,
       })
     }
+    const produkCol = collection(result, "produk")
+    const produkList = formData.produk
+    for (let index = 0; index < produkList.length; index++) {
+      const produk = produkList[index]
+      await addDoc(produkCol, {
+        nama: produk.nama,
+        harga: parseFloat(produk.harga),
+        jenis_armada_ref: doc(
+          database,
+          `jenis_armada/${produk.jenis_armada_id}`
+        ),
+        is_aktif: true,
+        created_at: serverTimestamp(),
+      })
+    }
     return true
   } catch (error) {
     throw error
@@ -84,4 +99,30 @@ export async function uploadFiles(images) {
     })
   )
   return links
+}
+
+export async function getPaketWisataProduk(idPaket) {
+  try {
+    const dbCol = collection(database, `/paket_wisata/${idPaket}/produk`)
+    const docsSnap = await getDocs(dbCol)
+    const result = docsSnap.docs.map((item) => {
+      return { id: item.id, ...item.data() }
+    })
+    return result
+  } catch (e) {
+    throw e
+  }
+}
+
+export async function getAllJenisArmada() {
+  try {
+    const dbCol = collection(database, "jenis_armada")
+    const docSnap = await getDocs(dbCol)
+    const result = docSnap.docs.map((item) => {
+      return { id: item.id, ...item.data() }
+    })
+    return result
+  } catch (error) {
+    throw e
+  }
 }

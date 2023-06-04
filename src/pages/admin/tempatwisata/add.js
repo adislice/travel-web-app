@@ -1,3 +1,4 @@
+import { Button } from "@/components/Button"
 import AdminLayout from "@/components/dashboard/Layout"
 import { Icons } from "@/components/Icons"
 import ImageUpload from "@/components/ImageUpload"
@@ -5,7 +6,7 @@ import ImageUploadBox from "@/components/ImageUploadBox"
 import ImageUploadItem from "@/components/ImageUploadItem"
 import { useNav } from "@/context/navigationContext"
 import { addTempatWisata } from "@/services/TempatWisataService"
-import { Button, Label, Textarea, TextInput } from "flowbite-react"
+import { Label, Textarea, TextInput } from "flowbite-react"
 import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -151,20 +152,37 @@ const AddTempatWisataPage = () => {
                     {...register("nama", { required: true })}
                   />
                 </div>
-                <div className="mb-2 block">
-                  <Label
-                    htmlFor="alamat"
-                    value="Alamat"
-                    className="mb-2 inline-block"
-                  />
+                <div className="flex gap-2">
+                  <div className="mb-2 block w-1/2">
+                    <Label
+                      htmlFor="provinsi"
+                      value="Provinsi"
+                      className="mb-2 inline-block"
+                    />
 
-                  <TextInput
-                    id="alamat"
-                    type="text"
-                    sizing="md"
-                    name="alamat"
-                    {...register("alamat", { required: true })}
-                  />
+                    <TextInput
+                      id="provinsi"
+                      type="text"
+                      sizing="md"
+                      name="provinsi"
+                      {...register("provinsi", { required: true })}
+                    />
+                  </div>
+                  <div className="mb-2 block w-1/2">
+                    <Label
+                      htmlFor="kota"
+                      value="Kota/Kab"
+                      className="mb-2 inline-block"
+                    />
+
+                    <TextInput
+                      id="kota"
+                      type="text"
+                      sizing="md"
+                      name="kota"
+                      {...register("kota", { required: true })}
+                    />
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <div className="mb-2 block w-1/2">
@@ -248,14 +266,7 @@ const AddTempatWisataPage = () => {
                 </div>
               </div>
             </div>
-            <Button
-              color="dark"
-              type="submit"
-              className="mb-4 ml-4 mr-4 rounded-md"
-              size="sm"
-            >
-              Simpan
-            </Button>
+            <Button type="submit">Simpan</Button>
           </form>
         </FormProvider>
       </div>

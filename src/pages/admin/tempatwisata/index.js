@@ -1,3 +1,4 @@
+import { LinkButton } from "@/components/Button"
 import AdminLayout from "@/components/dashboard/Layout"
 import { Icons } from "@/components/Icons"
 import Href from "@/components/Link"
@@ -11,7 +12,6 @@ import {
 } from "@/services/TempatWisataService"
 import { collection, getDocs } from "firebase/firestore"
 import { initFlowbite } from "flowbite"
-import { Button, Spinner } from "flowbite-react"
 import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -123,14 +123,10 @@ const TempatWisataPage = () => {
         </h3>
 
         <div className="actionbutton flex flex-row space-x-2">
-          <Link
-            href={"tempatwisata/add"}
-            type="button"
-            className="inline-flex items-center gap-x-1 rounded-md bg-blue-600 py-2 px-3.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
+          <LinkButton href={"tempatwisata/add"} type="button">
             <Icons.tambah className="h-5 w-5" />
             Tambah
-          </Link>
+          </LinkButton>
         </div>
       </div>
       <div className="wrapper  ">
@@ -150,7 +146,7 @@ const TempatWisataPage = () => {
               <button
                 type="button"
                 onClick={performSearch}
-                className="absolute top-0 right-0 rounded-r-lg border border-blue-600 bg-blue-600 p-2.5 text-sm font-medium text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className="absolute right-0 top-0 rounded-r-lg border border-blue-600 bg-blue-600 p-2.5 text-sm font-medium text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
                 <Icons.cari className="h-5 w-5" />
                 <span className="sr-only">Search</span>

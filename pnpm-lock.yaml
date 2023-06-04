@@ -20,8 +20,8 @@ dependencies:
     specifier: ^1.6.5
     version: 1.6.5
   flowbite-react:
-    specifier: ^0.4.6
-    version: 0.4.6(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2)
+    specifier: ^0.4.7
+    version: 0.4.7(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2)
   js-cookie:
     specifier: ^3.0.5
     version: 3.0.5
@@ -49,9 +49,15 @@ dependencies:
   react-hook-form:
     specifier: ^7.44.0
     version: 7.44.0(react@18.2.0)
+  react-modal:
+    specifier: ^3.16.1
+    version: 3.16.1(react-dom@18.2.0)(react@18.2.0)
   sweetalert2:
     specifier: ^11.7.5
     version: 11.7.5
+  tailwind-merge:
+    specifier: ^1.13.0
+    version: 1.13.0
   tailwindcss:
     specifier: 3.3.2
     version: 3.3.2
@@ -541,8 +547,8 @@ packages:
       '@floating-ui/core': 0.7.3
     dev: false
 
-  /@floating-ui/dom@1.2.8:
-    resolution: {integrity: sha512-XLwhYV90MxiHDq6S0rzFZj00fnDM+A1R9jhSioZoMsa7G0Q0i+Q4x40ajR8FHSdYDE1bgjG45mIWe6jtv9UPmg==}
+  /@floating-ui/dom@1.2.9:
+    resolution: {integrity: sha512-sosQxsqgxMNkV3C+3UqTS6LxP7isRLwX8WMepp843Rb3/b0Wz8+MdUkxJksByip3C2WwLugLHN1b4ibn//zKwQ==}
     dependencies:
       '@floating-ui/core': 1.2.6
     dev: false
@@ -567,13 +573,13 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
-      '@floating-ui/dom': 1.2.8
+      '@floating-ui/dom': 1.2.9
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /@floating-ui/react@0.24.1(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-qjCKUZDEz/4bnJmu4gn66TqsoX912/re8JGEi3pXazsphmyh327l0UpTgpBAT3WkNbnzAH7Adt3wKlLMNtfupw==}
+  /@floating-ui/react@0.24.2(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-8sdLmcC85J6M2H0AL8yOQuiWD4T0gNMSLpuJjmXyEA6ndfmxXR0hwKFkczB4xRNFhKbwoQeuh8z561HE2vOdZw==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
@@ -1553,6 +1559,10 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
+  /exenv@1.2.2:
+    resolution: {integrity: sha512-Z+ktTxTwv9ILfgKCk32OX3n/doe+OcLTRtqK9pcL+JsP3J1/VW8Uvl4ZjLlKqeW4rzK4oesDOGMEMRIZqtP4Iw==}
+    dev: false
+
   /fast-glob@3.2.12:
     resolution: {integrity: sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==}
     engines: {node: '>=8.6.0'}
@@ -1617,19 +1627,19 @@ packages:
       - encoding
     dev: false
 
-  /flowbite-react@0.4.6(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2):
-    resolution: {integrity: sha512-cUalFHNAgtx3giRgc5AUuMFDXGF/9sDNIm8u/AWmtNgmuhJwtD3qVMQydsI3RNE7fzt9TkhUDiW3Kmm2p9sh/g==}
+  /flowbite-react@0.4.7(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.3.2):
+    resolution: {integrity: sha512-DzVXuXZWBBLh6ZS08xLbIg3zR8/wU8pY/IqmunIAQgjGoSw1EfcLQdqmL2h/GnirlVo1NqF4y/CPALqGsdhW8A==}
     peerDependencies:
       react: ^18
       react-dom: ^18
       tailwindcss: ^3
     dependencies:
-      '@floating-ui/react': 0.24.1(react-dom@18.2.0)(react@18.2.0)
+      '@floating-ui/react': 0.24.2(react-dom@18.2.0)(react@18.2.0)
       classnames: 2.3.2
       flowbite: 1.6.5
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      react-icons: 4.8.0(react@18.2.0)
+      react-icons: 4.9.0(react@18.2.0)
       react-indiana-drag-scroll: 2.2.0(react-dom@18.2.0)(react@18.2.0)
       tailwindcss: 3.3.2
     dev: false
@@ -2170,6 +2180,14 @@ packages:
     hasBin: true
     dev: true
 
+  /prop-types@15.8.1:
+    resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
+    dependencies:
+      loose-envify: 1.4.0
+      object-assign: 4.1.1
+      react-is: 16.13.1
+    dev: false
+
   /protobufjs@6.11.3:
     resolution: {integrity: sha512-xL96WDdCZYdU7Slin569tFX712BxsxslWwAfAhCYjQKGTq7dAU91Lomy6nLLhh/dyGhk/YH4TwTSRxTzhuHyZg==}
     hasBin: true
@@ -2232,8 +2250,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-icons@4.8.0(react@18.2.0):
-    resolution: {integrity: sha512-N6+kOLcihDiAnj5Czu637waJqSnwlMNROzVZMhfX68V/9bu9qHaMIJC4UdozWoOk57gahFCNHwVvWzm0MTzRjg==}
+  /react-icons@4.9.0(react@18.2.0):
+    resolution: {integrity: sha512-ijUnFr//ycebOqujtqtV9PFS7JjhWg0QU6ykURVHuL4cbofvRCf3f6GMn9+fBktEFQOIVZnuAYLZdiyadRQRFg==}
     peerDependencies:
       react: '*'
     dependencies:
@@ -2252,6 +2270,29 @@ packages:
       easy-bem: 1.1.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /react-is@16.13.1:
+    resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
+    dev: false
+
+  /react-lifecycles-compat@3.0.4:
+    resolution: {integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==}
+    dev: false
+
+  /react-modal@3.16.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-VStHgI3BVcGo7OXczvnJN7yT2TWHJPDXZWyI/a0ssFNhGZWsPmB8cF0z33ewDXq4VfYMO1vXgiv/g8Nj9NDyWg==}
+    engines: {node: '>=8'}
+    peerDependencies:
+      react: ^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18
+      react-dom: ^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18
+    dependencies:
+      exenv: 1.2.2
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-lifecycles-compat: 3.0.4
+      warning: 4.0.3
     dev: false
 
   /react-remove-scroll-bar@2.3.4(react@18.2.0):
@@ -2444,6 +2485,10 @@ packages:
     resolution: {integrity: sha512-qCN98uP7i9z0fIS4amQ5zbGBOq+OSigYeGvPy7NDk8Y9yncqDZ9pRPgfsc2PJIVM9RrJj7GIfuRgmjoUU9zTHQ==}
     dev: false
 
+  /tailwind-merge@1.13.0:
+    resolution: {integrity: sha512-mUTmDbcU+IhOvJ0c42eLQ/nRkvolTqfpVaVQRSxfJAv9TabS6Y2zW/1wKpKLdKzyL3Gh8j6NTLl6MWNmvOM6kA==}
+    dev: false
+
   /tailwindcss@3.3.2:
     resolution: {integrity: sha512-9jPkMiIBXvPc2KywkraqsUfbfj+dHDb+JPWtSJa9MLFdrPyazI7q6WX2sUrm7R9eVR7qqv3Pas7EvQFzxKnI6w==}
     engines: {node: '>=14.0.0'}
@@ -2562,6 +2607,12 @@ packages:
 
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+    dev: false
+
+  /warning@4.0.3:
+    resolution: {integrity: sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==}
+    dependencies:
+      loose-envify: 1.4.0
     dev: false
 
   /webidl-conversions@3.0.1:
