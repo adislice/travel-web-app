@@ -11,6 +11,11 @@ const links = [
     icon: Icons.dashboard,
   },
   {
+    title: "Pengguna",
+    url: "/admin/users",
+    icon: Icons.users
+  },
+  {
     title: "Tempat Wisata",
     url: "/admin/tempatwisata",
     icon: Icons.tempatwisata,
@@ -21,8 +26,8 @@ const links = [
     icon: Icons.paketwisata,
   },
   {
-    title: "Transaksi",
-    url: "/admin/transaksi",
+    title: "Pemesanan",
+    url: "/admin/pemesanan",
     icon: Icons.transaksi,
   },
   {

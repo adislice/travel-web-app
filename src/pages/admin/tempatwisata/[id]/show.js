@@ -86,8 +86,8 @@ const TempatWisataShowPage = () => {
                 {tempatWisata?.foto?.map((foto, index) => (
                   <div className="aspect-video w-72" key={index}>
                     <img
-                      src={foto.url}
-                      alt={foto.nama}
+                      src={foto}
+                      alt={foto}
                       className="h-full w-full rounded-lg object-cover"
                       onClick={() => {
                         setImageIndex(index)

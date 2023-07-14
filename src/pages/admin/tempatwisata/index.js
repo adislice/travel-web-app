@@ -6,6 +6,7 @@ import LoadingDataSpinner from "@/components/LoadingDataSpinner"
 import { NavigationContext } from "@/context/navigationContext"
 import { database } from "@/lib/firebase"
 import {
+  cekPaketWisataExist,
   deleteTempatWisata,
   getTempatWisata,
   getTempatWisataRealtime,
@@ -59,9 +60,9 @@ const TempatWisataPage = () => {
     }
   }, [searchQuery])
 
-  useEffect(() => {
-    console.log(datas)
-  }, [datas])
+  // useEffect(() => {
+  //   console.log(datas)
+  // }, [datas])
 
   const handleHapus = (id) => {
     Swal.fire({
@@ -74,29 +75,46 @@ const TempatWisataPage = () => {
       confirmButtonText: "Yakin!",
     }).then((result) => {
       if (result.value) {
-        deleteTempatWisata(id)
-          .then((data) => {
-            Swal.fire({
-              title: "Sukses",
-              icon: "success",
-              text: "Data berhasil dihapus!",
+        cekPaketWisataExist(id).then((response) => {
+          if (response.status) {
+            const pwHtml = response.data.map((item) => {
+              return `<a class="underline" href='/admin/paketwisata/${item.id}'>${item.nama}</a>`
             })
-            let result = getTempatWisata()
-            result
+            Swal.fire({
+              title: "Gagal Menghapus!",
+              icon: "error",
+              text: "Terdapat paket wisata yang memiliki tempat wisata ini!",
+              html: `
+              <p>Terdapat paket wisata yang memiliki tempat wisata ini:</p>
+              ${pwHtml.join(', ')}
+              `
+            })
+          } else {
+            deleteTempatWisata(id)
               .then((data) => {
-                setDatas(data)
+                Swal.fire({
+                  title: "Sukses",
+                  icon: "success",
+                  text: "Data berhasil dihapus!",
+                })
+                let result = getTempatWisata()
+                result
+                  .then((data) => {
+                    setDatas(data)
+                  })
+                  .catch((error) => {
+                    console.log(error)
+                  })
               })
               .catch((error) => {
-                console.log(error)
+                Swal.fire({
+                  title: "Gagal!",
+                  text: "Gagal menghapus data!",
+                  icon: "error",
+                })
               })
-          })
-          .catch((error) => {
-            Swal.fire({
-              title: "Gagal!",
-              text: "Gagal menghapus data!",
-              icon: "error",
-            })
-          })
+          }
+        })
       }
     })
   }
@@ -105,6 +123,10 @@ const TempatWisataPage = () => {
     setDatas([])
     setSearchQuery(tempSearch)
   }
+
+  useEffect(() => {
+    performSearch()
+  }, [tempSearch])
 
   const handleEnter = (event) => {
     if (event.key === "Enter") {
@@ -181,6 +203,7 @@ const TempatWisataPage = () => {
                   </tr>
                 </thead>
                 <tbody>
+                  {datas.length == 0 && (<tr><td colSpan={5} className="p-2 text-center">Data kosong!</td></tr>)}
                   {datas.map((item, index) => (
                     <tr
                       key={index}
@@ -194,8 +217,8 @@ const TempatWisataPage = () => {
                       </th>
                       <td className="w-11">
                         <img
-                          src={item.thumbnail_foto}
-                          alt={item.thumbnail_foto}
+                          src={item.foto[0] || '/placeholder-image.png'}
+                          alt={item.foto[0]}
                           className="mx-auto my-2 h-12 w-12 rounded object-cover"
                         />
                       </td>
@@ -211,16 +234,16 @@ const TempatWisataPage = () => {
                       <td className="px-4 py-4">
                         {item.latitude}, {item.longitude}
                       </td>
-                      <td className="flex space-x-2 px-4 py-4 text-right">
+                      <td className="flex px-4 py-4 text-right">
                         <Link
                           href={`/admin/tempatwisata/${item.id}/edit`}
-                          className="inline-block rounded-lg border border-gray-200 p-2 font-medium text-blue-600 hover:bg-gray-100 hover:underline dark:text-blue-500"
+                          className="inline-block rounded-l-lg border border-blue-700 p-2 font-medium bg-blue-600 text-white hover:bg-blue-500 hover:underline dark:text-blue-500"
                         >
                           <Icons.edit className="h-5 w-5" />
                         </Link>
                         <button
                           onClick={() => handleHapus(item.id)}
-                          className="rounded-lg border border-gray-200 p-2 text-red-600 hover:bg-gray-100 hover:underline"
+                          className="rounded-r-lg border border-red-700 p-2 bg-red-600 text-white hover:bg-red-500 hover:underline"
                         >
                           <Icons.hapus className="h-5 w-5" />
                         </button>

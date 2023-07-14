@@ -21,6 +21,20 @@ const AddTempatWisataPage = () => {
   const [imageArray, setImageArray] = useState([])
   const [navigation, setNavigation] = useNav()
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = methods
+
+  useEffect(() => {
+    if (isSubmitSuccess) {
+      reset()
+    }
+  }, [isSubmitSuccess])
+
+  
   useEffect(() => {
     setNavigation([
       {
@@ -35,16 +49,6 @@ const AddTempatWisataPage = () => {
   }, [])
 
   const onChangePicture = (e) => {
-    // if (e.target.files[0] == undefined) {
-    //   return
-    // }
-    // let imgObject = URL.createObjectURL(e.target.files[0])
-    // setImageArray(olditem => [...olditem, {
-    //   name: e.target.files[0].name,
-    //   url: imgObject,
-    //   blob: e.target.files[0]
-    // }])
-    // console.log(e.target.files[0].name)
     const inputArray = e.target.files
     Array.from(inputArray).forEach((file) => {
       let imgObject = URL.createObjectURL(file)
@@ -58,19 +62,6 @@ const AddTempatWisataPage = () => {
       ])
     })
   }
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = methods
-
-  useEffect(() => {
-    if (isSubmitSuccess) {
-      reset()
-    }
-  }, [isSubmitSuccess])
 
   async function submitForm(data, e) {
     e.preventDefault()
@@ -102,7 +93,9 @@ const AddTempatWisataPage = () => {
           })
         }
       })
-      .catch((error) => {})
+      .catch((error) => {
+        console.log(error)
+      })
   }
 
   const deleteImage = (index) => {

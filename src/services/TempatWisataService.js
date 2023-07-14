@@ -4,6 +4,7 @@ import {
   addDoc,
   and,
   collection,
+  collectionGroup,
   deleteDoc,
   doc,
   FieldValue,
@@ -82,8 +83,12 @@ export function getTempatWisataRealtime(
   console.log("searcing " + searchQuery)
 
   const unsub = onSnapshot(q, (snapshot) => {
+    if (snapshot.empty) {
+      setLoading(false)
+    }
     snapshot.docChanges().forEach((change) => {
       console.log(change.doc.data())
+      console.log("change type: " + change.type)
       if (change.type === "added") {
         if (!dataState.some((e) => e.id === change.doc.id)) {
           const newData = {
@@ -105,13 +110,15 @@ export async function addTempatWisata(formData) {
   console.log(formData)
   try {
     let imgData = formData.images
-    let imgUpResult = await uploadFiles(formData.images)
 
     const dbInstance = collection(database, "tempat_wisata")
-    const coords = new GeoPoint(
-      Number(formData.latitude),
-      Number(formData.longitude)
-    )
+    const ref = doc(dbInstance)
+    const id = ref.id
+    let imgUpResult = await uploadFiles(formData.images, id)
+
+    const fotoUrlList = imgUpResult.map((item) => {
+      return item.url
+    })
     const data = {
       nama: formData.nama,
       deskripsi: formData.deskripsi,
@@ -120,25 +127,16 @@ export async function addTempatWisata(formData) {
       alamat: `${formData.kota}, ${formData.provinsi}`,
       latitude: formData.latitude,
       longitude: formData.longitude,
-      thumbnail_foto: imgUpResult[0].url,
+      foto: fotoUrlList,
       created_at: serverTimestamp(),
     }
-
-    let result = await addDoc(dbInstance, data)
-      .then((docRef) => {
-        console.log(docRef.id)
-        const imagesRef = doc(dbInstance, docRef.id)
-        const fotoColRef = collection(docRef, "foto")
-        console.log(imagesRef)
-
-        imgUpResult.map((item) => {
-          console.log("adding " + item.name + ", url: " + item.url)
-          addDoc(fotoColRef, {
-            nama: item.name,
-            url: item.url,
-          })
-        })
-
+    console.log("get id: " + id)
+    let result = await setDoc(ref, data)
+      .then(() => {
+        // console.log(docRef.id)
+        // const imagesRef = doc(dbInstance, docRef.id)
+        // const fotoColRef = collection(docRef, "foto")
+        // console.log(imagesRef)
         return true
       })
       .catch((error) => {
@@ -155,45 +153,40 @@ export async function editTempatWisata(id, formData) {
   console.log(formData)
   try {
     let imgData = formData.images
-    let imgUpResult = await uploadFiles(formData.images)
+    let imgUpResult = await uploadFiles(formData.images, id)
     console.log(imgUpResult)
 
     const dbInstance = collection(database, "tempat_wisata")
     const docRef = doc(dbInstance, id)
 
+    const fotoUrlList = imgUpResult.map((item) => {
+      return item.url
+    })
+
     const data = {
       nama: formData.nama,
       deskripsi: formData.deskripsi,
       alamat: formData.alamat,
+      foto: fotoUrlList,
       latitude: formData.latitude,
       longitude: formData.longitude,
     }
 
     let res = await updateDoc(docRef, data)
-    const fotoColRef = collection(docRef, "foto")
-    let docs = await getDocs(fotoColRef)
-
-    for (const elem of docs.docs) {
-      await deleteDoc(elem.ref)
-    }
-
-    for (const item of imgUpResult) {
-      console.log("adding " + item.name + ", url: " + item.url)
-      await addDoc(fotoColRef, {
-        nama: item.name,
-        url: item.url,
-      })
-    }
-
+    
     return true
   } catch (error) {
     throw error
   }
 }
 
-export async function uploadFiles(images) {
-  const promises = images.map((file) => {
-    const storageRef = ref(storage, `images/tempat_wisata/${file.name}`)
+export async function uploadFiles(images, prefix='') {
+  const promises = images.map((file, index) => {
+    const fileExt = file.name.split('.').pop();
+    const randNum = Math.floor(1000 + Math.random() * 9000)
+    const today = new Date()
+    const unique = `${today.getFullYear()}${today.getMonth()+1}${today.getDay()}${today.getHours()}${today.getMinutes()}${today.getSeconds()}${today.getMilliseconds()}_${randNum}`
+    const storageRef = ref(storage, `images/tempat_wisata/${prefix}_${unique}.${fileExt}`)
     if (file.blob instanceof File) {
       return uploadBytes(storageRef, file.blob)
     } else {
@@ -226,15 +219,9 @@ export async function getDetailTempatWisata(id) {
     const dbInstance = collection(database, "tempat_wisata")
     const docRef = doc(database, "tempat_wisata", id)
     const docSnap = await getDoc(docRef)
-    const fotoRef = collection(docRef, "foto")
-    const fotoSnap = await getDocs(fotoRef)
-    let fotoArray = fotoSnap.docs.map((foto) => {
-      return foto.data()
-    })
 
     const result = {
       ...docSnap.data(),
-      foto: fotoArray,
     }
 
     console.log(result)
@@ -259,5 +246,27 @@ export async function deleteTempatWisata(id) {
     return await deleteDoc(docRef)
   } catch (e) {
     throw e
+  }
+}
+
+export async function cekPaketWisataExist(idTempatWisata) {
+  try {
+    const dbRef = collectionGroup(database, "paket_wisata")
+    const dbQuery = query(dbRef, where("tempat_wisata", "array-contains", idTempatWisata))
+    const querySnap = await getDocs(dbQuery)
+    if (querySnap.empty) {
+      return {
+        status: false
+      }
+    }
+    const docs = querySnap.docs.map((item) => {
+      return { id: item.id, ...item.data() }
+    })
+    return {
+      status: true,
+      data: docs
+    }
+  } catch (error) {
+    throw error
   }
 }

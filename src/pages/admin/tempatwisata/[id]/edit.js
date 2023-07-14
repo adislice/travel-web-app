@@ -1,3 +1,4 @@
+import { Button } from "@/components/Button"
 import AdminLayout from "@/components/dashboard/Layout"
 import { Icons } from "@/components/Icons"
 import ImageUpload from "@/components/ImageUpload"
@@ -8,7 +9,7 @@ import {
   editTempatWisata,
   getDetailTempatWisata,
 } from "@/services/TempatWisataService"
-import { Button, Label, Textarea, TextInput } from "flowbite-react"
+import { Label, Textarea, TextInput } from "flowbite-react"
 import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -40,9 +41,9 @@ const EditTempatWisataPage = () => {
       let imgArr = []
       data?.foto?.map((foto) => {
         imgArr.push({
-          name: foto.nama,
-          url: foto.url,
-          blob: foto.url,
+          name: "",
+          url: foto,
+          blob: foto,
         })
       })
       setImageArray(imgArr)
@@ -106,12 +107,12 @@ const EditTempatWisataPage = () => {
       <Head>
         <title>Edit Tempat Wisata</title>
       </Head>
-      <div className="flex items-center gap-2 pb-5 ">
+      <div className="flex items-center gap-2 p-5 md:px-0 ">
         <Link href={"./../"}>
           <Icons.back className="h-6 w-6 rounded-full hover:bg-gray-200" />
         </Link>
         <h3 className="text-xl font-semibold text-gray-800">
-          Tambah Tempat Wisata
+          Edit Tempat Wisata
         </h3>
       </div>
       <div className="wrapper">
@@ -232,13 +233,8 @@ const EditTempatWisataPage = () => {
                 </div>
               </div>
             </div>
-            <Button
-              color="dark"
-              type="submit"
-              className="mb-4 ml-4 mr-4 rounded-md"
-              size="sm"
-            >
-              Submit
+            <Button>
+              Simpan
             </Button>
           </form>
         </FormProvider>

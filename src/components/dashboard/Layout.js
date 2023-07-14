@@ -1,6 +1,4 @@
 import { useAuth } from "@/context/authContext"
-import { NavigationContextProvider } from "@/context/navigationContext"
-import TestPage from "@/pages/test"
 import { initFlowbite } from "flowbite"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"

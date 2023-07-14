@@ -7,19 +7,25 @@ import { Label, Textarea, TextInput } from "flowbite-react"
 import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import * as Dialog from "@radix-ui/react-dialog"
 import { getTempatWisata } from "@/services/TempatWisataService"
 import Href from "@/components/Link"
 import {
   addPaketWisata,
-  getAllJenisArmada,
+  getAllJenisKendaraan,
 } from "@/services/PaketWisataService"
 import Swal from "sweetalert2"
 import Modal from "react-modal"
 import { Button } from "@/components/Button"
 import { doc } from "firebase/firestore"
+import Flatpickr from "react-flatpickr";
+import 'flatpickr/dist/themes/material_blue.css'
+import flatpickr from "flatpickr"
+import ModalDestinasiWisata from "@/components/ModalDestinasiWisata"
+import ModalProdukPaketWisata from "@/components/ModalProdukPaketWisata"
+import { useNav } from "@/context/navigationContext"
 
 const customStyles = {
   content: {
@@ -35,13 +41,13 @@ const customStyles = {
 const AddPaketWisataPage = () => {
   const [dataTempatWisata, setDataTempatWisata] = useState([])
   const [dialogTambahOpened, setDialogTambahOpened] = useState(false)
-  const [selectedId, setSelectedId] = useState("")
   const [imageArray, setImageArray] = useState([])
   const [tujuanWisata, setTujuanWisata] = useState([])
   const [isModalTambahProdukOpen, setIsModalTambahProdukOpen] = useState(false)
-  const [paketWisataProduk, setPaketWisataProduk] = useState([])
-  const [jenisArmada, setJenisArmada] = useState([])
+  const [jenisKendaraan, setJenisKendaraan] = useState([])
   const [addedProduk, setAddedProduk] = useState([])
+  const [navigation, setNavigation] = useNav()
+  const inputRef = useRef(null)
   const router = useRouter()
   const methods = useForm({ mode: "onBlur" })
   const {
@@ -50,16 +56,22 @@ const AddPaketWisataPage = () => {
     formState: { errors },
     reset,
   } = methods
-  const methodsProduk = useForm({ mode: "onBlur" })
-  const {
-    register: registerProduk,
-    handleSubmit: handleSubmitProduk,
-    formState: { errors: errorsProduk },
-    reset: resetProduk,
-  } = methodsProduk
+  
+  const {ref, ...rest} = register("jam_keberangkatan", { required: true })
 
   // effects
   useEffect(() => {
+    setNavigation([
+      {
+        title: "Paket Wisata",
+        url: "/admin/tempatwisata",
+      },
+      {
+        title: "Tambah Paket Wisata",
+        url: router.asPath,
+      },
+    ])
+
     // get all tempat wisata
     let result = getTempatWisata()
     result
@@ -73,14 +85,21 @@ const AddPaketWisataPage = () => {
         console.log(error)
       })
 
-    getAllJenisArmada()
+    getAllJenisKendaraan()
       .then((data) => {
-        setJenisArmada(data)
+        setJenisKendaraan(data)
         console.log(data)
       })
       .catch((error) => {
-        console.log("error mengambil data jenis armada")
+        console.log("error mengambil data jenis kendaraan")
       })
+
+      flatpickr(inputRef.current, {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: 'H:i',
+        time_24hr: true
+      });
 
     return () => {}
   }, [])
@@ -103,11 +122,22 @@ const AddPaketWisataPage = () => {
         blob: e.target.files[0],
       },
     ])
-    console.log(e.target.files[0].name)
   }
 
   const submitForm = (data, e) => {
+    console.log(data)
+    console.log(inputRef.current)
     e.preventDefault()
+    if (tujuanWisata.length == 0) {
+     return 
+    }
+    if (addedProduk.length == 0) {
+      return
+    }
+    Swal.fire({
+      title: "Menyimpan data...",
+    })
+    Swal.showLoading()
     data["foto"] = imageArray
     data["tempat_wisata"] = tujuanWisata
     data["produk"] = addedProduk
@@ -144,22 +174,7 @@ const AddPaketWisataPage = () => {
           icon: "error",
         })
       })
-  }
-
-  const saveSelection = () => {
-    const selId = selectedId
-    if (selId) {
-      const selData = dataTempatWisata.find((item) => item.id == selId)
-      const dataNew = {
-        nama: selData.nama,
-        thumbnail_foto: selData.thumbnail_foto,
-        tempat_wisata_id: selData.id,
-        alamat: selData.alamat,
-      }
-      setTujuanWisata((old) => [...old, dataNew])
-    }
-    setSelectedId("")
-    setDialogTambahOpened(false)
+      .finally(() => Swal.hideLoading())
   }
 
   const deleteSelection = (idx) => {
@@ -168,49 +183,26 @@ const AddPaketWisataPage = () => {
     setTujuanWisata(temp)
   }
 
-  function onChangeRadio(event) {
-    setSelectedId(event.target.value)
+  const deleteSelectedProduk = (idx) => {
+    const temp = [...addedProduk]
+    temp.splice(idx, 1)
+    setAddedProduk(temp)
   }
 
-  function handleCheckbox(e, id) {
-    if (e.target.checked) {
-      const check = tujuanWisata.find((item) => item.id == id)
-      if (check) {
-        return
-      }
-      const selData = dataTempatWisata.find((item) => item.id == id)
-      const dataNew = {
-        id: id,
-        nama: selData.nama,
-        thumbnail_foto: selData.thumbnail_foto,
-        tempat_wisata_id: selData.id,
-        alamat: selData.alamat,
-      }
-      setTujuanWisata((old) => [...old, dataNew])
-    } else {
-      console.log("unchecked " + id)
-      setTujuanWisata((value) => value.filter((it) => it.id !== id))
-    }
-  }
-
-  function findUrutan(id) {
-    const check = tujuanWisata.find((it) => it.id == id)
-    if (check) {
-      const idx = tujuanWisata.findIndex((x) => x.id == id)
-      return idx + 1
-    }
-    return
-  }
-
-  function saveProduk(formData, e) {
-    setAddedProduk((oldItem) => [...oldItem, formData])
-    setIsModalTambahProdukOpen(false)
-  }
-
-  function findArmada(idArmada) {
-    const res = jenisArmada.find((o) => o.id == idArmada)
+  function findKendaraan(idKendaraan) {
+    const res = jenisKendaraan.find((o) => o.id == idKendaraan)
     return res
   }
+
+  const handleKeyPress = (event) => {
+    const keyCode = event.keyCode || event.which;
+    const keyValue = String.fromCharCode(keyCode);
+    const regex = /[0-9]/;
+
+    if (!regex.test(keyValue)) {
+      event.preventDefault();
+    }
+  };
 
   return (
     <AdminLayout>
@@ -226,7 +218,7 @@ const AddPaketWisataPage = () => {
           Tambah Paket Wisata
         </h3>
       </div>
-      <div className="wrapper">
+      <div className="wrapper flex flex-col">
         <FormProvider {...methods}>
           <form
             onSubmit={handleSubmit(submitForm)}
@@ -241,7 +233,7 @@ const AddPaketWisataPage = () => {
                   <Label
                     htmlFor="nama"
                     value="Nama Paket Wisata"
-                    className="mb-2 inline-block"
+                    className="mb-2 inline-block font-semibold"
                   />
 
                   <TextInput
@@ -256,7 +248,7 @@ const AddPaketWisataPage = () => {
                   <Label
                     htmlFor="deskripsi"
                     value="Deskripsi"
-                    className="mb-2 inline-block"
+                    className="mb-2 inline-block font-semibold"
                   />
 
                   <Textarea
@@ -267,10 +259,68 @@ const AddPaketWisataPage = () => {
                     {...register("deskripsi", { required: true })}
                   />
                 </div>
+                <div className="mb-2 block">
+                  <Label
+                    htmlFor="waktu"
+                    value="Waktu Perjalanan Wisata"
+                    className="mb-2 inline-block font-semibold"
+                  />
+
+                  <div className="flex flex-col md:flex-row">
+                    <div className="flex md:w-1/2 items-center pr-1">
+                      
+                      <TextInput
+                        id="waktu_hari"
+                        type="number"
+                        sizing="md"
+                        onKeyPress={handleKeyPress}
+                        name="waktu_malam"
+                        {...register("waktu_perjalanan.hari", { required: true, valueAsNumber: true })}
+                      />
+                      <div className="shrink-0 ml-2 text-sm ">hari</div>
+                    </div>
+                    <div className="w-[0.125rem] mx-1 grow bg-gray-300 self-stretch"></div>
+                    <div className="flex md:w-1/2 items-center pl-1">
+                      
+                      <TextInput
+                        id="waktu_malam"
+                        type="number"
+                        sizing="md"
+                        onKeyPress={handleKeyPress}
+                        name="waktu_malam"
+                        {...register("waktu_perjalanan.malam", { required: true, valueAsNumber: true })}
+                      />
+                      <div className="shrink-0 ml-2 text-sm">malam</div>
+                    </div>
+                  </div>
+                  
+
+                </div>
+                <div className="mb-2 block">
+                  <Label
+                    htmlFor="jam_keberangkatan"
+                    value="Jam Keberangkatan"
+                    className="mb-2 inline-block font-semibold"
+                  />
+
+
+                  <input type="text"
+                  className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 rounded-lg p-2.5 text-sm"
+                  id="jam_keberangkatan"
+                  ref={(e) => {
+                    ref(e)
+                    inputRef.current = e 
+                  }}
+                    name="jam_keberangkatan"
+                    {...rest}
+                    
+                  />
+
+                </div>
               </div>
               <div id="kanan" className="w-full p-4 md:w-1/2 ">
                 <div className="mb-2 block">
-                  <div className="mb-2 inline-block text-sm font-medium text-gray-900 dark:text-gray-300">
+                  <div className="mb-2inline-block text-sm font-medium text-gray-900 dark:text-gray-300">
                     Gambar
                   </div>
                   <ImageUpload>
@@ -300,10 +350,7 @@ const AddPaketWisataPage = () => {
                 </div>
               </div>
             </div>
-            <button
-              type="submit"
-              className="mx-4 mb-4 inline-flex items-center gap-x-1 rounded-md bg-blue-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
+            <button type="submit" className="hidden" id="submit-all">
               Simpan
             </button>
           </form>
@@ -336,13 +383,10 @@ const AddPaketWisataPage = () => {
                       <th scope="col" className="px-4 py-3">
                         Nama
                       </th>
-
                       <th scope="col" className="px-4 py-3">
                         Alamat
                       </th>
-                      {/* <th scope="col" className="px-4 py-3">
-                        Koordinat
-                      </th> */}
+
                       <th scope="col" className="px-4 py-3">
                         Urutan
                       </th>
@@ -366,7 +410,7 @@ const AddPaketWisataPage = () => {
                       >
                         <td className="w-11">
                           <img
-                            src={item.thumbnail_foto}
+                            src={item.foto?.[0]}
                             alt={item.nama}
                             className="mx-auto my-2 h-12 w-12 rounded object-cover"
                           />
@@ -427,14 +471,10 @@ const AddPaketWisataPage = () => {
                         No.
                       </th>
                       <th scope="col" className="px-4 py-3">
-                        Nama Produk
+                        Jenis Kendaraan Kendaraan
                       </th>
-
                       <th scope="col" className="px-4 py-3">
                         Harga
-                      </th>
-                      <th scope="col" className="px-4 py-3">
-                        Jenis Kendaraan/Armada
                       </th>
                       <th scope="col" className="px-4 py-3">
                         Kapasitas Penumpang
@@ -445,29 +485,43 @@ const AddPaketWisataPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="px-4 py-4">1</td>
-                      <td className="px-4 py-4">Paket Keluarga</td>
-                      <td className="px-4 py-4">Rp. 850.000</td>
-                      <td className="px-4 py-4">Mobil Minibus</td>
-                      <td className="px-4 py-4">Min: 1, Max: 5</td>
-                      <td className="px-4 py-4">Edit</td>
-                    </tr>
+                    {addedProduk.length == 0 && (
+                      <tr className=" bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600">
+                        <td className="px-4 py-4 text-center" colSpan={5}>
+                          Produk Kosong
+                        </td>
+                      </tr>
+                    )}
+
                     {addedProduk.map((produk, index) => (
                       <tr key={`pw-${index}`}>
                         <td className="px-4 py-4">{index + 1}</td>
-                        <td className="px-4 py-4">{produk.nama}</td>
-                        <td className="px-4 py-4">{produk.harga}</td>
                         <td className="px-4 py-4">
-                          {findArmada(produk.jenis_armada_id)?.nama}
+                          {findKendaraan(produk.jenis_kendaraan_id)?.nama}
                         </td>
+                        <td className="px-4 py-4">{produk.harga}</td>
+
                         <td className="px-4 py-4">
                           Min:{" "}
-                          {findArmada(produk.jenis_armada_id)?.kapasitas_min},
-                          Max:{" "}
-                          {findArmada(produk.jenis_armada_id)?.kapasitas_max}
+                          {
+                            findKendaraan(produk.jenis_kendaraan_id)
+                              ?.kapasitas_min
+                          }
+                          , Max:{" "}
+                          {
+                            findKendaraan(produk.jenis_kendaraan_id)
+                              ?.kapasitas_max
+                          }
                         </td>
-                        <td className="px-4 py-4">Edit</td>
+                        <td className="">
+                          <button
+                            type="button"
+                            onClick={() => deleteSelectedProduk(index)}
+                            className="mr-4 rounded p-1.5 text-red-600 hover:bg-gray-200"
+                          >
+                            <Icons.sampah />
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -476,197 +530,31 @@ const AddPaketWisataPage = () => {
             </div>
           </div>
         </div>
+        <label
+          htmlFor="submit-all"
+          className="mb-4 inline-flex items-center gap-x-1 self-end rounded-md bg-blue-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          Simpan
+        </label>
       </div>
 
-      <Dialog.Root
-        open={dialogTambahOpened}
-        onOpenChange={setDialogTambahOpened}
-      >
-        <Dialog.Portal>
-          <Dialog.Overlay className="data-[state=open]:animate-overlayShow fixed inset-0 z-[99] bg-black/60" />
-          <Dialog.Content className="data-[state=open]:animate-contentShow fixed left-[50%] top-[50%] z-[100] flex max-h-[85vh] min-h-[60vh] w-[90vw] max-w-[60vw] translate-x-[-50%] translate-y-[-50%] flex-col rounded-[6px]  bg-white p-[25px] focus:outline-none ">
-            <Dialog.Title className="text-mauve12 m-0 mb-4 text-[17px] font-medium">
-              Tambah Tempat Wisata Tujuan
-            </Dialog.Title>
+      <ModalDestinasiWisata isModalOpened={dialogTambahOpened}
+      setModalOpened={setDialogTambahOpened}
+      allData={dataTempatWisata}
+      selectedData={tujuanWisata}
+      setSelectedData={setTujuanWisata}/>
 
-            {/* <Dialog.Description className="text-mauve11 mt-[10px] mb-5 text-[15px] leading-normal">
-              Pilih tempat wisata yang ingin ditambahkan, lalu klik Tambah.
-            </Dialog.Description> */}
-            <div className="flex-1 overflow-auto rounded border p-4">
-              <div className="grid grid-cols-2 gap-2" onChange={onChangeRadio}>
-                {dataTempatWisata.map((item, index) => (
-                  <label
-                    key={`tw-${index}`}
-                    htmlFor={`tw-${item.id}`}
-                    className="label-custom relative flex flex-row items-center"
-                  >
-                    <input
-                      type="checkbox"
-                      name="pilih-tw"
-                      id={`tw-${item.id}`}
-                      value={item.id}
-                      className="absolute right-4"
-                      checked={
-                        tujuanWisata.find((it) => it.id == item.id)
-                          ? true
-                          : false
-                      }
-                      onChange={(e) => handleCheckbox(e, item.id)}
-                    />
-
-                    <div className="flex w-full gap-2 rounded-lg border-2 border-transparent p-2">
-                      <div className="relative">
-                        <img
-                          src={item.thumbnail_foto}
-                          alt=""
-                          className="h-14 w-14 rounded"
-                        />
-                        {tujuanWisata.find((it) => it.id == item.id) ? (
-                          <div className="absolute left-[50%] top-[50%] flex h-6 w-6 translate-x-[-50%] translate-y-[-50%] items-center justify-center rounded-full bg-white text-sm font-semibold text-blue-700 shadow-lg">
-                            {findUrutan(item.id)}
-                          </div>
-                        ) : null}
-                      </div>
-
-                      <div className="flex flex-col">
-                        <div>{item.nama}</div>
-                        <div className="text-sm text-gray-600">
-                          {item.alamat}
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div className="mt-[25px] flex flex-shrink-0 flex-grow-0 basis-[auto] justify-end">
-              <button
-                onClick={() => setDialogTambahOpened(false)}
-                type="button"
-                className=" inline-flex items-center gap-x-1 rounded-md bg-blue-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                Simpan
-              </button>
-            </div>
-            <Dialog.Close asChild>
-              <button
-                className="text-violet11 focus:shadow-violet7 hover:bg-violet4 absolute right-[10px] top-[10px] inline-flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-none"
-                aria-label="Close"
-              >
-                <Icons.close />
-              </button>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+      
 
       {/* Modal tambah produk */}
-      <Dialog.Root
-        open={isModalTambahProdukOpen}
-        onOpenChange={setIsModalTambahProdukOpen}
-      >
-        <Dialog.Portal>
-          <Dialog.Overlay className="data-[state=open]:animate-overlayShow fixed inset-0 z-[99] bg-black/60" />
-          <Dialog.Content className="data-[state=open]:animate-contentShow fixed left-[50%] top-[50%] z-[100] flex max-h-[85vh] min-h-[60vh] w-[90vw] max-w-[60vw] translate-x-[-50%] translate-y-[-50%] flex-col rounded-[6px]  bg-white focus:outline-none ">
-            <div className="relative flex max-h-screen max-w-4xl flex-col overflow-auto rounded-lg bg-white shadow dark:bg-gray-700">
-              {/* Modal header */}
-              <div className="flex items-center justify-between rounded-t border-b px-3 py-2 dark:border-gray-600">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Tambah Produk Paket Wisata
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setIsModalTambahProdukOpen(false)}
-                  className="ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
-                  data-modal-hide="defaultModal"
-                >
-                  <Icons.close className="h-5 w-5" />
-                  <span className="sr-only">Close modal</span>
-                </button>
-              </div>
-              {/* Modal body */}
-              <div className="flex grow flex-col space-y-6 overflow-auto p-5">
-                {/* form tambah */}
-                <FormProvider {...methodsProduk}>
-                  <form onSubmit={handleSubmitProduk(saveProduk)}>
-                    <div className="mb-2 block">
-                      <Label
-                        htmlFor="nama"
-                        value="Nama Produk"
-                        className="mb-2 inline-block"
-                      />
+      <ModalProdukPaketWisata 
+      isModalOpened={isModalTambahProdukOpen}
+      setModalOpened={setIsModalTambahProdukOpen}
+      jenisKendaraan={jenisKendaraan}
+      setAddedProduk={setAddedProduk}
+      />
 
-                      <TextInput
-                        id="nama"
-                        type="text"
-                        sizing="md"
-                        name="nama"
-                        {...registerProduk("nama", { required: true })}
-                      />
-                    </div>
-                    <div className="mb-2 block">
-                      <Label
-                        htmlFor="harga"
-                        value="Harga"
-                        className="mb-2 inline-block"
-                      />
-
-                      <TextInput
-                        id="harga"
-                        type="number"
-                        sizing="md"
-                        name="harga"
-                        {...registerProduk("harga", { required: true })}
-                      />
-                    </div>
-                    <div className="mb-2 block">
-                      <Label
-                        htmlFor="jenis_armada_id"
-                        value="Jenis Armada Kendaraan"
-                        className="mb-2 inline-block"
-                      />
-
-                      <select
-                        id="jenis_armada_id"
-                        className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                        {...registerProduk("jenis_armada_id", {
-                          required: true,
-                        })}
-                      >
-                        {jenisArmada.map((item) => (
-                          <option key={`jenis-${item.id}`} value={item.id}>
-                            {item.nama}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="flex justify-end py-2">
-                      <Button type="submit">Simpan</Button>
-                    </div>
-                  </form>
-                </FormProvider>
-              </div>
-              {/* Modal footer */}
-              {/* <div className="flex items-center space-x-2 rounded-b border-t border-gray-200 p-6 dark:border-gray-600">
-                <button
-                  data-modal-hide="defaultModal"
-                  type="submit"
-                  className="rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                >
-                  Simpan
-                </button>
-                <button
-                  data-modal-hide="defaultModal"
-                  type="button"
-                  className="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-600"
-                >
-                  Decline
-                </button>
-              </div> */}
-            </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+      
     </AdminLayout>
   )
 }
