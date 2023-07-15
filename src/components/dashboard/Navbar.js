@@ -1,18 +1,22 @@
 import { useAuth } from "@/context/authContext"
+import { useFirebaseAuth } from "@/context/FirebaseAuthContext"
 import { NavigationContext } from "@/context/navigationContext"
-import { auth } from "@/lib/firebase"
+import { auth, database } from "@/lib/firebase"
 import { logOut } from "@/services/AuthService"
+import { collection, doc, getDoc } from "firebase/firestore"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import React, { useContext, useEffect, useState } from "react"
 import Swal from "sweetalert2"
 import CurrentTime from "../CurrentTime"
 import { Icons } from "../Icons"
+import UserPlaceholder from "../UserPlaceholder"
 
 const Navbar = ({ setSidebarOpened }) => {
   const router = useRouter()
-  const { authUser, loading } = useAuth()
+  const [authUser, authUserData] = useFirebaseAuth()
   const [navigation, setNavigation] = useContext(NavigationContext)
+  const [userData, setUserData] = useState(null)
 
   function logout() {
     Swal.fire({
@@ -44,9 +48,9 @@ const Navbar = ({ setSidebarOpened }) => {
       }
     })
   }
-  // console.log(authUser?.displayName)
+  // console.log(authUserData?.displayName)
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+    <nav className="sticky top-0 z-50 w-full border-b shadow-sm border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
       <div className="px-3 py-3">
         <div className="flex items-stretch gap-3">
           <div className="flex items-center justify-start">
@@ -82,17 +86,22 @@ const Navbar = ({ setSidebarOpened }) => {
               <div>
                 <button
                   type="button"
-                  className="flex items-center gap-2 text-sm"
+                  className="flex items-center gap-2 text-sm hover:bg-gray-100 rounded"
                   aria-expanded="false"
                   data-dropdown-toggle="dropdown-user"
                 >
                   <span className="sr-only">Open user menu</span>
+                  {authUserData != null ? (
                   <img
                     className="h-8 w-8 rounded-full bg-gray-800 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
-                    src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                    alt="user photo"
+                    src={authUserData?.foto}
+                    alt={`${authUserData?.nama} user photo`}
                   />
-                  <div className="hidden md:block">{authUser?.displayName}</div>
+                  ) : (
+                    <UserPlaceholder nama={authUserData?.nama} className="h-8 w-8 my-0"/>
+                  )}
+                  
+                  <div className="hidden md:block">{authUserData?.nama}</div>
                   <Icons.chevronDown className="h-4 w-4" />
                 </button>
               </div>
@@ -105,13 +114,13 @@ const Navbar = ({ setSidebarOpened }) => {
                     className="text-sm text-gray-900 dark:text-white"
                     role="none"
                   >
-                    {authUser?.displayName}
+                    {authUserData?.displayName}
                   </p>
                   <p
                     className="truncate text-sm text-gray-600 dark:text-gray-300"
                     role="none"
                   >
-                    {authUser?.email}
+                    {authUserData?.email}
                   </p>
                 </div>
                 <ul className="py-1" role="none">

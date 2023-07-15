@@ -6,7 +6,7 @@ import { createContext, useContext, useEffect, useState } from "react"
 
 export const AuthContext = createContext(undefined)
 
-const useFirebaseAuth = () => {
+const FirebaseAuthCtx = () => {
   const [authUser, setAuthUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -34,7 +34,7 @@ const useFirebaseAuth = () => {
   }
 }
 
-export default useFirebaseAuth
+export default FirebaseAuthCtx
 
 const AuthUserContext = createContext({
   authUser: null,
@@ -42,7 +42,7 @@ const AuthUserContext = createContext({
 })
 
 export const AuthUserProvider = ({ children }) => {
-  const auth = useFirebaseAuth()
+  const auth = FirebaseAuthCtx()
 
   return (
     <AuthUserContext.Provider value={auth}>

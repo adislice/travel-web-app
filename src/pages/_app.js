@@ -1,4 +1,5 @@
 import { AuthProvider, AuthUserProvider } from "@/context/authContext"
+import { FirebaseAuthProvider } from "@/context/FirebaseAuthContext"
 import { NavigationContextProvider } from "@/context/navigationContext"
 import "@/styles/globals.css"
 import {
@@ -50,11 +51,13 @@ export default function App({ Component, pageProps }) {
           }
         `}
       </style>
-      <AuthUserProvider>
+      {/* <AuthUserProvider> */}
+      <FirebaseAuthProvider>
         <NavigationContextProvider>
           <Component {...pageProps} />
         </NavigationContextProvider>
-      </AuthUserProvider>
+        </FirebaseAuthProvider>
+      {/* </AuthUserProvider> */}
     </>
   )
 }

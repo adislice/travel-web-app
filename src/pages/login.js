@@ -1,5 +1,5 @@
 import { Icons } from "@/components/Icons"
-import { useAuth } from "@/context/authContext"
+import { useFirebaseAuth } from "@/context/FirebaseAuthContext"
 import { auth } from "@/lib/firebase"
 import { logIn } from "@/services/AuthService"
 import { onAuthStateChanged } from "firebase/auth"
@@ -16,8 +16,8 @@ function LoginPage() {
   const [loginError, setLoginError] = useState({ error: false, errorMsg: "" })
   const methods = useForm({ mode: "onBlur" })
   const router = useRouter()
-  const { authUser } = useAuth()
   const [done, setDone] = useState(false)
+  const [authUser, authUserData] = useFirebaseAuth()
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -25,12 +25,13 @@ function LoginPage() {
         router.push("/admin/dashboard")
       }
     })
-    console.log(authUser)
-    // if (authUser) {
-    //   router.push('/admin/dashboard')
-    // }
+
     return unsubscribe
   }, [])
+
+  useEffect(() => {
+console.log("authuser: ", authUser, " authuserdata: ", authUserData)
+  }, [authUser, authUserData])
 
   const {
     register,
@@ -79,7 +80,9 @@ function LoginPage() {
   }
 
   return (
-    <div className={`flex h-screen min-h-screen items-center justify-center`}>
+    <>
+    {(authUserData === undefined) ? (<div></div>) : (
+      <div className={`flex h-screen min-h-screen items-center justify-center`}>
       <div className="m-5 flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">
           <Icons.login className="m-3 mx-auto h-10 w-10" />
@@ -136,6 +139,9 @@ function LoginPage() {
         </div>
       </div>
     </div>
+    )}
+    
+    </>
   )
 }
 

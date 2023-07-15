@@ -72,7 +72,7 @@ function ModalDestinasiWisata({isModalOpened, setModalOpened, allData, selectedD
                         <img
                           src={item.foto?.[0]}
                           alt=""
-                          className="h-14 w-14 rounded"
+                          className="h-14 w-14 rounded object-cover"
                         />
                         {selectedData.find((it) => it.id == item.id) ? (
                           <div className="absolute left-[50%] top-[50%] flex h-6 w-6 translate-x-[-50%] translate-y-[-50%] items-center justify-center rounded-full bg-white text-sm font-semibold text-blue-700 shadow-lg">

@@ -1,3 +1,4 @@
+import { PAGE_MAX_ITEM } from "@/lib/constant"
 import { database, storage } from "@/lib/firebase"
 import { async } from "@firebase/util"
 import {
@@ -11,6 +12,7 @@ import {
   GeoPoint,
   getDoc,
   getDocs,
+  limit,
   onSnapshot,
   or,
   query,
@@ -47,6 +49,8 @@ export function getTempatWisataRealtime(
   dataState,
   setDataState,
   searchQuery,
+  pageNum,
+  setLoadingNext,
   setLoading = null
 ) {
   const twCol = collection(database, "tempat_wisata")
@@ -78,29 +82,40 @@ export function getTempatWisataRealtime(
         where("nama", ">=", searchQuery.toLowerCase()),
         where("nama", "<=", searchQuery.toLowerCase() + "\uf8ff")
       )
-    )
+    ),
+    limit(PAGE_MAX_ITEM * pageNum)
   )
   console.log("searcing " + searchQuery)
 
   const unsub = onSnapshot(q, (snapshot) => {
     if (snapshot.empty) {
-      setLoading(false)
+      setDataState([])
+    } else {
+      const allData = snapshot.docs.map((item) => {
+        return {id: item.id, ...item.data()}
+      })
+      console.log("all data", allData)
+      setDataState(allData)
     }
-    snapshot.docChanges().forEach((change) => {
-      console.log(change.doc.data())
-      console.log("change type: " + change.type)
-      if (change.type === "added") {
-        if (!dataState.some((e) => e.id === change.doc.id)) {
-          const newData = {
-            id: change.doc.id,
-            ...change.doc.data(),
-          }
-          setDataState((oldData) => [...oldData, newData])
-          console.log("added ")
-          setLoading(false)
-        }
-      }
-    })
+    setLoading(false)
+    setLoadingNext(false)
+    // snapshot.docChanges().forEach((change) => {
+    //   console.log(change.doc.data())
+    //   console.log("change type: " + change.type)
+    //   if (change.type === "added") {
+    //     if (!dataState.some((e) => e.id === change.doc.id)) {
+    //       const newData = {
+    //         id: change.doc.id,
+    //         ...change.doc.data(),
+    //       }
+    //       setDataState((oldData) => [...oldData, newData])
+    //       console.log("added ")
+    //       setLoading(false)
+    //     }
+    //   }
+    // })
+  }, (error) => {
+    console.log(error)
   })
 
   return unsub
@@ -124,7 +139,6 @@ export async function addTempatWisata(formData) {
       deskripsi: formData.deskripsi,
       provinsi: formData.provinsi,
       kota: formData.kota,
-      alamat: `${formData.kota}, ${formData.provinsi}`,
       latitude: formData.latitude,
       longitude: formData.longitude,
       foto: fotoUrlList,

@@ -1,4 +1,4 @@
-import { useAuth } from "@/context/authContext"
+import { useFirebaseAuth } from "@/context/FirebaseAuthContext"
 import { initFlowbite } from "flowbite"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
@@ -8,17 +8,28 @@ import Sidebar from "./Sidebar"
 const AdminLayout = ({ children }) => {
   const [sidebarOpened, setSidebarOpened] = useState(false)
   const router = useRouter()
-  const { authUser, loading } = useAuth()
+
+  const [authUser, authUserData] = useFirebaseAuth()
+
+  // useEffect(() => {
+  //   if (!loading && !authUserData) {
+  //     router.push("/login")
+  //   }
+  // }, [authUserData, loading])
 
   useEffect(() => {
-    if (!loading && !authUser) {
-      router.push("/login")
+    if (authUser == null) {
+      router.push('/login')
     }
-  }, [authUser, loading])
+  }, [authUser])
 
   useEffect(() => {
     initFlowbite()
   }, [])
+
+  useEffect(() => {
+    console.log("user from layout: ", authUserData)
+  }, [authUserData])
 
   useEffect(() => {
     if (sidebarOpened) {
@@ -28,7 +39,7 @@ const AdminLayout = ({ children }) => {
     }
   }, [sidebarOpened])
 
-  return !authUser ? null : (
+  return !authUserData ? null : (
     <div>
       <Sidebar
         sidebarOpened={sidebarOpened}

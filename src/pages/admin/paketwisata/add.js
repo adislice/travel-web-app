@@ -26,6 +26,7 @@ import flatpickr from "flatpickr"
 import ModalDestinasiWisata from "@/components/ModalDestinasiWisata"
 import ModalProdukPaketWisata from "@/components/ModalProdukPaketWisata"
 import { useNav } from "@/context/navigationContext"
+import FormInputError from "@/components/FormInputError"
 
 const customStyles = {
   content: {
@@ -48,6 +49,8 @@ const AddPaketWisataPage = () => {
   const [addedProduk, setAddedProduk] = useState([])
   const [navigation, setNavigation] = useNav()
   const inputRef = useRef(null)
+  const tujuanWisataRef = useRef(null)
+  const produkRef = useRef(null)
   const router = useRouter()
   const methods = useForm({ mode: "onBlur" })
   const {
@@ -129,9 +132,11 @@ const AddPaketWisataPage = () => {
     console.log(inputRef.current)
     e.preventDefault()
     if (tujuanWisata.length == 0) {
+      tujuanWisataRef.current.scrollIntoView()
      return 
     }
     if (addedProduk.length == 0) {
+      produkRef.current.scrollIntoView()
       return
     }
     Swal.fire({
@@ -204,6 +209,12 @@ const AddPaketWisataPage = () => {
     }
   };
 
+  const deleteImage = (index) => {
+    const temp = [...imageArray]
+    temp.splice(index, 1)
+    setImageArray(temp)
+  }
+
   return (
     <AdminLayout>
       <Head>
@@ -241,8 +252,10 @@ const AddPaketWisataPage = () => {
                     type="text"
                     sizing="md"
                     name="nama"
-                    {...register("nama", { required: true })}
+                    placeholder="Masukkan nama paket wisata"
+                    {...register("nama", { required: "Nama tidak boleh kosong" })}
                   />
+                  <FormInputError errorState={errors.nama} />
                 </div>
                 <div className="mb-2 block">
                   <Label
@@ -253,11 +266,26 @@ const AddPaketWisataPage = () => {
 
                   <Textarea
                     id="deskripsi"
-                    placeholder=""
-                    required={true}
+                    placeholder="Masukkan deskripsi"
                     rows={4}
-                    {...register("deskripsi", { required: true })}
+                    {...register("deskripsi", { required: "Deskripsi tidak boleh kosong" })}
                   />
+                  <FormInputError errorState={errors.deskripsi} />
+                </div>
+                <div className="mb-2 block">
+                  <Label
+                    htmlFor="fasilitas"
+                    value="Fasilitas"
+                    className="mb-2 inline-block font-semibold"
+                  />
+
+                  <Textarea
+                    id="fasilitas"
+                    placeholder="Masukkan fasilitas"
+                    rows={4}
+                    {...register("fasilitas", { required: "Fasilitas tidak boleh kosong" })}
+                  />
+                  <FormInputError errorState={errors.fasilitas} />
                 </div>
                 <div className="mb-2 block">
                   <Label
@@ -275,7 +303,7 @@ const AddPaketWisataPage = () => {
                         sizing="md"
                         onKeyPress={handleKeyPress}
                         name="waktu_malam"
-                        {...register("waktu_perjalanan.hari", { required: true, valueAsNumber: true })}
+                        {...register("waktu_perjalanan.hari", { required: "Waktu perjalanan (hari) tidak boleh kosong", valueAsNumber: true })}
                       />
                       <div className="shrink-0 ml-2 text-sm ">hari</div>
                     </div>
@@ -288,12 +316,14 @@ const AddPaketWisataPage = () => {
                         sizing="md"
                         onKeyPress={handleKeyPress}
                         name="waktu_malam"
-                        {...register("waktu_perjalanan.malam", { required: true, valueAsNumber: true })}
+                        {...register("waktu_perjalanan.malam", { required: "Waktu perjalanan (malam) tidak boleh kosong", valueAsNumber: true })}
                       />
                       <div className="shrink-0 ml-2 text-sm">malam</div>
                     </div>
                   </div>
-                  
+
+                  <FormInputError errorState={errors.waktu_perjalanan?.hari} />
+                  <FormInputError errorState={errors.waktu_perjalanan?.malam} />
 
                 </div>
                 <div className="mb-2 block">
@@ -315,6 +345,7 @@ const AddPaketWisataPage = () => {
                     {...rest}
                     
                   />
+                  <FormInputError errorState={errors.jam_keberangkatan} />
 
                 </div>
               </div>
@@ -357,7 +388,7 @@ const AddPaketWisataPage = () => {
         </FormProvider>
 
         {/* Kelola tujuan tempat wisata */}
-        <div className="mb-5 rounded-xl bg-white md:p-4">
+        <div className="mb-5 rounded-xl bg-white md:p-4" ref={tujuanWisataRef}>
           <div className="mb-4 block">
             <div className="flex flex-row items-center">
               <h3 className="px-4 py-3 text-lg font-semibold text-gray-800">
@@ -444,10 +475,12 @@ const AddPaketWisataPage = () => {
               </div>
             </div>
           </div>
+          {tujuanWisata.length == 0 && (<p className="text-red-600 text-center text-sm">Tujuan Wisata tidak boleh kosong</p>)}
+          
         </div>
 
         {/* Kelola produk paket wisata */}
-        <div className="mb-5 rounded-xl bg-white md:p-4">
+        <div className="mb-5 rounded-xl bg-white md:p-4" ref={produkRef}>
           <div className="mb-4 block">
             <div className="flex flex-row items-center">
               <h3 className="px-4 py-3 text-lg font-semibold text-gray-800">
@@ -529,6 +562,7 @@ const AddPaketWisataPage = () => {
               </div>
             </div>
           </div>
+          {addedProduk.length == 0 && (<p className="text-red-600 text-center text-sm">Produk Paket Wisata tidak boleh kosong</p>)}
         </div>
         <label
           htmlFor="submit-all"

@@ -1,10 +1,13 @@
+import { PAGE_MAX_ITEM } from "@/lib/constant"
 import { database, storage } from "@/lib/firebase"
-import { collection, onSnapshot, query, or, and, where } from "firebase/firestore"
+import { collection, onSnapshot, query, or, and, where, limit } from "firebase/firestore"
 
 export function getAllUserRealtime(
   dataState,
   setDataState,
   searchQuery,
+  pageNum,
+  setLoadingNext,
   setLoading = null,
 ) {
   const userCol = collection(database, 'users')
@@ -34,7 +37,8 @@ export function getAllUserRealtime(
         where("nama", ">=", searchQuery.toLowerCase()),
         where("nama", "<=", searchQuery.toLowerCase() + "\uf8ff")
       )
-    )
+    ),
+    limit(PAGE_MAX_ITEM * pageNum)
   )
   console.log("searcing " + searchQuery)
 
@@ -45,7 +49,7 @@ export function getAllUserRealtime(
     const allData = snapshot.docs.map((item) => {
       return {id: item.id, ...item.data()}
     })
-    
+    setLoadingNext(false)
     setDataState(allData)
   })
 

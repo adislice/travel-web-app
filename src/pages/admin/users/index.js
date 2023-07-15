@@ -1,9 +1,14 @@
+import { Button } from "@/components/Button"
 import AdminLayout from "@/components/dashboard/Layout"
 import { Icons } from "@/components/Icons"
 import Href from "@/components/Link"
 import LoadingDataSpinner from "@/components/LoadingDataSpinner"
+import UserPlaceholder from "@/components/UserPlaceholder"
 import { useAuth } from "@/context/authContext"
+import { PAGE_MAX_ITEM } from "@/lib/constant"
+import { database } from "@/lib/firebase"
 import { getAllUserRealtime } from "@/services/UserService"
+import { collection, getCountFromServer, limit, onSnapshot, query, startAfter } from "firebase/firestore"
 import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -15,13 +20,21 @@ function UsersIndexPage() {
   const [loggedUser, setLoggedUser] = useState()
   const router = useRouter()
   const {authUser, loading: loadingUser} = useAuth()
+  const [lastVisible, setLastVisible] = useState(null);
+  const [pageNum, setPageNum] = useState(1)
+  const [isFetchingNewData, setFetchingNewData] = useState(false)
+  const [totalData, setTotalData] = useState(0)
 
   useEffect(() => {
-    const unsubscribe = getAllUserRealtime(dataUsers, setDataUsers, "", setLoading)
-    return () => unsubscribe()
+    const unsubscribe = getAllUserRealtime(dataUsers, setDataUsers, "", pageNum, setFetchingNewData, setLoading)
     
-    
-  }, [loggedUser])
+    return () => {console.log('ubsubs user'); unsubscribe()}
+  }, [loggedUser, pageNum])
+
+  const loadMore = () => {
+    setFetchingNewData(true)
+    setPageNum((oldPageNum) => oldPageNum + 1)
+  };
 
   useEffect(() => {
 
@@ -29,6 +42,20 @@ function UsersIndexPage() {
       setLoggedUser(authUser)
     }
   }, [authUser])
+
+    useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const countSnap = await getCountFromServer(collection(database, "users"))
+        setTotalData(countSnap.data().count)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    const intervalId = setInterval(fetchCount, 5000);
+    return () => clearInterval(intervalId)
+  }, [])
 
   return (
     <AdminLayout>
@@ -113,9 +140,7 @@ function UsersIndexPage() {
                           alt={item.nama}
                           className="mx-auto my-2 h-12 w-12 rounded-full object-cover"
                         />) : (
-                        <div className="mx-auto my-2 h-12 w-12 rounded-full text-lg bg-gray-200 flex items-center justify-center">
-                          {item.nama?.[0]}
-                        </div>
+                        <UserPlaceholder nama={item.nama} />
                         )}
                         
                       </td>
@@ -156,6 +181,16 @@ function UsersIndexPage() {
               </table>
             )}
           </div>
+          <div className="flex flex-row items-center">
+            <div className="m-2 text-gray-600 text-sm px-3 font-semibold">Total data: {totalData}</div>
+          <Button className="m-2 ml-auto bg-white text-blue-600 hover:bg-gray-200" 
+          onClick={loadMore} 
+          disabled={isFetchingNewData}>
+            Tampilkan +{PAGE_MAX_ITEM} Data 
+            {isFetchingNewData ? (<Icons.loading className="w-5 h-5 animate-spin" />) : (<Icons.arrowDown className="w-5 h-5" />)}
+            </Button>
+          </div>
+          
         </div>
       </div>
     </AdminLayout>

@@ -125,7 +125,7 @@ const PaketWisataPage = () => {
                       <td className="w-11">
                         <img
                           src={item.foto[0] || '/placeholder-image.png'}
-                          alt={item.foto[0]}
+                          alt={item.nama}
                           className="mx-auto my-2 h-12 w-12 rounded object-cover"
                         />
                       </td>

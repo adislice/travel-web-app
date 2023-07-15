@@ -1,9 +1,10 @@
-import { LinkButton } from "@/components/Button"
+import { Button, LinkButton } from "@/components/Button"
 import AdminLayout from "@/components/dashboard/Layout"
 import { Icons } from "@/components/Icons"
 import Href from "@/components/Link"
 import LoadingDataSpinner from "@/components/LoadingDataSpinner"
 import { NavigationContext } from "@/context/navigationContext"
+import { PAGE_MAX_ITEM } from "@/lib/constant"
 import { database } from "@/lib/firebase"
 import {
   cekPaketWisataExist,
@@ -11,7 +12,7 @@ import {
   getTempatWisata,
   getTempatWisataRealtime,
 } from "@/services/TempatWisataService"
-import { collection, getDocs } from "firebase/firestore"
+import { collection, getCountFromServer, getDocs } from "firebase/firestore"
 import { initFlowbite } from "flowbite"
 import Head from "next/head"
 import Link from "next/link"
@@ -25,15 +26,10 @@ const TempatWisataPage = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [tempSearch, setTempSearch] = useState("")
   const [navigation, setNavigation] = useContext(NavigationContext)
+  const [pageNum, setPageNum] = useState(1)
+  const [isFetchingNewData, setFetchingNewData] = useState(false)
+  const [totalData, setTotalData] = useState(0)
   const router = useRouter()
-
-  // setNavigation([
-  //   {
-  //     title: "Tempat Wisata",
-  //     url: "/admin/dashboard/tempatwisata"
-  //   }
-  // ])
-  console.log(navigation)
 
   useEffect(() => {
     setNavigation([
@@ -50,19 +46,35 @@ const TempatWisataPage = () => {
       datas,
       setDatas,
       searchQuery,
+      pageNum,
+      setFetchingNewData,
       setLoading
     )
 
-    // return () => unsubscribe()
     return () => {
-      console.log("unsubscribe")
+      console.log("unsubscribe tempat wisata")
       unsubscribe()
     }
-  }, [searchQuery])
+  }, [searchQuery, pageNum])
 
-  // useEffect(() => {
-  //   console.log(datas)
-  // }, [datas])
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const countSnap = await getCountFromServer(collection(database, "tempat_wisata"))
+        setTotalData(countSnap.data().count)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    const intervalId = setInterval(fetchCount, 5000);
+    return () => clearInterval(intervalId)
+  }, [])
+
+  const loadMore = () => {
+    setFetchingNewData(true)
+    setPageNum((oldPageNum) => oldPageNum + 1)
+  };
 
   const handleHapus = (id) => {
     Swal.fire({
@@ -120,12 +132,13 @@ const TempatWisataPage = () => {
   }
 
   const performSearch = () => {
-    setDatas([])
+    // setDatas([])
     setSearchQuery(tempSearch)
   }
 
   useEffect(() => {
-    performSearch()
+    const timeOutId = setTimeout(() => performSearch(), 600);
+    return () => clearTimeout(timeOutId);
   }, [tempSearch])
 
   const handleEnter = (event) => {
@@ -176,10 +189,7 @@ const TempatWisataPage = () => {
             </div>
           </div>
           <div className="relative overflow-x-auto">
-            {loading ? (
-              <LoadingDataSpinner />
-            ) : (
-              <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+            <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
                 <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
                   <tr className="border-b border-t">
                     <th scope="col" className="px-4 py-3">
@@ -203,7 +213,8 @@ const TempatWisataPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {datas.length == 0 && (<tr><td colSpan={5} className="p-2 text-center">Data kosong!</td></tr>)}
+                
+                  {(datas.length == 0 && !loading)  && (<tr className="border-b"><td colSpan={5} className="p-2 text-center">Data kosong!</td></tr>)}
                   {datas.map((item, index) => (
                     <tr
                       key={index}
@@ -218,7 +229,7 @@ const TempatWisataPage = () => {
                       <td className="w-11">
                         <img
                           src={item.foto[0] || '/placeholder-image.png'}
-                          alt={item.foto[0]}
+                          alt={item.nama}
                           className="mx-auto my-2 h-12 w-12 rounded object-cover"
                         />
                       </td>
@@ -250,10 +261,20 @@ const TempatWisataPage = () => {
                       </td>
                     </tr>
                   ))}
+                  {/* {loading && (<tr className="border-b"><td colSpan={6}><LoadingDataSpinner /></td></tr>)} */}
                 </tbody>
               </table>
-            )}
           </div>
+          <div className="flex flex-row items-center">
+            <div className="m-2 text-gray-600 text-sm px-3 font-semibold">Total data: {totalData}</div>
+          <Button className="m-2 ml-auto bg-white text-blue-600 hover:bg-gray-200" 
+          onClick={loadMore} 
+          disabled={isFetchingNewData}>
+            Tampilkan +{PAGE_MAX_ITEM} Data 
+            {isFetchingNewData ? (<Icons.loading className="w-5 h-5 animate-spin" />) : (<Icons.arrowDown className="w-5 h-5" />)}
+            </Button>
+          </div>
+          
         </div>
       </div>
     </AdminLayout>

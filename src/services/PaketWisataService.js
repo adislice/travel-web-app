@@ -41,6 +41,7 @@ export async function addPaketWisata(formData) {
     const dataPaket = {
       nama: formData.nama,
       deskripsi: formData.deskripsi,
+      fasilitas: formData.fasilitas,
       tempat_wisata: tujuanWisata,
       foto: fotoUrlList,
       created_at: serverTimestamp(),

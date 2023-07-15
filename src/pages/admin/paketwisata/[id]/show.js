@@ -33,6 +33,10 @@ function PaketWisataShow() {
           title: "Kesalahan!",
           text: data.msg,
           icon: "error",
+        }).then(({isConfirmed}) => {
+          if (isConfirmed) {
+            router.push("/admin/paketwisata")
+          }
         })
       } else {
         console.log(data.data)
@@ -72,6 +76,10 @@ function PaketWisataShow() {
               <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">Deskripsi</h5>
                 <p className="text-gray-800">{dataPaketWisata.deskripsi}</p>
+              </div>
+              <div className="mb-6">
+                <h5 className="font-semibold text-gray-900">Fasilitas</h5>
+                <p className="text-gray-800">{dataPaketWisata.fasilitas || "-"}</p>
               </div>
               <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">
@@ -116,7 +124,7 @@ function PaketWisataShow() {
 
         {/* Section Destinasi Wisata */}
         <section className="rounded-xl border bg-white" id="destinasi">
-          <h3 className="p-6 text-lg font-bold">Destinasi Wisata Tujuan</h3>
+          <h3 className="p-6 text-lg font-bold">Destinasi Tujuan Wisata</h3>
           <div className="mb-5 rounded-xl bg-white md:px-4">
             <div className="mb-4 block">
               <div className="mt-2 flex flex-col gap-2">
@@ -191,9 +199,9 @@ function PaketWisataShow() {
         </section>
 
         {/* Section Produk Paket Wisata */}
-        <section className="rounded-xl border bg-white" id="destinasi">
+        <section className="rounded-xl border bg-white " id="destinasi">
           <h3 className="p-6 text-lg font-bold">Produk Paket Wisata</h3>
-          <div className="mt-2 flex flex-col gap-2 px-4">
+          <div className="mt-2 flex flex-col gap-2 px-4 mb-4">
               <div className="relative overflow-x-auto rounded-lg border bg-white">
                 <table className="w-full text-left text-sm text-gray-800 dark:text-gray-400">
                   <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
