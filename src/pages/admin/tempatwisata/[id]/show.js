@@ -7,6 +7,7 @@ import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
+import Swal from "sweetalert2"
 
 const TempatWisataShowPage = () => {
   const [tempatWisata, setTempatWisata] = useState({})
@@ -36,13 +37,23 @@ const TempatWisataShowPage = () => {
         arr.push(item.url)
       })
       setImgSources(arr)
+    }).catch((error) => {
+      Swal.fire({
+        title: "Kesalahan",
+        text: "Terjadi kesalahan! Periksa jaringan lalu coba lagi!",
+        icon: "error",
+      }).then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          router.push("/admin/tempatwisata")
+        }
+      })
     })
   }, [])
 
   return (
     <AdminLayout>
       <Head>
-        <title>Detail Tempat Wisata</title>
+        <title>Detail Tempat Wisata - {tempatWisata?.nama}</title>
       </Head>
       <div className="flex items-center gap-2 px-5 py-5 ">
         <Link href={"./../"}>

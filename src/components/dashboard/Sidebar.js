@@ -57,7 +57,7 @@ const Sidebar = ({ sidebarOpened, setSidebarOpened }) => {
                 active={router.asPath.startsWith(item.url) ? true : false}
               >
                 {<item.icon className="mr-4 h-5 w-5" />}
-                <span className="m">{item.title}</span>
+                <span className="">{item.title}</span>
               </SidebarLink>
             ))}
           </ul>

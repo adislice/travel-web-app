@@ -4,6 +4,7 @@ import { NavigationContext } from "@/context/navigationContext"
 import { auth, database } from "@/lib/firebase"
 import { logOut } from "@/services/AuthService"
 import { collection, doc, getDoc } from "firebase/firestore"
+import { initFlowbite } from "flowbite"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import React, { useContext, useEffect, useState } from "react"
@@ -17,6 +18,10 @@ const Navbar = ({ setSidebarOpened }) => {
   const [authUser, authUserData] = useFirebaseAuth()
   const [navigation, setNavigation] = useContext(NavigationContext)
   const [userData, setUserData] = useState(null)
+
+  useEffect(() => {
+    initFlowbite()
+  }, [])
 
   function logout() {
     Swal.fire({

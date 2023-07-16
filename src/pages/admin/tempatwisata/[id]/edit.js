@@ -1,9 +1,11 @@
 import { Button } from "@/components/Button"
 import AdminLayout from "@/components/dashboard/Layout"
+import FormInputError from "@/components/FormInputError"
 import { Icons } from "@/components/Icons"
 import ImageUpload from "@/components/ImageUpload"
 import ImageUploadBox from "@/components/ImageUploadBox"
 import ImageUploadItem from "@/components/ImageUploadItem"
+import ModalLocationPicker from "@/components/ModalLocationPicker"
 import {
   addTempatWisata,
   editTempatWisata,
@@ -22,6 +24,8 @@ const EditTempatWisataPage = () => {
   const { id } = router.query
   const [isSubmitSuccess, setIsSubmitSuccess] = useState(false)
   const [imageArray, setImageArray] = useState([])
+  const [isModalLokasiOpen, setModalLokasiOpen] = useState(false)
+  const [lokasi, setLokasi] = useState({})
   const methods = useForm({ mode: "onBlur" })
   const {
     register,
@@ -34,10 +38,21 @@ const EditTempatWisataPage = () => {
   useEffect(() => {
     getDetailTempatWisata(id).then((data) => {
       setValue("nama", data.nama)
-      setValue("alamat", data.alamat)
+      setValue("provinsi", data.provinsi)
+      setValue("kota", data.kota)
       setValue("latitude", data.latitude)
       setValue("longitude", data.longitude)
       setValue("deskripsi", data.deskripsi)
+      setLokasi({
+        latLng: {
+          lat: data.latitude,
+          lng: data.longitude,
+        }, 
+        address: {
+          kota: data.kota,
+          provinsi: data.provinsi
+        }
+      })
       let imgArr = []
       data?.foto?.map((foto) => {
         imgArr.push({
@@ -47,8 +62,27 @@ const EditTempatWisataPage = () => {
         })
       })
       setImageArray(imgArr)
+    }).catch((error) => {
+      Swal.fire({
+        title: "Kesalahan",
+        text: "Terjadi kesalahan! Periksa jaringan lalu coba lagi!",
+        icon: "error",
+      }).then(({ isConfirmed }) => {
+        if (isConfirmed) {
+          router.push("/admin/tempatwisata")
+        }
+      })
     })
   }, [])
+
+  useEffect(() => {
+    if (lokasi) {
+      setValue("latitude", lokasi?.latLng?.lat)
+      setValue("longitude", lokasi?.latLng?.lng)
+      setValue("kota", lokasi?.address?.kota)
+      setValue("provinsi", lokasi?.address?.provinsi)
+    }
+  }, [lokasi])
 
   const deleteImage = (index) => {
     const temp = [...imageArray]
@@ -123,7 +157,7 @@ const EditTempatWisataPage = () => {
           >
             <div className="relative flex flex-wrap overflow-x-auto">
               <div id="kiri" className="p-4 md:w-1/2 ">
-                <div className="mb-2 block">
+              <div className="mb-2 block">
                   <Label
                     htmlFor="nama"
                     value="Nama Tempat Wisata"
@@ -135,23 +169,50 @@ const EditTempatWisataPage = () => {
                     type="text"
                     sizing="md"
                     name="nama"
-                    {...register("nama", { required: true })}
+                    {...register("nama", { required: "Nama tidak boleh kosong" })}
                   />
+                  <FormInputError errorState={errors.nama} />
                 </div>
                 <div className="mb-2 block">
-                  <Label
-                    htmlFor="alamat"
-                    value="Alamat"
-                    className="mb-2 inline-block"
-                  />
+                  <div className="text-sm font-semibold text-gray-900 mb-2 mt-4">Lokasi</div>
+                  <div>
+                    <Button type="button" onClick={() => setModalLokasiOpen(true)} className="bg-white hover:bg-gray-200 text-blue-600 border border-gray-300"><Icons.location className="h-4 w-4" />Pilih Dari Peta</Button>
+                  </div>
+                  
+                </div>
+                <div className="flex gap-2">
+                  <div className="mb-2 block w-1/2">
+                    <Label
+                      htmlFor="provinsi"
+                      value="Provinsi"
+                      className="mb-2 inline-block"
+                    />
 
-                  <TextInput
-                    id="alamat"
-                    type="text"
-                    sizing="md"
-                    name="alamat"
-                    {...register("alamat", { required: true })}
-                  />
+                    <TextInput
+                      id="provinsi"
+                      type="text"
+                      sizing="md"
+                      name="provinsi"
+                      {...register("provinsi", { required: "Provinsi tidak boleh kosong" })}
+                    />
+                    <FormInputError errorState={errors.provinsi} />
+                  </div>
+                  <div className="mb-2 block w-1/2">
+                    <Label
+                      htmlFor="kota"
+                      value="Kota/Kab"
+                      className="mb-2 inline-block"
+                    />
+
+                    <TextInput
+                      id="kota"
+                      type="text"
+                      sizing="md"
+                      name="kota"
+                      {...register("kota", { required: "Kota tidak boleh kosong" })}
+                    />
+                    <FormInputError errorState={errors.kota} />
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <div className="mb-2 block w-1/2">
@@ -166,8 +227,9 @@ const EditTempatWisataPage = () => {
                       type="text"
                       sizing="md"
                       name="latitude"
-                      {...register("latitude", { required: true })}
+                      {...register("latitude", { required: "Latitude tidak boleh kosong" })}
                     />
+                    <FormInputError errorState={errors.latitude} />
                   </div>
                   <div className="mb-2 block w-1/2">
                     <Label
@@ -181,8 +243,9 @@ const EditTempatWisataPage = () => {
                       type="text"
                       sizing="md"
                       name="longitude"
-                      {...register("longitude", { required: true })}
+                      {...register("longitude", { required: "Longitude tidak boleh kosong" })}
                     />
+                    <FormInputError errorState={errors.longitude} />
                   </div>
                 </div>
                 <div className="mb-2 block">
@@ -195,10 +258,10 @@ const EditTempatWisataPage = () => {
                   <Textarea
                     id="deskripsi"
                     placeholder=""
-                    required={true}
                     rows={4}
-                    {...register("deskripsi", { required: true })}
+                    {...register("deskripsi", { required: "Deskripsi tidak boleh kosong" })}
                   />
+                  <FormInputError errorState={errors.deskripsi} />
                 </div>
               </div>
               <div id="kanan" className="p-4 md:w-1/2 ">
@@ -239,6 +302,13 @@ const EditTempatWisataPage = () => {
           </form>
         </FormProvider>
       </div>
+      {/* Modal */}
+      <ModalLocationPicker
+      isModalOpen={isModalLokasiOpen}
+      setModalOpen={setModalLokasiOpen}
+      onLocationChanged={setLokasi}
+      defaultLocation={{lat: lokasi.latLng?.lat, lng: lokasi.latLng?.lng}}
+      />
     </AdminLayout>
   )
 }

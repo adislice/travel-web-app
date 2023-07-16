@@ -22,6 +22,7 @@ import {
   Text,
   Wallet,
   XCircle,
+  User2,
 } from "lucide-react"
 
 export const Icons = {
@@ -47,5 +48,6 @@ export const Icons = {
   logout: LogOut,
   arrowDown: ArrowDown,
   loading: Loader2,
-  location: MapPin
+  location: MapPin,
+  user2: User2
 }

@@ -1,6 +1,7 @@
 import { PAGE_MAX_ITEM } from "@/lib/constant"
 import { database, storage } from "@/lib/firebase"
-import { collection, onSnapshot, query, or, and, where, limit } from "firebase/firestore"
+import { FirebaseError } from "firebase/app"
+import { collection, onSnapshot, query, or, and, where, limit, doc, Firestore, FirestoreError } from "firebase/firestore"
 
 export function getAllUserRealtime(
   dataState,
@@ -43,6 +44,7 @@ export function getAllUserRealtime(
   console.log("searcing " + searchQuery)
 
   const unsub = onSnapshot(q, (snapshot) => {
+    console.log("ketemu")
     if (snapshot.empty) {
       setLoading(false)
     }
@@ -51,8 +53,33 @@ export function getAllUserRealtime(
     })
     setLoadingNext(false)
     setDataState(allData)
+    setLoading(false)
   })
 
   return unsub
   
+}
+/**
+ * Multiply two numbers.
+ * @param {string} idUser - Id user.
+ * @param {Function} setData - When data fetched.
+ * @param {(error: string) => void} onError - On error
+ * @returns {Firestore.Unsubscribe} The product of a and b.
+ */
+export function getUserDetailRealtime(idUser, setData, onError) {
+  const dbCol = collection(database, "users")
+  const unsubscribe = onSnapshot(doc(dbCol, idUser), (snapshot) => {
+    if (snapshot.exists()) {
+      setData({
+        id: snapshot.id,
+        ...snapshot.data()
+      })
+    } else {
+      onError("Data tidak ditemukan!")
+    }
+  }, (error) => {
+    onError(error.message)
+  })
+
+  return unsubscribe
 }

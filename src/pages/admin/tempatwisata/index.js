@@ -13,7 +13,6 @@ import {
   getTempatWisataRealtime,
 } from "@/services/TempatWisataService"
 import { collection, getCountFromServer, getDocs } from "firebase/firestore"
-import { initFlowbite } from "flowbite"
 import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -29,6 +28,7 @@ const TempatWisataPage = () => {
   const [pageNum, setPageNum] = useState(1)
   const [isFetchingNewData, setFetchingNewData] = useState(false)
   const [totalData, setTotalData] = useState(0)
+  const [searching, setSearching] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -48,7 +48,10 @@ const TempatWisataPage = () => {
       searchQuery,
       pageNum,
       setFetchingNewData,
-      setLoading
+      (load) => {
+        setLoading(load)
+        setSearching(load)
+      }
     )
 
     return () => {
@@ -60,21 +63,24 @@ const TempatWisataPage = () => {
   useEffect(() => {
     const fetchCount = async () => {
       try {
-        const countSnap = await getCountFromServer(collection(database, "tempat_wisata"))
+        const countSnap = await getCountFromServer(
+          collection(database, "tempat_wisata")
+        )
         setTotalData(countSnap.data().count)
       } catch (error) {
         console.log(error)
       }
     }
 
-    const intervalId = setInterval(fetchCount, 5000);
+    fetchCount()
+    const intervalId = setInterval(fetchCount, 5000)
     return () => clearInterval(intervalId)
   }, [])
 
   const loadMore = () => {
     setFetchingNewData(true)
     setPageNum((oldPageNum) => oldPageNum + 1)
-  };
+  }
 
   const handleHapus = (id) => {
     Swal.fire({
@@ -98,8 +104,8 @@ const TempatWisataPage = () => {
               text: "Terdapat paket wisata yang memiliki tempat wisata ini!",
               html: `
               <p>Terdapat paket wisata yang memiliki tempat wisata ini:</p>
-              ${pwHtml.join(', ')}
-              `
+              ${pwHtml.join(", ")}
+              `,
             })
           } else {
             deleteTempatWisata(id)
@@ -132,13 +138,15 @@ const TempatWisataPage = () => {
   }
 
   const performSearch = () => {
-    // setDatas([])
-    setSearchQuery(tempSearch)
+    if (tempSearch != searchQuery) {
+      setSearchQuery(tempSearch)
+      setSearching(true)
+    }
   }
 
   useEffect(() => {
-    const timeOutId = setTimeout(() => performSearch(), 600);
-    return () => clearTimeout(timeOutId);
+    const timeOutId = setTimeout(() => performSearch(), 600)
+    return () => clearTimeout(timeOutId)
   }, [tempSearch])
 
   const handleEnter = (event) => {
@@ -153,9 +161,7 @@ const TempatWisataPage = () => {
         <title>Tempat Wisata</title>
       </Head>
       <div className="flex items-center justify-between px-5 py-5 md:px-0">
-        <h3 className="text-xl font-semibold text-gray-800 md:text-2xl">
-          Tempat Wisata
-        </h3>
+        <h3 className="text-xl font-semibold text-gray-800 md:text-2xl">Tempat Wisata</h3>
 
         <div className="actionbutton flex flex-row space-x-2">
           <LinkButton href={"tempatwisata/add"} type="button">
@@ -165,7 +171,7 @@ const TempatWisataPage = () => {
         </div>
       </div>
       <div className="wrapper  ">
-        <div className="rounded-xl border bg-white">
+        <div className="md:rounded-xl border bg-white">
           <div className="flex justify-end">
             <div className="relative m-4 w-full lg:w-80">
               <input
@@ -183,98 +189,116 @@ const TempatWisataPage = () => {
                 onClick={performSearch}
                 className="absolute right-0 top-0 rounded-r-lg border border-blue-600 bg-blue-600 p-2.5 text-sm font-medium text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                <Icons.cari className="h-5 w-5" />
+                {searching ? (
+                  <Icons.loading className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Icons.cari className="h-5 w-5" />
+                )}
                 <span className="sr-only">Search</span>
               </button>
             </div>
           </div>
           <div className="relative overflow-x-auto">
-            <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
-                <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
-                  <tr className="border-b border-t">
-                    <th scope="col" className="px-4 py-3">
-                      No.
-                    </th>
-                    <th scope="col" className="px-4 py-3">
-                      Gambar
-                    </th>
-                    <th scope="col" className="px-4 py-3">
-                      Nama
-                    </th>
-                    <th scope="col" className="px-4 py-3">
-                      Alamat
-                    </th>
-                    <th scope="col" className="px-4 py-3">
-                      Koordinat
-                    </th>
-                    <th scope="col" className="px-4 py-3">
-                      <span className="sr-only">Edit</span>
-                    </th>
+            <table className="w-full text-left text-sm text-gray-700 dark:text-gray-400">
+              <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+                <tr className="border-b border-t">
+                  <th scope="col" className="px-4 py-3">
+                    No.
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    Gambar
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    Nama
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    Kota/Kab, Provinsi
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    Koordinat
+                  </th>
+                  <th scope="col" className="px-4 py-3">
+                    <span className="sr-only">Edit</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {datas.length == 0 && !loading && (
+                  <tr className="border-b">
+                    <td colSpan={5} className="p-2 text-center">
+                      Data kosong!
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                
-                  {(datas.length == 0 && !loading)  && (<tr className="border-b"><td colSpan={5} className="p-2 text-center">Data kosong!</td></tr>)}
-                  {datas.map((item, index) => (
-                    <tr
-                      key={index}
-                      className="border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600"
+                )}
+                {datas.map((item, index) => (
+                  <tr
+                    key={index}
+                    className="border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600"
+                  >
+                    <th
+                      scope="row"
+                      className="w-3 whitespace-nowrap px-4 py-4 font-medium text-gray-900 dark:text-white"
                     >
-                      <th
-                        scope="row"
-                        className="w-3 whitespace-nowrap px-4 py-4 font-medium text-gray-900 dark:text-white"
+                      {index + 1}
+                    </th>
+                    <td className="w-11">
+                      <img
+                        src={item.foto[0] || "/placeholder-image.png"}
+                        alt={item.nama}
+                        className="mx-auto my-2 h-12 w-12 rounded object-cover"
+                      />
+                    </td>
+                    <td className="px-4 py-4">
+                      <Href
+                        href={`${router.asPath}/${item.id}/show`}
+                        className="text-gray-900"
                       >
-                        {index + 1}
-                      </th>
-                      <td className="w-11">
-                        <img
-                          src={item.foto[0] || '/placeholder-image.png'}
-                          alt={item.nama}
-                          className="mx-auto my-2 h-12 w-12 rounded object-cover"
-                        />
-                      </td>
-                      <td className="px-4 py-4">
-                        <Href
-                          href={`${router.asPath}/${item.id}/show`}
-                          className="text-gray-900"
-                        >
-                          {item.nama}
-                        </Href>
-                      </td>
-                      <td className="px-4 py-4">{item.alamat}</td>
-                      <td className="px-4 py-4">
-                        {item.latitude}, {item.longitude}
-                      </td>
-                      <td className="flex px-4 py-4 text-right">
-                        <Link
-                          href={`/admin/tempatwisata/${item.id}/edit`}
-                          className="inline-block rounded-l-lg border border-blue-700 p-2 font-medium bg-blue-600 text-white hover:bg-blue-500 hover:underline dark:text-blue-500"
-                        >
-                          <Icons.edit className="h-5 w-5" />
-                        </Link>
-                        <button
-                          onClick={() => handleHapus(item.id)}
-                          className="rounded-r-lg border border-red-700 p-2 bg-red-600 text-white hover:bg-red-500 hover:underline"
-                        >
-                          <Icons.hapus className="h-5 w-5" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {/* {loading && (<tr className="border-b"><td colSpan={6}><LoadingDataSpinner /></td></tr>)} */}
-                </tbody>
-              </table>
+                        {item.nama}
+                      </Href>
+                    </td>
+                    <td className="px-4 py-4">
+                      {item.kota}, {item.provinsi}
+                    </td>
+                    <td className="px-4 py-4">
+                      {item.latitude}, {item.longitude}
+                    </td>
+                    <td className="flex px-4 py-4 text-right">
+                      <Link
+                        href={`/admin/tempatwisata/${item.id}/edit`}
+                        className="inline-block rounded-l-lg border border-blue-700 bg-blue-600 p-2 font-medium text-white hover:bg-blue-500 hover:underline dark:text-blue-500"
+                      >
+                        <Icons.edit className="h-5 w-5" />
+                      </Link>
+                      <button
+                        onClick={() => handleHapus(item.id)}
+                        className="rounded-r-lg border border-red-700 bg-red-600 p-2 text-white hover:bg-red-500 hover:underline"
+                      >
+                        <Icons.hapus className="h-5 w-5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {/* {loading && (<tr className="border-b"><td colSpan={6}><LoadingDataSpinner /></td></tr>)} */}
+              </tbody>
+            </table>
           </div>
           <div className="flex flex-row items-center">
-            <div className="m-2 text-gray-600 text-sm px-3 font-semibold">Total data: {totalData}</div>
-          <Button className="m-2 ml-auto bg-white text-blue-600 hover:bg-gray-200" 
-          onClick={loadMore} 
-          disabled={isFetchingNewData}>
-            Tampilkan +{PAGE_MAX_ITEM} Data 
-            {isFetchingNewData ? (<Icons.loading className="w-5 h-5 animate-spin" />) : (<Icons.arrowDown className="w-5 h-5" />)}
+            <div className="m-2 px-3 text-sm font-semibold text-gray-600">
+              Menampilkan {datas.length} dari {totalData} data
+            </div>
+            <Button
+              className="m-2 ml-auto border border-gray-300 bg-white text-blue-600 hover:bg-gray-200"
+              onClick={loadMore}
+              disabled={isFetchingNewData}
+            >
+              Tampilkan +{PAGE_MAX_ITEM} Data
+              {isFetchingNewData ? (
+                <Icons.loading className="h-5 w-5 animate-spin" />
+              ) : (
+                <Icons.arrowDown className="h-5 w-5" />
+              )}
             </Button>
           </div>
-          
         </div>
       </div>
     </AdminLayout>

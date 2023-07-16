@@ -25,6 +25,7 @@ const AdminLayout = ({ children }) => {
 
   useEffect(() => {
     initFlowbite()
+    console.log("init flowbite")
   }, [])
 
   useEffect(() => {

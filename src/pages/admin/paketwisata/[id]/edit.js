@@ -13,6 +13,7 @@ import { getTempatWisata } from "@/services/TempatWisataService"
 import {
   addPaketWisata,
   getAllJenisKendaraan,
+  getDetailPaketWisata,
 } from "@/services/PaketWisataService"
 import Swal from "sweetalert2"
 import 'flatpickr/dist/themes/material_blue.css'
@@ -22,8 +23,9 @@ import ModalProdukPaketWisata from "@/components/ModalProdukPaketWisata"
 import { useNav } from "@/context/navigationContext"
 import FormInputError from "@/components/FormInputError"
 
-const AddPaketWisataPage = () => {
+function EditPaketWisataPage() {
   const [dataTempatWisata, setDataTempatWisata] = useState([])
+  const [dataPaketWisata, setDataPaketWisata] = useState(null)
   const [dialogTambahOpened, setDialogTambahOpened] = useState(false)
   const [imageArray, setImageArray] = useState([])
   const [tujuanWisata, setTujuanWisata] = useState([])
@@ -36,6 +38,7 @@ const AddPaketWisataPage = () => {
   const tujuanWisataRef = useRef(null)
   const produkRef = useRef(null)
   const router = useRouter()
+  const { id } = router.query
   const methods = useForm({ mode: "onBlur" })
   const {
     register,
@@ -45,7 +48,80 @@ const AddPaketWisataPage = () => {
     setValue
   } = methods
   
-  // effects
+  // get detail
+  useEffect(() => {
+    getDetailPaketWisata(id).then((data) => {
+      if (data.status == 1) {
+        Swal.fire({
+          title: "Kesalahan!",
+          text: data.msg,
+          icon: "error",
+        }).then(({isConfirmed}) => {
+          if (isConfirmed) {
+            router.push("/admin/paketwisata")
+          }
+        })
+      } else {
+        console.log(data.data)
+        setDataPaketWisata(data.data)
+        const dataPaket = data.data
+        setValue("nama", dataPaket.nama)
+        setValue("deskripsi", dataPaket.deskripsi)
+        setValue("fasilitas", dataPaket.fasilitas)
+        setValue("waktu_perjalanan.hari", dataPaket.waktu_perjalanan.hari)
+        setValue("waktu_perjalanan.malam", dataPaket.waktu_perjalanan.malam)
+        setValue("jam_keberangkatan", dataPaket.jam_keberangkatan)
+        const [hour, minute] = dataPaket?.jam_keberangkatan?.split(":");
+        setTimeInputvalue({jam: hour, menit: minute})
+        let imgArr = []
+        dataPaket?.foto?.map((foto) => {
+          imgArr.push({
+            name: "",
+            url: foto,
+            blob: foto,
+          })
+        })
+        setImageArray(imgArr)
+        
+      }
+    })
+  }, [])
+
+  const handleChangeJam = (e) => {
+    const value = e.target.value;
+    if(value <= 23) {
+      setTimeInputvalue(oldValue => ({...oldValue,jam:value,}))
+    }
+  };
+  
+  const handleChangeMenit = (e) => {
+    const value = e.target.value;
+    if(value <= 59) {
+      setTimeInputvalue(oldValue => ({...oldValue, menit:value}))
+    }
+  };
+
+  useEffect(() => {
+    console.log(timeInputValue)
+    if (timeInputValue.jam != '' && timeInputValue.menit != '') {
+     const newVal = `${timeInputValue.jam}:${timeInputValue.menit}`
+     console.log(newVal)
+     setValue("jam_keberangkatan", newVal) 
+    }
+    
+  }, [timeInputValue])
+
+  useEffect(() => {
+    if (dataTempatWisata.length > 0 && dataPaketWisata != null) {
+    const thirdArray = dataTempatWisata.filter((item) => dataPaketWisata?.tempat_wisata?.includes(item.id));
+    setTujuanWisata(thirdArray)
+    }
+  }, [dataTempatWisata, dataPaketWisata])
+
+  useEffect(() => {
+    console.log(tujuanWisata)
+  }, [tujuanWisata])
+
   useEffect(() => {
     setNavigation([
       {
@@ -53,7 +129,7 @@ const AddPaketWisataPage = () => {
         url: "/admin/tempatwisata",
       },
       {
-        title: "Tambah Paket Wisata",
+        title: "Edit Paket Wisata",
         url: router.asPath,
       },
     ])
@@ -80,6 +156,15 @@ const AddPaketWisataPage = () => {
         console.log("error mengambil data jenis kendaraan")
       })
 
+    if (inputRef.current != null) {
+      flatpickr(inputRef.current, {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: 'H:i',
+        time_24hr: true
+      });
+    }
+
     return () => {}
   }, [])
 
@@ -102,30 +187,6 @@ const AddPaketWisataPage = () => {
       },
     ])
   }
-
-  const handleChangeJam = (e) => {
-    const value = e.target.value;
-    if(value <= 23) {
-      setTimeInputvalue(oldValue => ({...oldValue,jam:value,}))
-    }
-  };
-
-  const handleChangeMenit = (e) => {
-    const value = e.target.value;
-    if(value <= 59) {
-      setTimeInputvalue(oldValue => ({...oldValue, menit:value}))
-    }
-  };
-
-  useEffect(() => {
-    console.log(timeInputValue)
-    if (timeInputValue.jam != '' && timeInputValue.menit != '') {
-     const newVal = `${timeInputValue.jam}:${timeInputValue.menit}`
-     console.log(newVal)
-     setValue("jam_keberangkatan", newVal) 
-    }
-    
-  }, [timeInputValue])
 
   const submitForm = (data, e) => {
     console.log(data)
@@ -218,7 +279,7 @@ const AddPaketWisataPage = () => {
   return (
     <AdminLayout>
       <Head>
-        <title>Tambah Paket Wisata</title>
+        <title>Edit Paket Wisata</title>
       </Head>
 
       <div className="flex items-center gap-2 p-5 md:px-0 ">
@@ -226,7 +287,7 @@ const AddPaketWisataPage = () => {
           <Icons.back className="h-6 w-6 rounded-full hover:bg-gray-200" />
         </Link>
         <h3 className="text-xl font-semibold text-gray-800">
-          Tambah Paket Wisata
+          Edit Paket Wisata
         </h3>
       </div>
       <div className="wrapper flex flex-col">
@@ -588,4 +649,4 @@ const AddPaketWisataPage = () => {
   )
 }
 
-export default AddPaketWisataPage
+export default EditPaketWisataPage

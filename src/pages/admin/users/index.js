@@ -5,6 +5,8 @@ import Href from "@/components/Link"
 import LoadingDataSpinner from "@/components/LoadingDataSpinner"
 import UserPlaceholder from "@/components/UserPlaceholder"
 import { useAuth } from "@/context/authContext"
+import { useFirebaseAuth } from "@/context/FirebaseAuthContext"
+import { useNav } from "@/context/navigationContext"
 import { PAGE_MAX_ITEM } from "@/lib/constant"
 import { database } from "@/lib/firebase"
 import { getAllUserRealtime } from "@/services/UserService"
@@ -19,31 +21,40 @@ function UsersIndexPage() {
   const [dataUsers, setDataUsers] = useState([])
   const [loggedUser, setLoggedUser] = useState()
   const router = useRouter()
-  const {authUser, loading: loadingUser} = useAuth()
+  const [authUser, authUserData] = useFirebaseAuth()
   const [lastVisible, setLastVisible] = useState(null);
   const [pageNum, setPageNum] = useState(1)
   const [isFetchingNewData, setFetchingNewData] = useState(false)
   const [totalData, setTotalData] = useState(0)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [tempSearch, setTempSearch] = useState("")
+  const [searching, setSearching] = useState(false)
+  const [navigation, setNavigation] = useNav()
 
   useEffect(() => {
-    const unsubscribe = getAllUserRealtime(dataUsers, setDataUsers, "", pageNum, setFetchingNewData, setLoading)
+    const unsubscribe = getAllUserRealtime(dataUsers, setDataUsers, searchQuery, pageNum, setFetchingNewData, (newState) => {
+      setLoading(false)
+      setSearching(false)
+    })
     
     return () => {console.log('ubsubs user'); unsubscribe()}
-  }, [loggedUser, pageNum])
-
-  const loadMore = () => {
-    setFetchingNewData(true)
-    setPageNum((oldPageNum) => oldPageNum + 1)
-  };
+  }, [loggedUser, pageNum, searchQuery])
 
   useEffect(() => {
-
     if (authUser != undefined) {
       setLoggedUser(authUser)
     }
   }, [authUser])
 
-    useEffect(() => {
+  useEffect(() => {
+    setNavigation([
+      {
+        title: "Kelola Pengguna",
+        url: "/admin/users",
+      },
+      
+    ])
+
     const fetchCount = async () => {
       try {
         const countSnap = await getCountFromServer(collection(database, "users"))
@@ -52,10 +63,27 @@ function UsersIndexPage() {
         console.log(error)
       }
     }
-
+    fetchCount()
     const intervalId = setInterval(fetchCount, 5000);
     return () => clearInterval(intervalId)
   }, [])
+
+  useEffect(() => {
+    const timeOutId = setTimeout(() => performSearch(), 600);
+    return () => clearTimeout(timeOutId);
+  }, [tempSearch])
+
+  const performSearch = () => {
+    if (tempSearch != searchQuery) {
+      setSearchQuery(tempSearch)
+      setSearching(true)
+    }
+  }
+
+  const loadMore = () => {
+    setFetchingNewData(true)
+    setPageNum((oldPageNum) => oldPageNum + 1)
+  };
 
   return (
     <AdminLayout>
@@ -63,7 +91,7 @@ function UsersIndexPage() {
         <title>Kelola Pengguna Terdaftar</title>
       </Head>
       <div className="flex items-center justify-between px-5 py-5 md:px-0">
-        <h3 className="text-lg font-semibold text-gray-800 md:text-xl">
+        <h3 className="text-xl font-semibold text-gray-800 md:text-2xl">
           Pengguna Terdaftar
         </h3>
       </div>
@@ -77,16 +105,20 @@ function UsersIndexPage() {
                 className="z-20 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:border-l-gray-700  dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500"
                 placeholder="Cari..."
                 required=""
-                // value={}
-                // onChange={(e) => setTempSearch(e.target.value)}
-                // onKeyDown={handleEnter}
+                value={tempSearch}
+                onChange={(e) => setTempSearch(e.target.value)}
               />
               <button
                 type="button"
-                // onClick={performSearch}
+                onClick={performSearch}
                 className="absolute right-0 top-0 rounded-r-lg border border-blue-600 bg-blue-600 p-2.5 text-sm font-medium text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                <Icons.cari className="h-5 w-5" />
+                {searching ? (
+                <Icons.loading className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Icons.cari className="h-5 w-5" />
+                )}
+                
                 <span className="sr-only">Search</span>
               </button>
             </div>
@@ -182,8 +214,8 @@ function UsersIndexPage() {
             )}
           </div>
           <div className="flex flex-row items-center">
-            <div className="m-2 text-gray-600 text-sm px-3 font-semibold">Total data: {totalData}</div>
-          <Button className="m-2 ml-auto bg-white text-blue-600 hover:bg-gray-200" 
+            <div className="m-2 text-gray-600 text-sm px-3 font-semibold">Menampilkan {dataUsers.length} dari {totalData} data</div>
+          <Button className="m-2 ml-auto bg-white text-blue-600 hover:bg-gray-200 border border-gray-300" 
           onClick={loadMore} 
           disabled={isFetchingNewData}>
             Tampilkan +{PAGE_MAX_ITEM} Data 

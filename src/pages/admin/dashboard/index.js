@@ -17,6 +17,7 @@ function DashboardIndexPage() {
   })
 
   useEffect(() => {
+    console.log("Page: dashboard")
     setNavigation([
       {
         title: "Dashboard",

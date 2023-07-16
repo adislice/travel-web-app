@@ -8,10 +8,10 @@ import Geocode from "react-geocode"
 
 const defaultCenter = { lat: -7.309180, lng: 109.906461 }
 
-function LocationPicker({onAddressChanged}) {
+function LocationPicker({onAddressChanged, defaultLocation}) {
   const [map, setMap] = useState(/** @type google.maps.Map */ (null))
-  const [selectedLoc, setSelectedLoc] = useState(/**@type google.maps.LatLng */ (null))
-  const [currentCenter, setCurrentCenter] = useState(/**@type google.maps.LatLng */ (null))
+  const [selectedLoc, setSelectedLoc] = useState()
+  const [currentCenter, setCurrentCenter] = useState(null)
   const [alamat, setAlamat] = useState({})
 
   const {isLoaded, loadError} = useJsApiLoader({
@@ -22,13 +22,29 @@ function LocationPicker({onAddressChanged}) {
 
   useEffect(() => {
     onAddressChanged(alamat)
+    console.log(alamat)
   }, [alamat])
+
+  useEffect(() => {
+    console.log(defaultLocation)
+    if (defaultLocation?.lat && defaultLocation?.lng) {
+      setSelectedLoc({
+        lat: Number(defaultLocation.lat),
+        lng: Number(defaultLocation.lng)
+      })
+      setCurrentCenter({
+        lat: Number(defaultLocation.lat),
+        lng: Number(defaultLocation.lng)
+      })
+    }
+    console.log(defaultLocation)
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const apiKey = GEOCODER_API_KEY;
-        const apiUrl = `https://revgeocode.search.hereapi.com/v1/revgeocode?at=${selectedLoc.lat()},${selectedLoc.lng()}&lang=id-ID&apiKey=${apiKey}`;
+        const apiUrl = `https://revgeocode.search.hereapi.com/v1/revgeocode?at=${selectedLoc.lat},${selectedLoc.lng}&lang=id-ID&apiKey=${apiKey}`;
 
         const response = await axios.get(apiUrl);
         const data = response.data;
@@ -37,8 +53,8 @@ function LocationPicker({onAddressChanged}) {
         const kota = normalizeKota(data.items[0]?.address.city)
         setAlamat({
           latLng: {
-            lat: selectedLoc.lat(),
-            lng: selectedLoc.lng()
+            lat: selectedLoc.lat,
+            lng: selectedLoc.lng
           },
           address: {
             kota: kota,
@@ -52,7 +68,10 @@ function LocationPicker({onAddressChanged}) {
         console.error('Error fetching data:', error);
       }
     };
-    fetchData()
+    if (selectedLoc) {
+      fetchData()
+    }
+    
   }, [selectedLoc])
 
 
@@ -65,7 +84,7 @@ function LocationPicker({onAddressChanged}) {
     const lng = event.latLng.lng();
     const newMarker = { lat, lng };
     console.log(newMarker)
-    setSelectedLoc(event.latLng);
+    setSelectedLoc(newMarker);
   };
 
   function normalizeKota(inputString = "") {

@@ -9,7 +9,7 @@ const SidebarLink = ({ children, to = "#", active = false }) => {
       <Link
         href={to}
         className={`flex items-center rounded-lg px-4 py-3 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 ${
-          active ? "bg-blue-100 text-sky-600" : "text-gray-900"
+          active ? "bg-blue-100 text-sky-600 font-semibold" : "text-gray-900"
         }`}
       >
         {children}

@@ -15,6 +15,7 @@ import {
   limit,
   onSnapshot,
   or,
+  orderBy,
   query,
   serverTimestamp,
   setDoc,
@@ -83,7 +84,9 @@ export function getTempatWisataRealtime(
         where("nama", "<=", searchQuery.toLowerCase() + "\uf8ff")
       )
     ),
-    limit(PAGE_MAX_ITEM * pageNum)
+    orderBy("nama", "asc"),
+    orderBy("created_at", "desc"),
+    limit(PAGE_MAX_ITEM * pageNum),
   )
   console.log("searcing " + searchQuery)
 
@@ -99,21 +102,7 @@ export function getTempatWisataRealtime(
     }
     setLoading(false)
     setLoadingNext(false)
-    // snapshot.docChanges().forEach((change) => {
-    //   console.log(change.doc.data())
-    //   console.log("change type: " + change.type)
-    //   if (change.type === "added") {
-    //     if (!dataState.some((e) => e.id === change.doc.id)) {
-    //       const newData = {
-    //         id: change.doc.id,
-    //         ...change.doc.data(),
-    //       }
-    //       setDataState((oldData) => [...oldData, newData])
-    //       console.log("added ")
-    //       setLoading(false)
-    //     }
-    //   }
-    // })
+
   }, (error) => {
     console.log(error)
   })
@@ -180,7 +169,8 @@ export async function editTempatWisata(id, formData) {
     const data = {
       nama: formData.nama,
       deskripsi: formData.deskripsi,
-      alamat: formData.alamat,
+      provinsi: formData.provinsi,
+      kota: formData.kota,
       foto: fotoUrlList,
       latitude: formData.latitude,
       longitude: formData.longitude,

@@ -1,12 +1,20 @@
+import { PAGE_MAX_ITEM } from "@/lib/constant"
 import { database, storage } from "@/lib/firebase"
 import {
   addDoc,
+  and,
   collection,
   doc,
   getDoc,
   getDocs,
+  limit,
+  onSnapshot,
+  or,
+  orderBy,
+  query,
   serverTimestamp,
   setDoc,
+  where,
 } from "firebase/firestore"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 
@@ -19,6 +27,66 @@ export async function getAllPaketWisata() {
     })
     return result
   } catch (error) {}
+}
+
+export function getAllPaketWisataRealtime(
+  setDataState,
+  searchQuery,
+  pageNum,
+  setLoading
+) {
+  const dbCol = collection(database, "paket_wisata")
+
+  searchQuery = searchQuery ?? ""
+  const q = query(
+    dbCol,
+    or(
+      // query as-is:
+      and(
+        where("nama", ">=", searchQuery),
+        where("nama", "<=", searchQuery + "\uf8ff")
+      ),
+      // capitalize first letter:
+      and(
+        where(
+          "nama",
+          ">=",
+          searchQuery.charAt(0).toUpperCase() + searchQuery.slice(1)
+        ),
+        where(
+          "nama",
+          "<=",
+          searchQuery.charAt(0).toUpperCase() + searchQuery.slice(1) + "\uf8ff"
+        )
+      ),
+      // lowercase:
+      and(
+        where("nama", ">=", searchQuery.toLowerCase()),
+        where("nama", "<=", searchQuery.toLowerCase() + "\uf8ff")
+      )
+    ),
+    orderBy("nama", "asc"),
+    orderBy("created_at", "desc"),
+    limit(PAGE_MAX_ITEM * pageNum),
+  )
+  console.log("searcing " + searchQuery)
+
+  const unsub = onSnapshot(q, (snapshot) => {
+    if (snapshot.empty) {
+      setDataState([])
+    } else {
+      const allData = snapshot.docs.map((item) => {
+        return {id: item.id, ...item.data()}
+      })
+      console.log("all data", allData)
+      setDataState(allData)
+    }
+    setLoading(false)
+  }, (error) => {
+    console.log(error)
+  })
+
+  return unsub
 }
 
 export async function addPaketWisata(formData) {
