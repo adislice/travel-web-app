@@ -14,6 +14,7 @@ import {
   addPaketWisata,
   getAllJenisKendaraan,
   getDetailPaketWisata,
+  updatePaketWisata,
 } from "@/services/PaketWisataService"
 import Swal from "sweetalert2"
 import 'flatpickr/dist/themes/material_blue.css'
@@ -38,6 +39,7 @@ function EditPaketWisataPage() {
   const tujuanWisataRef = useRef(null)
   const produkRef = useRef(null)
   const router = useRouter()
+  const [currentId, setCurrentId] = useState(null)
   const { id } = router.query
   const methods = useForm({ mode: "onBlur" })
   const {
@@ -50,6 +52,8 @@ function EditPaketWisataPage() {
   
   // get detail
   useEffect(() => {
+    console.log(id)
+    console.log(router.query)
     getDetailPaketWisata(id).then((data) => {
       if (data.status == 1) {
         Swal.fire({
@@ -62,6 +66,7 @@ function EditPaketWisataPage() {
           }
         })
       } else {
+        setCurrentId(data.data.id)
         console.log(data.data)
         setDataPaketWisata(data.data)
         const dataPaket = data.data
@@ -82,10 +87,22 @@ function EditPaketWisataPage() {
           })
         })
         setImageArray(imgArr)
+        let produkArr = []
+        dataPaket?.produk?.forEach((item) => {
+          const newProduk = {
+            jenis_kendaraan_id: item.jenis_kendaraan_id,
+            harga: item.harga,
+            id: item.id,
+            is_deleted: item.is_deleted
+          }
+          produkArr.push(newProduk)
+        })
+        setAddedProduk(produkArr)
+
         
       }
     })
-  }, [])
+  }, [router.isReady])
 
   const handleChangeJam = (e) => {
     const value = e.target.value;
@@ -187,6 +204,9 @@ function EditPaketWisataPage() {
       },
     ])
   }
+  useEffect(() => {
+    console.log("addedproduk: ", addedProduk)
+  }, [addedProduk])
 
   const submitForm = (data, e) => {
     console.log(data)
@@ -208,12 +228,12 @@ function EditPaketWisataPage() {
     data["tempat_wisata"] = tujuanWisata
     data["produk"] = addedProduk
     console.log(data)
-    addPaketWisata(data)
+    updatePaketWisata(currentId, data)
       .then((success) => {
         if (success) {
           Swal.fire({
             title: "Sukses!",
-            text: "Berhasil menambah data tempat wisata",
+            text: "Berhasil mengubah data tempat wisata",
             icon: "success",
             showConfirmButton: true,
             confirmButtonText: "Baik",
@@ -221,13 +241,13 @@ function EditPaketWisataPage() {
             showCancelButton: true,
           }).then(({ isConfirmed }) => {
             if (isConfirmed) {
-              router.push(router.asPath + "/..")
+              router.push("/admin/paketwisata")
             }
           })
         } else {
           Swal.fire({
             title: "Gagal!",
-            text: "Gagal menambah data. Cek kembali inputan!",
+            text: "Gagal mengubah data. Cek kembali inputan!",
             icon: "error",
           })
         }
@@ -236,7 +256,7 @@ function EditPaketWisataPage() {
         console.log(error)
         Swal.fire({
           title: "Gagal!",
-          text: "Gagal menambah data. Cek kembali inputan!",
+          text: "Gagal mengubah data. Cek kembali inputan!",
           icon: "error",
         })
       })
@@ -250,6 +270,7 @@ function EditPaketWisataPage() {
   }
 
   const deleteSelectedProduk = (idx) => {
+    console.log(addedProduk[idx].id)
     const temp = [...addedProduk]
     temp.splice(idx, 1)
     setAddedProduk(temp)
@@ -563,10 +584,10 @@ function EditPaketWisataPage() {
                         Jenis Kendaraan Kendaraan
                       </th>
                       <th scope="col" className="px-4 py-3">
-                        Harga
+                        Jumlah Seat
                       </th>
                       <th scope="col" className="px-4 py-3">
-                        Kapasitas Penumpang
+                        Harga
                       </th>
                       <th scope="col" className="px-4 py-3">
                         <span className="sr-only">Edit</span>
@@ -583,35 +604,30 @@ function EditPaketWisataPage() {
                     )}
 
                     {addedProduk.map((produk, index) => (
+                      <>
+                      {produk.is_deleted == true ? (<></>) : (
                       <tr key={`pw-${index}`}>
-                        <td className="px-4 py-4">{index + 1}</td>
-                        <td className="px-4 py-4">
-                          {findKendaraan(produk.jenis_kendaraan_id)?.nama}
-                        </td>
-                        <td className="px-4 py-4">{produk.harga}</td>
-
-                        <td className="px-4 py-4">
-                          Min:{" "}
-                          {
-                            findKendaraan(produk.jenis_kendaraan_id)
-                              ?.kapasitas_min
-                          }
-                          , Max:{" "}
-                          {
-                            findKendaraan(produk.jenis_kendaraan_id)
-                              ?.kapasitas_max
-                          }
-                        </td>
-                        <td className="">
-                          <button
-                            type="button"
-                            onClick={() => deleteSelectedProduk(index)}
-                            className="mr-4 rounded p-1.5 text-red-600 hover:bg-gray-200"
-                          >
-                            <Icons.sampah />
-                          </button>
-                        </td>
-                      </tr>
+                      <td className="px-4 py-4">{index + 1}</td>
+                      <td className="px-4 py-4">
+                        {findKendaraan(produk.jenis_kendaraan_id)?.nama}
+                      </td>
+                      <td className="px-4 py-4">
+                        {`${findKendaraan(produk.jenis_kendaraan_id)?.jumlah_seat} penumpang`}
+                      </td>
+                      <td className="px-4 py-4">{produk.harga}</td>
+                      <td className="">
+                        <button
+                          type="button"
+                          onClick={() => deleteSelectedProduk(index)}
+                          className="mr-4 rounded p-1.5 text-red-600 hover:bg-gray-200"
+                        >
+                          <Icons.sampah />
+                        </button>
+                      </td>
+                    </tr>
+                      )}
+                      
+                      </>
                     ))}
                   </tbody>
                 </table>

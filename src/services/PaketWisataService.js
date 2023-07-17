@@ -4,6 +4,7 @@ import {
   addDoc,
   and,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -14,6 +15,7 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  updateDoc,
   where,
 } from "firebase/firestore"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
@@ -135,6 +137,86 @@ export async function addPaketWisata(formData) {
   }
 }
 
+export async function updatePaketWisata(id, formData) {
+  try {
+    console.log("formdata:", formData)
+    console.log("update paket id: ", id)
+    const dbCol = collection(database, "paket_wisata")
+    const docRef = doc(dbCol, id)
+    let imgData = formData.foto
+    let imgUpResult = await uploadFiles(imgData, id)
+
+    const tujuanWisata = formData.tempat_wisata.map((item) => {
+      // const twRef = doc(database, `/tempat_wisata/${item.tempat_wisata_id}`)
+      return item.id
+    })
+
+    const fotoUrlList = imgUpResult.map((item) => {
+      return item.url
+    })
+
+    const dataPaket = {
+      nama: formData.nama,
+      deskripsi: formData.deskripsi,
+      fasilitas: formData.fasilitas,
+      tempat_wisata: tujuanWisata,
+      foto: fotoUrlList,
+      // created_at: serverTimestamp(),
+      jam_keberangkatan: formData.jam_keberangkatan,
+      waktu_perjalanan: formData.waktu_perjalanan
+    }
+    console.log("updated:", dataPaket)
+    const result = await updateDoc(docRef, dataPaket)
+
+    const produkCol = collection(docRef, "produk")
+    // update semua produk is_deleted
+    const delProduk = await getDocs(produkCol)
+    console.log(produkCol.path)
+    for (let index = 0; index < delProduk.docs.length; index++) {
+      const element = delProduk.docs[index];
+      console.log("deleting produk:", element.id)
+      await updateDoc(element.ref, {is_deleted: true})
+    }
+    const produkList = formData.produk
+    for (let index = 0; index < produkList.length; index++) {
+      const produk = produkList[index]
+      if (produk.id) {
+        const produkRef = doc(produkCol, produk.id)
+        const updatedProduk = {
+          harga: parseFloat(produk.harga),
+          jenis_kendaraan_id: produk.jenis_kendaraan_id,
+          is_deleted: false,
+        }
+        await updateDoc(produkRef, updatedProduk)
+      } else {
+        await addDoc(produkCol, {
+          harga: parseFloat(produk.harga),
+          jenis_kendaraan_id: produk.jenis_kendaraan_id,
+          is_deleted: false,
+          created_at: serverTimestamp(),
+        })
+      }
+      
+    }
+    return true
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function deletePaketWisata(idPaket) {
+  try {
+    const dbCol = collection(database, "paket_wisata")
+    const docRef = doc(dbCol, idPaket)
+    const result = await deleteDoc(docRef)
+    return {status: true, msg: "Paket wisata berhasil dihapus!"}
+  } catch (error) {
+    console.log(error.message)
+    return {status: false, msg: error.message}
+  }
+  
+}
+
 export async function uploadFiles(images, prefix='') {
   const promises = images.map((file) => {
     const fileExt = file.name.split('.').pop();
@@ -197,6 +279,7 @@ export async function getAllJenisKendaraan() {
 
 export async function getDetailPaketWisata(idPaket) {
   try {
+    console.log("getting paket id:"+ idPaket)
     const dbCol = collection(database, "paket_wisata")
     const data = await getDoc(doc(dbCol, idPaket))
     if (!data.exists()) {
@@ -206,7 +289,7 @@ export async function getDetailPaketWisata(idPaket) {
       }
     }
 
-    const dataPw = data.data()
+    const dataPw = {...data.data(), id: data.id}
 
     // get destinasi wisata
     const twArray = []
@@ -223,7 +306,8 @@ export async function getDetailPaketWisata(idPaket) {
 
     // get produk paket wisata
     const produkArray = []
-    const produkDocs = await getDocs(collection(dbCol, idPaket, 'produk'))
+    const produkCol = collection(dbCol, idPaket, 'produk')
+    const produkDocs = await getDocs(query(produkCol, where("is_deleted",'==', false)))
     if (!produkDocs.empty) {
       for (let index = 0; index < produkDocs.docs.length; index++) {
         const item = produkDocs.docs[index];

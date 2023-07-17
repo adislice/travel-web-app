@@ -18,12 +18,17 @@ const links = [
   {
     title: "Tempat Wisata",
     url: "/admin/tempatwisata",
-    icon: Icons.tempatwisata,
+    icon: Icons.location,
   },
   {
     title: "Paket Wisata",
     url: "/admin/paketwisata",
     icon: Icons.paketwisata,
+  },
+  {
+    title: "Jenis Kendaraan",
+    url: "/admin/jeniskendaraan",
+    icon: Icons.jeniskendaraan
   },
   {
     title: "Pemesanan",

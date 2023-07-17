@@ -15,12 +15,13 @@ import {
   getAllJenisKendaraan,
 } from "@/services/PaketWisataService"
 import Swal from "sweetalert2"
-import 'flatpickr/dist/themes/material_blue.css'
+import "flatpickr/dist/themes/material_blue.css"
 import flatpickr from "flatpickr"
 import ModalDestinasiWisata from "@/components/ModalDestinasiWisata"
 import ModalProdukPaketWisata from "@/components/ModalProdukPaketWisata"
 import { useNav } from "@/context/navigationContext"
 import FormInputError from "@/components/FormInputError"
+import { formatRupiah } from "@/lib/helper"
 
 const AddPaketWisataPage = () => {
   const [dataTempatWisata, setDataTempatWisata] = useState([])
@@ -31,7 +32,7 @@ const AddPaketWisataPage = () => {
   const [jenisKendaraan, setJenisKendaraan] = useState([])
   const [addedProduk, setAddedProduk] = useState([])
   const [navigation, setNavigation] = useNav()
-  const [timeInputValue, setTimeInputvalue] = useState({jam:'', menit: ''});
+  const [timeInputValue, setTimeInputvalue] = useState({ jam: "", menit: "" })
   const inputRef = useRef(null)
   const tujuanWisataRef = useRef(null)
   const produkRef = useRef(null)
@@ -42,9 +43,9 @@ const AddPaketWisataPage = () => {
     handleSubmit,
     formState: { errors },
     reset,
-    setValue
+    setValue,
   } = methods
-  
+
   // effects
   useEffect(() => {
     setNavigation([
@@ -104,27 +105,26 @@ const AddPaketWisataPage = () => {
   }
 
   const handleChangeJam = (e) => {
-    const value = e.target.value;
-    if(value <= 23) {
-      setTimeInputvalue(oldValue => ({...oldValue,jam:value,}))
+    const value = e.target.value
+    if (value <= 23) {
+      setTimeInputvalue((oldValue) => ({ ...oldValue, jam: value }))
     }
-  };
+  }
 
   const handleChangeMenit = (e) => {
-    const value = e.target.value;
-    if(value <= 59) {
-      setTimeInputvalue(oldValue => ({...oldValue, menit:value}))
+    const value = e.target.value
+    if (value <= 59) {
+      setTimeInputvalue((oldValue) => ({ ...oldValue, menit: value }))
     }
-  };
+  }
 
   useEffect(() => {
     console.log(timeInputValue)
-    if (timeInputValue.jam != '' && timeInputValue.menit != '') {
-     const newVal = `${timeInputValue.jam}:${timeInputValue.menit}`
-     console.log(newVal)
-     setValue("jam_keberangkatan", newVal) 
+    if (timeInputValue.jam != "" && timeInputValue.menit != "") {
+      const newVal = `${timeInputValue.jam}:${timeInputValue.menit}`
+      console.log(newVal)
+      setValue("jam_keberangkatan", newVal)
     }
-    
   }, [timeInputValue])
 
   const submitForm = (data, e) => {
@@ -133,7 +133,7 @@ const AddPaketWisataPage = () => {
     e.preventDefault()
     if (tujuanWisata.length == 0) {
       tujuanWisataRef.current.scrollIntoView()
-     return 
+      return
     }
     if (addedProduk.length == 0) {
       produkRef.current.scrollIntoView()
@@ -200,14 +200,14 @@ const AddPaketWisataPage = () => {
   }
 
   const handleKeyPress = (event) => {
-    const keyCode = event.keyCode || event.which;
-    const keyValue = String.fromCharCode(keyCode);
-    const regex = /[0-9]/;
+    const keyCode = event.keyCode || event.which
+    const keyValue = String.fromCharCode(keyCode)
+    const regex = /[0-9]/
 
     if (!regex.test(keyValue)) {
-      event.preventDefault();
+      event.preventDefault()
     }
-  };
+  }
 
   const deleteImage = (index) => {
     const temp = [...imageArray]
@@ -252,7 +252,9 @@ const AddPaketWisataPage = () => {
                     sizing="md"
                     name="nama"
                     placeholder="Masukkan nama paket wisata"
-                    {...register("nama", { required: "Nama tidak boleh kosong" })}
+                    {...register("nama", {
+                      required: "Nama tidak boleh kosong",
+                    })}
                   />
                   <FormInputError errorState={errors.nama} />
                 </div>
@@ -267,7 +269,9 @@ const AddPaketWisataPage = () => {
                     id="deskripsi"
                     placeholder="Masukkan deskripsi"
                     rows={4}
-                    {...register("deskripsi", { required: "Deskripsi tidak boleh kosong" })}
+                    {...register("deskripsi", {
+                      required: "Deskripsi tidak boleh kosong",
+                    })}
                   />
                   <FormInputError errorState={errors.deskripsi} />
                 </div>
@@ -282,7 +286,9 @@ const AddPaketWisataPage = () => {
                     id="fasilitas"
                     placeholder="Masukkan fasilitas"
                     rows={4}
-                    {...register("fasilitas", { required: "Fasilitas tidak boleh kosong" })}
+                    {...register("fasilitas", {
+                      required: "Fasilitas tidak boleh kosong",
+                    })}
                   />
                   <FormInputError errorState={errors.fasilitas} />
                 </div>
@@ -293,28 +299,36 @@ const AddPaketWisataPage = () => {
                     className="mb-2 inline-block font-semibold"
                   />
                   <div className="flex flex-col md:flex-row">
-                    <div className="flex md:w-1/2 items-center pr-1">
+                    <div className="flex items-center pr-1 md:w-1/2">
                       <TextInput
                         id="waktu_hari"
                         type="number"
                         sizing="md"
                         onKeyPress={handleKeyPress}
                         name="waktu_malam"
-                        {...register("waktu_perjalanan.hari", { required: "Waktu perjalanan (hari) tidak boleh kosong", valueAsNumber: true })}
+                        {...register("waktu_perjalanan.hari", {
+                          required:
+                            "Waktu perjalanan (hari) tidak boleh kosong",
+                          valueAsNumber: true,
+                        })}
                       />
-                      <div className="shrink-0 ml-2 text-sm ">hari</div>
+                      <div className="ml-2 shrink-0 text-sm ">hari</div>
                     </div>
-                    <div className="w-[0.125rem] mx-1 grow bg-gray-300 self-stretch"></div>
-                    <div className="flex md:w-1/2 items-center pl-1">
+                    <div className="mx-1 w-[0.125rem] grow self-stretch bg-gray-300"></div>
+                    <div className="flex items-center pl-1 md:w-1/2">
                       <TextInput
                         id="waktu_malam"
                         type="number"
                         sizing="md"
                         onKeyPress={handleKeyPress}
                         name="waktu_malam"
-                        {...register("waktu_perjalanan.malam", { required: "Waktu perjalanan (malam) tidak boleh kosong", valueAsNumber: true })}
+                        {...register("waktu_perjalanan.malam", {
+                          required:
+                            "Waktu perjalanan (malam) tidak boleh kosong",
+                          valueAsNumber: true,
+                        })}
                       />
-                      <div className="shrink-0 ml-2 text-sm">malam</div>
+                      <div className="ml-2 shrink-0 text-sm">malam</div>
                     </div>
                   </div>
                   <FormInputError errorState={errors.waktu_perjalanan?.hari} />
@@ -326,31 +340,37 @@ const AddPaketWisataPage = () => {
                     value="Jam Keberangkatan"
                     className="mb-2 inline-block font-semibold"
                   />
-                  <input type="text"
-                  className="w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 rounded-lg p-2.5 text-sm"
-                  id="jam_keberangkatan"
-                  hidden={true}
-                  {...register("jam_keberangkatan", { required: "Jam keberangkatan tidak boleh kosong" })}
+                  <input
+                    type="text"
+                    className="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500"
+                    id="jam_keberangkatan"
+                    hidden={true}
+                    {...register("jam_keberangkatan", {
+                      required: "Jam keberangkatan tidak boleh kosong",
+                    })}
                   />
                   <div className="flex">
-                  <input type="text"
-                  placeholder="Jam"
-                  value={timeInputValue.jam} onChange={handleChangeJam}
-                  className="w-1/2 border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 rounded-l-lg p-2.5 text-sm"
-                  />
-                  <input type="text"
-                  placeholder="Menit"
-                  value={timeInputValue.menit} onChange={handleChangeMenit}
-                  className="w-1/2 border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 rounded-r-lg p-2.5 text-sm"
-                  />
+                    <input
+                      type="text"
+                      placeholder="Jam"
+                      value={timeInputValue.jam}
+                      onChange={handleChangeJam}
+                      className="w-1/2 rounded-l-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Menit"
+                      value={timeInputValue.menit}
+                      onChange={handleChangeMenit}
+                      className="w-1/2 rounded-r-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500"
+                    />
                   </div>
                   <FormInputError errorState={errors.jam_keberangkatan} />
-
                 </div>
               </div>
               <div id="kanan" className="w-full p-4 md:w-1/2 ">
                 <div className="mb-2 block">
-                  <div className="mb-2inline-block text-sm font-medium text-gray-900 dark:text-gray-300">
+                  <div className="mb-2 inline-block text-sm font-semibold text-gray-900 dark:text-gray-300">
                     Gambar
                   </div>
                   <ImageUpload>
@@ -444,9 +464,7 @@ const AddPaketWisataPage = () => {
                             className="mx-auto my-2 h-12 w-12 rounded object-cover"
                           />
                         </td>
-                        <td className="px-4 py-4">
-                          {item.nama}
-                        </td>
+                        <td className="px-4 py-4">{item.nama}</td>
 
                         <td className="px-4 py-4">{item.alamat}</td>
                         <td className="px-4 py-4">
@@ -470,8 +488,11 @@ const AddPaketWisataPage = () => {
               </div>
             </div>
           </div>
-          {tujuanWisata.length == 0 && (<p className="text-red-600 text-center text-sm">Tujuan Wisata tidak boleh kosong</p>)}
-          
+          {tujuanWisata.length == 0 && (
+            <p className="text-center text-sm text-red-600">
+              Tujuan Wisata tidak boleh kosong
+            </p>
+          )}
         </div>
 
         {/* Kelola produk paket wisata */}
@@ -505,7 +526,7 @@ const AddPaketWisataPage = () => {
                         Harga
                       </th>
                       <th scope="col" className="px-4 py-3">
-                        Kapasitas Penumpang
+                        Jumlah Seat
                       </th>
                       <th scope="col" className="px-4 py-3">
                         <span className="sr-only">Edit</span>
@@ -527,19 +548,16 @@ const AddPaketWisataPage = () => {
                         <td className="px-4 py-4">
                           {findKendaraan(produk.jenis_kendaraan_id)?.nama}
                         </td>
-                        <td className="px-4 py-4">{produk.harga}</td>
+                        <td className="px-4 py-4">
+                          {formatRupiah(produk.harga)}
+                        </td>
 
                         <td className="px-4 py-4">
-                          Min:{" "}
                           {
                             findKendaraan(produk.jenis_kendaraan_id)
-                              ?.kapasitas_min
-                          }
-                          , Max:{" "}
-                          {
-                            findKendaraan(produk.jenis_kendaraan_id)
-                              ?.kapasitas_max
-                          }
+                              ?.jumlah_seat
+                          }{" "}
+                          penumpang
                         </td>
                         <td className="">
                           <button
@@ -557,7 +575,11 @@ const AddPaketWisataPage = () => {
               </div>
             </div>
           </div>
-          {addedProduk.length == 0 && (<p className="text-red-600 text-center text-sm">Produk Paket Wisata tidak boleh kosong</p>)}
+          {addedProduk.length == 0 && (
+            <p className="text-center text-sm text-red-600">
+              Produk Paket Wisata tidak boleh kosong
+            </p>
+          )}
         </div>
         <label
           htmlFor="submit-all"
@@ -567,23 +589,21 @@ const AddPaketWisataPage = () => {
         </label>
       </div>
 
-      <ModalDestinasiWisata isModalOpened={dialogTambahOpened}
-      setModalOpened={setDialogTambahOpened}
-      allData={dataTempatWisata}
-      selectedData={tujuanWisata}
-      setSelectedData={setTujuanWisata}/>
-
-      
-
-      {/* Modal tambah produk */}
-      <ModalProdukPaketWisata 
-      isModalOpened={isModalTambahProdukOpen}
-      setModalOpened={setIsModalTambahProdukOpen}
-      jenisKendaraan={jenisKendaraan}
-      setAddedProduk={setAddedProduk}
+      <ModalDestinasiWisata
+        isModalOpened={dialogTambahOpened}
+        setModalOpened={setDialogTambahOpened}
+        allData={dataTempatWisata}
+        selectedData={tujuanWisata}
+        setSelectedData={setTujuanWisata}
       />
 
-      
+      {/* Modal tambah produk */}
+      <ModalProdukPaketWisata
+        isModalOpened={isModalTambahProdukOpen}
+        setModalOpened={setIsModalTambahProdukOpen}
+        jenisKendaraan={jenisKendaraan}
+        setAddedProduk={setAddedProduk}
+      />
     </AdminLayout>
   )
 }

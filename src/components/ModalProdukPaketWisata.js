@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import * as Dialog from "@radix-ui/react-dialog"
 import { Icons } from './Icons'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -8,17 +8,35 @@ import { Button } from './Button'
 
 function ModalProdukPaketWisata({isModalOpened, setModalOpened, setAddedProduk, jenisKendaraan }) {
   const methodsProduk = useForm({ mode: "onBlur" })
+  const [selected, setSelected] = useState("")
+
   const {
     register: registerProduk,
     handleSubmit: handleSubmitProduk,
     formState: { errors: errorsProduk },
     reset: resetProduk,
+    watch
   } = methodsProduk
+  const watchSelect = watch("jenis_kendaraan_id")
 
   function saveProduk(formData, e) {
     setAddedProduk((oldItem) => [...oldItem, formData])
     setModalOpened(false)
     resetProduk()
+  }
+
+  useEffect(() => {
+    console.log(watchSelect)
+    setSelected(watchSelect)
+  }, [watchSelect])
+
+  useEffect(() => {
+    setSelected(jenisKendaraan?.[0]?.id)
+  }, [jenisKendaraan])
+
+  function findKendaraan(idKendaraan) {
+    const res = jenisKendaraan.find((o) => o.id == idKendaraan)
+    return res
   }
 
   return (
@@ -37,7 +55,7 @@ function ModalProdukPaketWisata({isModalOpened, setModalOpened, setAddedProduk, 
                 </h3>
                 <button
                   type="button"
-                  onClick={() => setIsModalTambahProdukOpen(false)}
+                  onClick={() => setModalOpened(false)}
                   className="ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
                   data-modal-hide="defaultModal"
                 >
@@ -71,6 +89,8 @@ function ModalProdukPaketWisata({isModalOpened, setModalOpened, setAddedProduk, 
                         ))}
                       </select>
                     </div>
+                    <div className='text-sm text-gray-700 mb-2'>Jumlah seat: {findKendaraan(selected)?.jumlah_seat} penumpang</div>
+                    
                     <div className="mb-2 block">
                       <Label
                         htmlFor="harga"

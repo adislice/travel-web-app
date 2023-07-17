@@ -121,10 +121,6 @@ const AddTempatWisataPage = () => {
     console.log(imageArray)
   }
 
-  const check = () => {
-    console.log("a")
-  }
-
   return (
     <AdminLayout>
       <Head>

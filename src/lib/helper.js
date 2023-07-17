@@ -16,3 +16,15 @@ export function formatTimestamp(timestamp) {
     return ""
   }
 }
+
+export function formatRupiah(value) {
+  const formattedValue = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+
+  // Remove decimal separator and fractional digits
+  return formattedValue.replace(/\.00$/, '');
+};

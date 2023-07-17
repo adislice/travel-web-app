@@ -6,6 +6,7 @@ import LoadingDataSpinner from "@/components/LoadingDataSpinner"
 import { NavigationContext } from "@/context/navigationContext"
 import { PAGE_MAX_ITEM } from "@/lib/constant"
 import { database } from "@/lib/firebase"
+import { formatTimestamp } from "@/lib/helper"
 import {
   cekPaketWisataExist,
   deleteTempatWisata,
@@ -161,7 +162,7 @@ const TempatWisataPage = () => {
         <title>Tempat Wisata</title>
       </Head>
       <div className="flex items-center justify-between px-5 py-5 md:px-0">
-        <h3 className="text-xl font-semibold text-gray-800 md:text-2xl">Tempat Wisata</h3>
+        <h3 className="text-xl font-semibold text-gray-800 md:text-2xl">Kelola Tempat Wisata</h3>
 
         <div className="actionbutton flex flex-row space-x-2">
           <LinkButton href={"tempatwisata/add"} type="button">
@@ -218,6 +219,10 @@ const TempatWisataPage = () => {
                     Koordinat
                   </th>
                   <th scope="col" className="px-4 py-3">
+                    Tanggal dibuat
+                  </th>
+                  
+                  <th scope="col" className="px-4 py-3">
                     <span className="sr-only">Edit</span>
                   </th>
                 </tr>
@@ -237,7 +242,7 @@ const TempatWisataPage = () => {
                   >
                     <th
                       scope="row"
-                      className="w-3 whitespace-nowrap px-4 py-4 font-medium text-gray-900 dark:text-white"
+                      className="w-3 whitespace-nowrap px-4 py-3 font-medium text-gray-900 dark:text-white"
                     >
                       {index + 1}
                     </th>
@@ -248,7 +253,7 @@ const TempatWisataPage = () => {
                         className="mx-auto my-2 h-12 w-12 rounded object-cover"
                       />
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-4 py-3">
                       <Href
                         href={`${router.asPath}/${item.id}/show`}
                         className="text-gray-900"
@@ -256,13 +261,16 @@ const TempatWisataPage = () => {
                         {item.nama}
                       </Href>
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-4 py-3">
                       {item.kota}, {item.provinsi}
                     </td>
-                    <td className="px-4 py-4">
-                      {item.latitude}, {item.longitude}
+                    <td className="px-4 py-3">
+                      {item.latitude},<br />{item.longitude}
                     </td>
-                    <td className="flex px-4 py-4 text-right">
+                    <td className="px-4 py-3">
+                      {formatTimestamp(item.created_at)}
+                    </td>
+                    <td className="flex px-4 py-3 text-right">
                       <Link
                         href={`/admin/tempatwisata/${item.id}/edit`}
                         className="inline-block rounded-l-lg border border-blue-700 bg-blue-600 p-2 font-medium text-white hover:bg-blue-500 hover:underline dark:text-blue-500"

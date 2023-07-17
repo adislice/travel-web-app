@@ -1,52 +1,37 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { TimepickerUI } from 'timepicker-ui';
+import { Wrapper, Status } from "@googlemaps/react-wrapper";
+
+const render = (status) => {
+  if (status === Status.LOADING) return <h3>{status} ..</h3>;
+  if (status === Status.FAILURE) return <h3>{status} ...</h3>;
+  return null;
+};
+
+function MyMapComponent({
+  center,
+  zoom,
+}) {
+  const ref = useRef();
+
+  useEffect(() => {
+    new window.google.maps.Map(ref.current, {
+      center,
+      zoom,
+    });
+  });
+
+  return <div ref={ref} id="map" />;
+}
 
 function TestTime() {
-  const tmRef = useRef(null);
-  // const [inputValue, setInputValue] = useState("12:00");
-  const [inputValue, setInputValue] = useState({jam:'', menit: ''});
-
-
-  const handleChangeJam = (e) => {
-    const value = e.target.value;
-    // if (/^\d{0,2}$/.test(value)) { // Validasi hanya menerima angka maksimal 2 digit
-    //   if (value.charAt(0) <= 2) { // Angka pertama <= 2
-    //     setInputValue(value);
-    //     console.log("pertama")
-    //   } else if (value.charAt(0) === '2' && value.charAt(1) <= 3) { // Angka pertama = 2, angka kedua <= 3
-    //     setInputValue(value);
-    //     console.log("kedua")
-    //   }
-    // }
-    if(value <= 23) {
-      setInputValue(oldValue => ({...oldValue,jam:value,}))
-    }
-  };
-  const handleChangeMenit = (e) => {
-    const value = e.target.value;
-    console.log(value.charAt(0) === '2' && value.charAt(1) <= 3)
-    // if (/^\d{0,2}$/.test(value)) { // Validasi hanya menerima angka maksimal 2 digit
-    //   if (value.charAt(0) <= 2) { // Angka pertama <= 2
-    //     setInputValue(value);
-    //     console.log("pertama")
-    //   } else if (value.charAt(0) === '2' && value.charAt(1) <= 3) { // Angka pertama = 2, angka kedua <= 3
-    //     setInputValue(value);
-    //     console.log("kedua")
-    //   }
-    // }
-    if(value <= 59) {
-      setInputValue(oldValue => ({...oldValue, menit:value}))
-    }
-  };
+  const center = { lat: -34.397, lng: 150.644 };
+  const zoom = 4;
 
   return (
-    <div>
-      jam
-    <input type="text" value={inputValue.jam} onChange={handleChangeJam} />
-    menit
-    <input type="text" value={inputValue.menit} onChange={handleChangeMenit} />
-    <p>{inputValue.jam}:{inputValue.menit}</p>
-    </div>
+    <Wrapper apiKey="AIzaSyAr4xlzzVJARvrYjj-qE00fNqMv4D-LY-U" render={render}>
+      <MyMapComponent center={center} zoom={zoom} />
+    </Wrapper>
   )
 }
 

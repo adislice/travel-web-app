@@ -1,123 +1,239 @@
+import { Button } from "@/components/Button"
 import AdminLayout from "@/components/dashboard/Layout"
 import { Icons } from "@/components/Icons"
 import Href from "@/components/Link"
 import LoadingDataSpinner from "@/components/LoadingDataSpinner"
-import { getAllTransaksiRealtime } from "@/services/TransaksiService"
+import { useNav } from "@/context/navigationContext"
+import { PAGE_MAX_ITEM, StatusPemesanan } from "@/lib/constant"
+import { database } from "@/lib/firebase"
+import { formatRupiah } from "@/lib/helper"
+import { getAllPemesananRealtime } from "@/services/PemesananService"
+import { collection, getCountFromServer } from "firebase/firestore"
 import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
+import Datepicker from "react-tailwindcss-datepicker"
+
+const currentDate = new Date()
+const firstDayOfMonth = new Date(
+  currentDate.getFullYear(),
+  currentDate.getMonth(),
+  1
+)
+const lastDayOfMonth = new Date(
+  currentDate.getFullYear(),
+  currentDate.getMonth() + 1,
+  0
+)
 
 const TransaksiPage = () => {
   const [dataTransaksi, setDataTransaksi] = useState([])
-  const [tempSearch, setTempSearch] = useState("")
   const [loading, setLoading] = useState(false)
+  const [pageNum, setPageNum] = useState(1)
+  const [isFetchingNewData, setFetchingNewData] = useState(false)
+  const [totalData, setTotalData] = useState(0)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [tempSearch, setTempSearch] = useState("")
+  const [searching, setSearching] = useState(false)
+  const [navigation, setNavigation] = useNav()
+  const [filterTglAwal, setFilterTglAwal] = useState(null)
+  const [filterStatus, setFilterStatus] = useState("SEMUA")
+  const [filterTglAkhir, setFilterTglAkhir] = useState(null)
+  const [triggerFilter, setTriggerFilter] = useState(false)
+  const [dateRangeValue, setDateRangeValue] = useState({
+    startDate: firstDayOfMonth,
+    endDate: lastDayOfMonth,
+  })
+
   const router = useRouter()
 
   useEffect(() => {
-    setLoading(true)
-    const unsubs = getAllTransaksiRealtime(
-      dataTransaksi,
+    const unsubscribe = getAllPemesananRealtime(
       setDataTransaksi,
-      "",
-      setLoading
+      filterTglAwal,
+      filterTglAkhir,
+      filterStatus,
+      pageNum,
+      (isLoad) => {
+        setLoading(isLoad)
+        setSearching(isLoad)
+        setFetchingNewData(isLoad)
+      }
     )
 
     return () => {
-      console.log("unsubscribe get all transaksi")
-      unsubs()
+      console.log("ubsubs pemesanan")
+      unsubscribe()
     }
-  }, [])
+  }, [pageNum, triggerFilter])
+
+  const loadMore = () => {
+    setFetchingNewData(true)
+    setPageNum((oldPageNum) => oldPageNum + 1)
+  }
 
   useEffect(() => {
-    console.log(dataTransaksi)
-  }, [dataTransaksi])
+    setNavigation([
+      {
+        title: "Pemesanan Paket Wisata",
+        url: "/admin/pemesanan",
+      },
+    ])
 
-  const performSearch = () => {}
-  const handleEnter = () => {}
-  const handleAMonthChange = () => {}
+    const fetchCount = async () => {
+      try {
+        const countSnap = await getCountFromServer(
+          collection(database, "pemesanan")
+        )
+        setTotalData(countSnap.data().count)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchCount()
+    const intervalId = setInterval(fetchCount, 5000)
+    return () => clearInterval(intervalId)
+  }, [])
 
-  const pickerLang = {
-    months: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ],
-    from: "From",
-    to: "To",
+  const handleDateRangeChange = (newValue) => {
+    console.log("newValue:", newValue)
+    setDateRangeValue(newValue)
   }
+
+  useEffect(() => {
+    console.log(dateRangeValue)
+    if (dateRangeValue.startDate != null && dateRangeValue.endDate != null) {
+      setFilterTglAwal(new Date(dateRangeValue.startDate))
+      setFilterTglAkhir(new Date(dateRangeValue.endDate))
+    } else {
+      setFilterTglAwal(null)
+      setFilterTglAkhir(null)
+    }
+  }, [dateRangeValue])
 
   return (
     <AdminLayout>
       <Head>
-        <title>Transaksi</title>
+        <title>Pemesanan Paket Wisata</title>
       </Head>
-      <div className="flex items-center justify-between py-5 md:px-5">
+      <div className="flex items-center justify-between px-5 py-5 md:px-0">
         <h3 className="text-xl font-semibold text-gray-800 md:text-2xl">
-          Transaksi
+          Kelola Pemesanan Paket Wisata
         </h3>
-
-        {/* <div className="actionbutton space-x-2 flex flex-row">
-          <Link
-            href={'tempatwisata/add'}
-            type="button"
-            className="inline-flex items-center gap-x-1 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm py-2 px-3.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-
-          >
-            <Icons.tambah className='h-5 w-5' />
-            Tambah
-          </Link>
-
-        </div> */}
       </div>
-      <div className="wrapper md:px-5 ">
+      <div className="wrapper">
         <div className="rounded-xl border bg-white">
-          <div className="flex justify-end">
-            <div className="relative m-4 w-full lg:w-80">
-              <input
-                type="search"
-                id="search-dropdown"
-                className="z-20 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:border-l-gray-700  dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500"
-                placeholder="Cari..."
-                required=""
-                value={tempSearch}
-                onChange={(e) => setTempSearch(e.target.value)}
-                onKeyDown={handleEnter}
-              />
-              <button
-                type="button"
-                onClick={performSearch}
-                className="absolute top-0 right-0 rounded-r-lg border border-blue-600 bg-blue-600 p-2.5 text-sm font-medium text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          <div className="flex items-center justify-end gap-2 p-4">
+            <Button
+              id="filterStatusDropdown"
+              data-dropdown-toggle="dropdown"
+              className="border border-gray-300 bg-white font-normal text-gray-800 hover:bg-gray-200"
+              type="button"
+            >
+              <Icons.filter className="mr-1 h-4 w-4" />
+              Status: {filterStatus}
+              <Icons.chevronDown className="h-4 w-4" />
+            </Button>
+            {/* Dropdown menu */}
+            <div
+              id="dropdown"
+              className="z-10 hidden w-44 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700"
+            >
+              <ul
+                className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                aria-labelledby="filterStatusDropdown"
               >
-                <Icons.cari className="h-5 w-5" />
-                <span className="sr-only">Search</span>
-              </button>
+                <li key={"status-semua"}>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setFilterStatus("SEMUA")
+                    }}
+                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                  >
+                    Semua
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setFilterStatus(StatusPemesanan.SELESAI)
+                    }}
+                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                  >
+                    Selesai
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setFilterStatus(StatusPemesanan.DIPROSES)
+                    }}
+                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                  >
+                    Diproses
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setFilterStatus(StatusPemesanan.PENDING)
+                    }}
+                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                  >
+                    Pending
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setFilterStatus(StatusPemesanan.DIBATALKAN)
+                    }}
+                    className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                  >
+                    Dibatalkan
+                  </a>
+                </li>
+              </ul>
             </div>
+
+            <div className="relative w-full lg:w-64">
+              <Datepicker
+                useRange={false}
+                inputClassName="relative transition-all duration-300 py-2 pl-4 pr-14 w-full border-gray-300 dark:bg-slate-800 dark:text-white/80 dark:border-slate-600 rounded-lg tracking-wide font-light text-sm placeholder-gray-400 bg-white focus:ring disabled:opacity-40 disabled:cursor-not-allowed focus:border-blue-500 focus:ring-blue-500/20"
+                value={dateRangeValue}
+                onChange={handleDateRangeChange}
+              />
+            </div>
+            <Button onClick={() => setTriggerFilter((oldState) => !oldState)}>
+              Tampilkan
+            </Button>
           </div>
           <div className="relative overflow-x-auto">
             {loading ? (
               <LoadingDataSpinner />
             ) : (
-              <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+              <table className="w-full text-left text-sm text-gray-700 dark:text-gray-400">
                 <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
                   <tr className="border-b border-t">
                     <th scope="col" className="px-4 py-3">
                       No.
                     </th>
                     <th scope="col" className="px-4 py-3">
-                      Kode Transaksi
+                      Kode Pemesanan
                     </th>
                     <th scope="col" className="px-4 py-3">
-                      Nama Customer
+                      Nama Pemesan
                     </th>
                     <th scope="col" className="px-4 py-3">
                       Paket Wisata
@@ -134,6 +250,13 @@ const TransaksiPage = () => {
                   </tr>
                 </thead>
                 <tbody>
+                  {dataTransaksi.length == 0 && (
+                    <tr>
+                      <td colSpan={7} className="p-2 text-center border-b">
+                        Data kosong!
+                      </td>
+                    </tr>
+                  )}
                   {dataTransaksi.map((item, index) => (
                     <tr
                       key={index}
@@ -141,35 +264,49 @@ const TransaksiPage = () => {
                     >
                       <th
                         scope="row"
-                        className="w-3 whitespace-nowrap px-4 py-4 font-medium text-gray-900 dark:text-white"
+                        className="w-3 whitespace-nowrap px-3 py-2 font-medium text-gray-900 dark:text-white"
                       >
                         {index + 1}
                       </th>
-                      <td className="px-4 py-4">
+                      <td className="px-3 py-2">
                         <Href
                           href={`${router.asPath}/${item.id}/show`}
                           className="text-gray-900"
                         >
-                          {item.kode_transaksi}
+                          {item.kode_pemesanan}
                         </Href>
                       </td>
-                      <td className="px-4 py-4">{item.user?.nama}</td>
-                      <td className="px-4 py-4">
-                        <div>{item.paket_wisata?.nama}</div>
-                        <div>{`(${item.paket_wisata_produk?.nama})`}</div>
+                      <td className="px-3 py-2">{item.user?.nama}</td>
+                      <td className="px-3 py-2">{item.paket_wisata?.nama}</td>
+                      <td className="px-3 py-2">
+                        {formatRupiah(item.total_bayar)}
                       </td>
-                      <td className="px-4 py-4">{item.total_bayar}</td>
-                      <td className="px-4 py-4">{item.status}</td>
-                      <td className="space-x-4 px-4 py-4 text-right">
-                        <Link
-                          href={`/admin/tempatwisata/${item.id}/edit`}
-                          className="inline-block font-medium text-blue-600 hover:underline dark:text-blue-500"
-                        >
-                          <Icons.edit className="h-5 w-5" />
-                        </Link>
+                      <td className="px-3 py-2">
+                        {item.status == StatusPemesanan.SELESAI && (
+                          <span className="mr-2 rounded bg-green-100 px-2.5 py-0.5 text-sm font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
+                            SELESAI
+                          </span>
+                        )}
+                        {item.status == StatusPemesanan.PENDING && (
+                          <span className="mr-2 rounded bg-yellow-100 px-2.5 py-0.5 text-sm font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                            PENDING
+                          </span>
+                        )}
+                        {item.status == StatusPemesanan.DIPROSES && (
+                          <span className="mr-2 rounded bg-yellow-100 px-2.5 py-0.5 text-sm font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                            PENDING
+                          </span>
+                        )}
+                        {item.status == StatusPemesanan.DIBATALKAN && (
+                          <span className="mr-2 rounded bg-red-100 px-2.5 py-0.5 text-sm font-medium text-red-800 dark:bg-red-900 dark:text-red-300">
+                            DIBATALKAN
+                          </span>
+                        )}
+                      </td>
+                      <td className="flex px-3 py-2 text-right">
                         <button
-                          onClick={() => handleHapus(item.id)}
-                          className="text-red-600 hover:underline"
+                          // onClick={() => handleHapus(item.id)}
+                          className="invisible rounded-r-lg border border-red-700 bg-red-600 p-2 text-white hover:bg-red-500 hover:underline"
                         >
                           <Icons.hapus className="h-5 w-5" />
                         </button>
@@ -179,6 +316,23 @@ const TransaksiPage = () => {
                 </tbody>
               </table>
             )}
+          </div>
+          <div className="flex flex-row items-center">
+            <div className="m-2 px-3 text-sm font-semibold text-gray-600">
+              Menampilkan {dataTransaksi.length} dari {totalData} data
+            </div>
+            <Button
+              className="m-2 ml-auto border border-gray-300 bg-white text-blue-600 hover:bg-gray-200"
+              onClick={loadMore}
+              disabled={isFetchingNewData}
+            >
+              Tampilkan +{PAGE_MAX_ITEM} Data
+              {isFetchingNewData ? (
+                <Icons.loading className="h-5 w-5 animate-spin" />
+              ) : (
+                <Icons.arrowDown className="h-5 w-5" />
+              )}
+            </Button>
           </div>
         </div>
       </div>

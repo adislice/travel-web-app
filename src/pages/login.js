@@ -1,7 +1,7 @@
 import { Icons } from "@/components/Icons"
 import { useFirebaseAuth } from "@/context/FirebaseAuthContext"
 import { auth } from "@/lib/firebase"
-import { logIn } from "@/services/AuthService"
+import { checkRole, logIn, logOut } from "@/services/AuthService"
 import { onAuthStateChanged } from "firebase/auth"
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react"
 import { Inter } from "next/font/google"
@@ -43,13 +43,26 @@ console.log("authuser: ", authUser, " authuserdata: ", authUserData)
     setLoading(true)
     const { result, error } = await logIn(data.email, data.password)
     if (result) {
-      Swal.fire({
-        title: "Sukses",
-        text: "Login berhasil!",
-        icon: "success",
-        timer: "2500",
-      })
-      router.push("/admin/dashboard")
+      const checkAdmin = await checkRole(result.user.uid)
+      if (checkAdmin) {
+        Swal.fire({
+          title: "Sukses",
+          text: "Login berhasil!",
+          icon: "success",
+          confirmButtonText: "OK"
+        })
+        router.push("/admin/dashboard")
+      } else {
+        await logOut()
+        Swal.fire({
+          title: "Login gagal!",
+          text: "Silahkan cek kembali email dan password!!",
+          icon: "error",
+          confirmButtonText: "OK",
+        })
+        setLoading(false)
+      }
+      
       setLoading(true)
     }
 
@@ -61,9 +74,9 @@ console.log("authuser: ", authUser, " authuserdata: ", authUserData)
         case "auth/wrong-password":
           Swal.fire({
             title: "Login gagal!",
-            text: "Email atau password salah!",
+            text: "Silahkan cek kembali email dan password!",
             icon: "error",
-            confirmButtonText: "Tutup",
+            confirmButtonText: "OK",
           })
           break
         default:
@@ -71,7 +84,7 @@ console.log("authuser: ", authUser, " authuserdata: ", authUserData)
             title: "Login gagal!",
             text: "Silahkan coba beberapa saat lagi!",
             icon: "error",
-            confirmButtonText: "Tutup",
+            confirmButtonText: "OK",
           })
           break
       }

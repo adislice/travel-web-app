@@ -13,7 +13,7 @@ function DashboardIndexPage() {
     users: 0,
     paket_wisata: 0,
     tempat_wisata: 0,
-    transaksi: 0,
+    pemesanan: 0,
   })
 
   useEffect(() => {
@@ -87,12 +87,12 @@ function DashboardIndexPage() {
           </div>
           <div className="dashboard-card flex flex-row items-center rounded-lg bg-amber-100 p-5">
             <div>
-              <h5 className="text-sm font-semibold">Transaksi</h5>
+              <h5 className="text-sm font-semibold">Pemesanan</h5>
               <div className="text-2xl font-bold">
-                {dashboardData.transaksi}
+                {dashboardData.pemesanan}
               </div>
               <div className="flex flex-row text-xs">
-                Transaksi berhasil
+                Pemesanan selesai
                 <Icons.arrowRight className="arrow h-4 w-4" />
               </div>
             </div>

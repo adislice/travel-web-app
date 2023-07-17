@@ -10,59 +10,44 @@ export default async function handler(req, res) {
     const transactionStatus = reqBody.transaction_status
     const batasPembayaran = reqBody.expiry_time
     const totalBayar = reqBody.gross_amount
-    const kodeTransaksi = reqBody.order_id
+    const kodePemesanan = reqBody.order_id
 
-    if (kodeTransaksi == undefined) {
+    if (kodePemesanan == undefined) {
       return res.status(404).json({
         status: "error",
-        msg: "Transaksi tidak ditemukan!"
+        msg: "Pemesanan tidak ditemukan!"
       })
     }
 
-    const dbCol = collection(database, 'transaksi')
-    const transaksiQuery = query(dbCol, where('kode_transaksi', '==', kodeTransaksi))
-    const result = await getDocs(transaksiQuery)
+    const dbCol = collection(database, 'pemesanan')
+    const pemesananQuery = query(dbCol, where('kode_pemesanan', '==', kodePemesanan))
+    const result = await getDocs(pemesananQuery)
     if (result.empty) {
       return res.status(404).json({
         status: "error",
-        msg: "Transaksi tidak ditemukan!"
+        msg: "Pemesanan tidak ditemukan!"
       })
     }
-    const transaksiRef = result.docs[0].ref
+    const pemesananRef = result.docs[0].ref
 
     if (transactionStatus == "pending") {
       var date = new Date(batasPembayaran);
       var timestampBatas = Timestamp.fromDate(date);
-      if (paymentType == 'bank_transfer') {
-        const detailPembayaran = {
-          jenis: paymentType,
-          no_va: reqBody.va_numbers[0].va_number,
-          bank: reqBody.va_numbers[0].bank,
-          batas_bayar: timestampBatas
-        }
-
-        await updateDoc(transaksiRef, {
-          status: 'PENDING',
-          detail_pembayaran: detailPembayaran
-        })
-      } else if (paymentType == "cstore") {
-        const detailPembayaran = {
-          jenis: paymentType,
-          code: reqBody.payment_code,
-          store: reqBody.store,
-          batas_bayar: timestampBatas
-        }
-
-        await updateDoc(transaksiRef, {
-          detail_pembayaran: detailPembayaran
-        })
+      const detailPembayaran = {
+        metode: paymentType,
+        batas_bayar: timestampBatas
       }
+
+      await updateDoc(pemesananRef, {
+        status: 'PENDING',
+        pembayaran: detailPembayaran
+      })
     } else if (transactionStatus == "settlement") {
       var date = new Date(reqBody.settlement_time);
       var tglBayar = Timestamp.fromDate(date)
-      await updateDoc(transaksiRef, {
+      await updateDoc(pemesananRef, {
         status: "SELESAI",
-        'detail_pembayaran.tanggal_bayar': tglBayar
+        'pembayaran.tanggal_bayar': tglBayar
       })
     }
 

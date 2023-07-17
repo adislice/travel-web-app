@@ -3,6 +3,8 @@ import {
   collection,
   collectionGroup,
   getCountFromServer,
+  query,
+  where,
 } from "firebase/firestore"
 
 export async function getRekapDashboard() {
@@ -15,13 +17,14 @@ export async function getRekapDashboard() {
   const tempatWisataColl = collection(database, "tempat_wisata")
   const tempatWisataCount = await getCountFromServer(tempatWisataColl)
 
-  const transaksiColl = collectionGroup(database, "transaksi")
-  const transaksiCount = await getCountFromServer(transaksiColl)
+  const pemesananColl = collection(database, "pemesanan")
+  const pemesananQuery = query(pemesananColl, where('status', '==', "SELESAI"))
+  const pemesananCount = await getCountFromServer(pemesananQuery)
 
   return {
     users: userCount.data().count,
     paket_wisata: paketWisataCount.data().count,
     tempat_wisata: tempatWisataCount.data().count,
-    transaksi: transaksiCount.data().count,
+    pemesanan: pemesananCount.data().count,
   }
 }
