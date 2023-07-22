@@ -128,8 +128,8 @@ export async function addTempatWisata(formData) {
       deskripsi: formData.deskripsi,
       provinsi: formData.provinsi,
       kota: formData.kota,
-      latitude: formData.latitude,
-      longitude: formData.longitude,
+      latitude: formData.latitude.toString(),
+      longitude: formData.longitude.toString(),
       foto: fotoUrlList,
       created_at: serverTimestamp(),
     }
@@ -172,8 +172,8 @@ export async function editTempatWisata(id, formData) {
       provinsi: formData.provinsi,
       kota: formData.kota,
       foto: fotoUrlList,
-      latitude: formData.latitude,
-      longitude: formData.longitude,
+      latitude: formData.latitude.toString(),
+      longitude: formData.longitude.toString(),
     }
 
     let res = await updateDoc(docRef, data)

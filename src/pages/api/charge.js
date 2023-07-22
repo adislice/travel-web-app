@@ -20,18 +20,18 @@ export default async function handler(req, res) {
 
   console.log(response)
 
-  const kodeTransaksi = reqBody.transaction_details.order_id
+  const kodePemesanan = reqBody.transaction_details.order_id
   const url = response.redirect_url
   const transactionToken = response.token
 
-  const dbCol = collection(database, 'transaksi')
-  const transaksiQuery = query(dbCol, where('kode_transaksi', '==', kodeTransaksi))
-  const result = await getDocs(transaksiQuery)
+  const dbCol = collection(database, 'pemesanan')
+  const pemesananQuery = query(dbCol, where('kode_pemesanan', '==', kodePemesanan))
+  const result = await getDocs(pemesananQuery)
   if (!result.empty) {
-    const transaksiRef = result.docs[0].ref
-    const updateResult = await updateDoc(transaksiRef, {
+    const pemesananRef = result.docs[0].ref
+    const updateResult = await updateDoc(pemesananRef, {
       payment_url: url,
-      status: 'BELUM_BAYAR',
+      status: 'DIPROSES',
     })
   }
   
