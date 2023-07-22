@@ -54,7 +54,7 @@ export default async function handler(req, res) {
         status: "SELESAI",
         'pembayaran.tanggal_bayar': tglBayar
       })
-    } else if (transactionStatus == "expire") {
+    } else if (transactionStatus == "expire" || transactionStatus == "cancel") {
       await updateDoc(pemesananRef, {
         status: "DIBATALKAN"
       })
