@@ -18,7 +18,7 @@ export default function Home() {
         <title>Kencana Wisata</title>
         <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet' />
       </Head>
-      <nav className="h-16 bg-white flex flex-row px-10 items-center sticky top-0 z-[999]">
+      <nav className="h-16 bg-white flex flex-row lg:px-10 items-center sticky top-0 z-[999]">
         <div className="h-full flex items-center">
           <img src="/logo-kencana-transparent.png" alt="logo" className="h-full" />
           <h5 className="font-bold text-lg">Kencana Wisata</h5>
