@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button"
+import { Button, LinkButton } from "@/components/Button"
 import AdminLayout from "@/components/dashboard/Layout"
 import { Icons } from "@/components/Icons"
 import Href from "@/components/Link"
@@ -27,7 +27,7 @@ const lastDayOfMonth = new Date(
   0
 )
 
-const TransaksiPage = () => {
+const LaporanPage = () => {
   const [dataTransaksi, setDataTransaksi] = useState([])
   const [loading, setLoading] = useState(false)
   const [pageNum, setPageNum] = useState(1)
@@ -37,17 +37,23 @@ const TransaksiPage = () => {
   const [tempSearch, setTempSearch] = useState("")
   const [searching, setSearching] = useState(false)
   const [navigation, setNavigation] = useNav()
+  const [filterTglAwal, setFilterTglAwal] = useState(null)
   const [filterStatus, setFilterStatus] = useState("SEMUA")
+  const [filterTglAkhir, setFilterTglAkhir] = useState(null)
   const [triggerFilter, setTriggerFilter] = useState(false)
-
+  const [dateRangeValue, setDateRangeValue] = useState({
+    startDate: firstDayOfMonth,
+    endDate: lastDayOfMonth,
+  })
+  const [linkCetak, setLinkCetak] = useState("")
 
   const router = useRouter()
 
   useEffect(() => {
     const unsubscribe = getAllPemesananRealtime(
       setDataTransaksi,
-      null,
-      null,
+      filterTglAwal,
+      filterTglAkhir,
       filterStatus,
       pageNum,
       (isLoad) => {
@@ -71,7 +77,7 @@ const TransaksiPage = () => {
   useEffect(() => {
     setNavigation([
       {
-        title: "Pemesanan Paket Wisata",
+        title: "Laporan",
         url: "/admin/pemesanan",
       },
     ])
@@ -91,16 +97,38 @@ const TransaksiPage = () => {
     return () => clearInterval(intervalId)
   }, [])
 
+  const handleDateRangeChange = (newValue) => {
+    console.log("newValue:", newValue)
+    setDateRangeValue(newValue)
+  }
 
+  useEffect(() => {
+    const urlTanggalAwal = filterTglAwal?.toISOString()
+    const urlTanggalAkhir = filterTglAkhir?.toISOString()
+    const urlStatus = filterStatus
+    const urlCetak = `/admin/laporan/cetak?tglAwal=${urlTanggalAwal}&tglAkhir=${urlTanggalAkhir}&status=${urlStatus}`
+    setLinkCetak(urlCetak)
+  }, [filterTglAwal, filterTglAkhir, filterStatus])
+
+  useEffect(() => {
+    console.log(dateRangeValue)
+    if (dateRangeValue.startDate != null && dateRangeValue.endDate != null) {
+      setFilterTglAwal(new Date(dateRangeValue.startDate))
+      setFilterTglAkhir(new Date(dateRangeValue.endDate))
+    } else {
+      setFilterTglAwal(null)
+      setFilterTglAkhir(null)
+    }
+  }, [dateRangeValue])
 
   return (
     <AdminLayout>
       <Head>
-        <title>Pemesanan Paket Wisata</title>
+        <title>Laporan Pemesanan</title>
       </Head>
       <div className="flex items-center justify-between px-5 py-5 md:px-0">
         <h3 className="text-xl font-semibold text-gray-800 md:text-2xl">
-          Kelola Pemesanan Paket Wisata
+          Laporan Pemesanan Paket Wisata
         </h3>
       </div>
       <div className="wrapper">
@@ -131,7 +159,6 @@ const TransaksiPage = () => {
                     onClick={(e) => {
                       e.preventDefault()
                       setFilterStatus("SEMUA")
-                      setTriggerFilter((oldState) => !oldState)
                     }}
                     className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                   >
@@ -144,7 +171,6 @@ const TransaksiPage = () => {
                     onClick={(e) => {
                       e.preventDefault()
                       setFilterStatus(StatusPemesanan.SELESAI)
-                      setTriggerFilter((oldState) => !oldState)
                     }}
                     className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                   >
@@ -157,7 +183,6 @@ const TransaksiPage = () => {
                     onClick={(e) => {
                       e.preventDefault()
                       setFilterStatus(StatusPemesanan.DIPROSES)
-                      setTriggerFilter((oldState) => !oldState)
                     }}
                     className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                   >
@@ -170,7 +195,6 @@ const TransaksiPage = () => {
                     onClick={(e) => {
                       e.preventDefault()
                       setFilterStatus(StatusPemesanan.PENDING)
-                      setTriggerFilter((oldState) => !oldState)
                     }}
                     className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                   >
@@ -183,7 +207,6 @@ const TransaksiPage = () => {
                     onClick={(e) => {
                       e.preventDefault()
                       setFilterStatus(StatusPemesanan.DIBATALKAN)
-                      setTriggerFilter((oldState) => !oldState)
                     }}
                     className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                   >
@@ -193,10 +216,20 @@ const TransaksiPage = () => {
               </ul>
             </div>
 
-            
+            <div className="relative w-full lg:w-64">
+              <Datepicker
+                useRange={false}
+                inputClassName="relative transition-all duration-300 py-2 pl-4 pr-14 w-full border-gray-300 dark:bg-slate-800 dark:text-white/80 dark:border-slate-600 rounded-lg tracking-wide font-light text-sm placeholder-gray-400 bg-white focus:ring disabled:opacity-40 disabled:cursor-not-allowed focus:border-blue-500 focus:ring-blue-500/20"
+                value={dateRangeValue}
+                onChange={handleDateRangeChange}
+              />
+            </div>
             <Button onClick={() => setTriggerFilter((oldState) => !oldState)}>
-              Tampilkan
+              Lihat
             </Button>
+            <LinkButton href={linkCetak} rel="noopener noreferrer" target="_blank">
+            Cetak
+            </LinkButton>
           </div>
           <div className="relative overflow-x-auto">
             {loading ? (
@@ -251,12 +284,9 @@ const TransaksiPage = () => {
                         {index + 1}
                       </th>
                       <td className="px-3 py-2">
-                        <Href
-                          href={`${router.asPath}/${item.id}/show`}
-                          className="text-gray-900"
-                        >
+                        
                           {item.kode_pemesanan}
-                        </Href>
+                        
                       </td>
                       <td className="px-3 py-2">{item.user_nama}</td>
                       <td className="px-3 py-2">{formatTimestamp(item.created_at)}</td>
@@ -324,4 +354,4 @@ const TransaksiPage = () => {
   )
 }
 
-export default TransaksiPage
+export default LaporanPage

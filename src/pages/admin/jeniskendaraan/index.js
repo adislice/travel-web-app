@@ -3,15 +3,12 @@ import AdminLayout from "@/components/dashboard/Layout"
 import { Icons } from "@/components/Icons"
 import Href from "@/components/Link"
 import LoadingDataSpinner from "@/components/LoadingDataSpinner"
-import { useFirebaseAuth } from "@/context/FirebaseAuthContext"
 import { useNav } from "@/context/navigationContext"
 import { PAGE_MAX_ITEM } from "@/lib/constant"
 import { database } from "@/lib/firebase"
 import { formatTimestamp } from "@/lib/helper"
 import { deleteJenisKendaraan, getAllJenisKendaraanRealtime } from "@/services/JenisKendaraanService"
-import { getAllJenisKendaraan } from "@/services/PaketWisataService"
-import { getAllUserRealtime } from "@/services/UserService"
-import { collection, getCountFromServer, limit, onSnapshot, query, startAfter } from "firebase/firestore"
+import { collection, getCountFromServer } from "firebase/firestore"
 import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -22,7 +19,6 @@ function JenisKendaraanIndexPage() {
   const [loading, setLoading] = useState(false)
   const [dataJenisKendaraan, setDataJenisKendaraan] = useState([])
   const router = useRouter()
-  const [lastVisible, setLastVisible] = useState(null);
   const [pageNum, setPageNum] = useState(1)
   const [isFetchingNewData, setFetchingNewData] = useState(false)
   const [totalData, setTotalData] = useState(0)
@@ -84,7 +80,7 @@ function JenisKendaraanIndexPage() {
 function handleHapus(idJenis) {
   Swal.fire({
     title: "Anda Yakin?",
-    text: "Anda yakin ingin menghapus paket wisata ini?",
+    text: "Anda yakin ingin menghapus data ini?",
     icon: "warning",
     showCancelButton: true,
     cancelButtonText: "Batal",

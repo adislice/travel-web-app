@@ -1,27 +1,24 @@
-import { Button } from "@/components/Button"
+import { Button, LinkButton } from "@/components/Button"
 import AdminLayout from "@/components/dashboard/Layout"
 import { Icons } from "@/components/Icons"
 import Href from "@/components/Link"
 import LoadingDataSpinner from "@/components/LoadingDataSpinner"
-import UserPlaceholder from "@/components/UserPlaceholder"
-import { useFirebaseAuth } from "@/context/FirebaseAuthContext"
 import { useNav } from "@/context/navigationContext"
 import { PAGE_MAX_ITEM } from "@/lib/constant"
 import { database } from "@/lib/firebase"
-import { getAllUserRealtime } from "@/services/UserService"
-import { collection, getCountFromServer, limit, onSnapshot, query, startAfter } from "firebase/firestore"
+import { formatTimestamp } from "@/lib/helper"
+import { deletePromo, getAllPromoRealtime } from "@/services/PromoService"
+import { collection, getCountFromServer } from "firebase/firestore"
 import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
+import Swal from "sweetalert2"
 
-function UsersIndexPage() {
+function PromoIndexPage() {
   const [loading, setLoading] = useState(false)
-  const [dataUsers, setDataUsers] = useState([])
-  const [loggedUser, setLoggedUser] = useState()
+  const [dataPromo, setDataPromo] = useState([])
   const router = useRouter()
-  const [authUser, authUserData] = useFirebaseAuth()
-  const [lastVisible, setLastVisible] = useState(null);
   const [pageNum, setPageNum] = useState(1)
   const [isFetchingNewData, setFetchingNewData] = useState(false)
   const [totalData, setTotalData] = useState(0)
@@ -31,32 +28,27 @@ function UsersIndexPage() {
   const [navigation, setNavigation] = useNav()
 
   useEffect(() => {
-    const unsubscribe = getAllUserRealtime(dataUsers, setDataUsers, searchQuery, pageNum, setFetchingNewData, (newState) => {
-      setLoading(false)
-      setSearching(false)
+    const unsubscribe = getAllPromoRealtime(
+      setDataPromo, searchQuery, pageNum, (isLoad) => {
+      setLoading(isLoad)
+      setSearching(isLoad)
+      setFetchingNewData(isLoad)
     })
     
-    return () => {console.log('ubsubs user'); unsubscribe()}
-  }, [loggedUser, pageNum, searchQuery])
-
-  useEffect(() => {
-    if (authUser != undefined) {
-      setLoggedUser(authUser)
-    }
-  }, [authUser])
+    return () => {console.log('ubsubs promo'); unsubscribe()}
+  }, [pageNum, searchQuery])
 
   useEffect(() => {
     setNavigation([
       {
-        title: "Kelola Pengguna",
-        url: "/admin/users",
+        title: "Kelola Promo",
+        url: "/admin/promo",
       },
-      
     ])
 
     const fetchCount = async () => {
       try {
-        const countSnap = await getCountFromServer(collection(database, "users"))
+        const countSnap = await getCountFromServer(collection(database, "promo"))
         setTotalData(countSnap.data().count)
       } catch (error) {
         console.log(error)
@@ -84,15 +76,54 @@ function UsersIndexPage() {
     setPageNum((oldPageNum) => oldPageNum + 1)
   };
 
+
+function handleHapus(idJenis) {
+  Swal.fire({
+    title: "Anda Yakin?",
+    text: "Anda yakin ingin menghapus data ini?",
+    icon: "warning",
+    showCancelButton: true,
+    cancelButtonText: "Batal",
+    confirmButtonColor: "#d33",
+    confirmButtonText: "Yakin!",
+  }).then((result) => {
+    if (result.value) {
+      Swal.fire({
+        title: "Menghapus data...",
+      })
+      Swal.showLoading()
+      deletePromo(idJenis).then(() => {
+        Swal.fire({
+          title: "Sukses",
+          text: "Data berhasil dihapus!",
+          icon: "success"
+        })
+      }).catch((error) => {
+        Swal.fire({
+          title: "Gagal",
+          text: "Terjasi kesalahan. Gagal menghapus data!",
+          icon: "error"
+        })
+      })
+    }
+  })
+}
+
   return (
     <AdminLayout>
       <Head>
-        <title>Kelola Pengguna Terdaftar</title>
+        <title>Kelola Promo</title>
       </Head>
       <div className="flex items-center justify-between px-5 py-5 md:px-0">
         <h3 className="text-xl font-semibold text-gray-800 md:text-2xl">
-          Pengguna Terdaftar
+          Kelola Promo
         </h3>
+        <div className="actionbutton flex flex-row space-x-2">
+          <LinkButton href={"promo/add"} type="button">
+            <Icons.tambah className="h-5 w-5" />
+            Tambah
+          </LinkButton>
+        </div>
       </div>
       <div className="wrapper">
         <div className="rounded-xl border bg-white">
@@ -133,19 +164,16 @@ function UsersIndexPage() {
                       No.
                     </th>
                     <th scope="col" className="px-4 py-3">
-                      Foto
-                    </th>
-                    <th scope="col" className="px-4 py-3">
                       Nama
                     </th>
                     <th scope="col" className="px-4 py-3">
-                      Email
+                      Diskon %
                     </th>
                     <th scope="col" className="px-4 py-3">
-                      No. Telepon
+                      Tanggal Mulai
                     </th>
                     <th scope="col" className="px-4 py-3">
-                      Role
+                      Tanggal Berakhir
                     </th>
                     <th scope="col" className="px-4 py-3">
                       <span className="sr-only">Edit</span>
@@ -153,29 +181,19 @@ function UsersIndexPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {dataUsers.length == 0 && (<tr><td colSpan={5} className="p-2 text-center">Data kosong!</td></tr>)}
-                  {dataUsers.map((item, index) => (
+                  {dataPromo.length == 0 && (<tr><td colSpan={5} className="p-2 text-center border-b">Data kosong!</td></tr>)}
+                  {dataPromo.map((item, index) => (
                     <tr
                       key={index}
                       className="border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600"
                     >
                       <th
                         scope="row"
-                        className="w-3 whitespace-nowrap px-4 py-4 font-medium text-gray-900 dark:text-white"
+                        className="w-3 whitespace-nowrap px-4 py-2 font-medium text-gray-900 dark:text-white"
                       >
                         {index + 1}
                       </th>
-                      <td className="w-11">
-                        {item.foto ? (<img
-                          src={item.foto || '/placeholder-image.png'}
-                          alt={item.nama}
-                          className="mx-auto my-2 h-12 w-12 rounded-full object-cover"
-                        />) : (
-                        <UserPlaceholder nama={item.nama} />
-                        )}
-                        
-                      </td>
-                      <td className="px-4 py-4">
+                      <td className="px-4 py-2">
                         <Href
                           href={`${router.asPath}/${item.id}/show`}
                           className="text-gray-900"
@@ -183,27 +201,29 @@ function UsersIndexPage() {
                           {item.nama}
                         </Href>
                       </td>
-                      <td className="px-4 py-4">{item.email}</td>
-                      <td className="px-4 py-4">
-                       {item.no_telp}
+                      <td className="px-4 py-2">
+                        {item.persen} %
+                        </td>
+                      <td className="px-4 py-2">
+                       {formatTimestamp(item.tanggal_mulai)}
                       </td>
-                      <td className="px-4 py-4">
-                       {item.role}
+                      <td className="px-4 py-2">
+                       {formatTimestamp(item.tanggal_akhir)}
                       </td>
-                      <td className="flex px-4 py-4 text-right">
-                        {/* {item.id != authUser?.uid && (<>
+                      <td className="flex px-4 py-2 text-right">
+                        
                           <Link
-                          href={`/admin/tempatwisata/${item.id}/edit`}
+                          href={`/admin/promo/${item.id}/edit`}
                           className="inline-block rounded-l-lg border border-blue-700 p-2 font-medium bg-blue-600 text-white hover:bg-blue-500 hover:underline dark:text-blue-500"
                         >
                           <Icons.edit className="h-5 w-5" />
                         </Link>
                         <button
-                          // onClick={() => handleHapus(item.id)}
+                          onClick={() => handleHapus(item.id)}
                           className="rounded-r-lg border border-red-700 p-2 bg-red-600 text-white hover:bg-red-500 hover:underline"
                         >
                           <Icons.hapus className="h-5 w-5" />
-                        </button></>)} */}
+                        </button>
                         
                       </td>
                     </tr>
@@ -213,7 +233,7 @@ function UsersIndexPage() {
             )}
           </div>
           <div className="flex flex-row items-center">
-            <div className="m-2 text-gray-600 text-sm px-3 font-semibold">Menampilkan {dataUsers.length} dari {totalData} data</div>
+            <div className="m-2 text-gray-600 text-sm px-3 font-semibold">Menampilkan {dataPromo.length} dari {totalData} data</div>
           <Button className="m-2 ml-auto bg-white text-blue-600 hover:bg-gray-200 border border-gray-300" 
           onClick={loadMore} 
           disabled={isFetchingNewData}>
@@ -228,4 +248,4 @@ function UsersIndexPage() {
   )
 }
 
-export default UsersIndexPage
+export default PromoIndexPage

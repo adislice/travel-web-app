@@ -100,7 +100,6 @@ export async function addPaketWisata(formData) {
     let imgUpResult = await uploadFiles(imgData, id)
 
     const tujuanWisata = formData.tempat_wisata.map((item) => {
-      // const twRef = doc(database, `/tempat_wisata/${item.tempat_wisata_id}`)
       return item.tempat_wisata_id
     })
 
@@ -109,6 +108,7 @@ export async function addPaketWisata(formData) {
     })
 
     const dataPaket = {
+      id: ref.id,
       nama: formData.nama,
       deskripsi: formData.deskripsi,
       fasilitas: formData.fasilitas,
@@ -124,7 +124,9 @@ export async function addPaketWisata(formData) {
     const produkList = formData.produk
     for (let index = 0; index < produkList.length; index++) {
       const produk = produkList[index]
-      await addDoc(produkCol, {
+      const newProdukRef = doc(produkCol)
+      await setDoc(newProdukRef, {
+        id: newProdukRef.id,
         harga: parseFloat(produk.harga),
         jenis_kendaraan_id: produk.jenis_kendaraan_id,
         is_deleted: false,
@@ -147,7 +149,6 @@ export async function updatePaketWisata(id, formData) {
     let imgUpResult = await uploadFiles(imgData, id)
 
     const tujuanWisata = formData.tempat_wisata.map((item) => {
-      // const twRef = doc(database, `/tempat_wisata/${item.tempat_wisata_id}`)
       return item.id
     })
 
@@ -161,7 +162,6 @@ export async function updatePaketWisata(id, formData) {
       fasilitas: formData.fasilitas,
       tempat_wisata: tujuanWisata,
       foto: fotoUrlList,
-      // created_at: serverTimestamp(),
       jam_keberangkatan: formData.jam_keberangkatan,
       waktu_perjalanan: formData.waktu_perjalanan
     }
@@ -189,7 +189,9 @@ export async function updatePaketWisata(id, formData) {
         }
         await updateDoc(produkRef, updatedProduk)
       } else {
-        await addDoc(produkCol, {
+        const newDataRef = doc(produkCol)
+        await setDoc(newDataRef, {
+          id: newDataRef.id,
           harga: parseFloat(produk.harga),
           jenis_kendaraan_id: produk.jenis_kendaraan_id,
           is_deleted: false,
@@ -322,12 +324,6 @@ export async function getDetailPaketWisata(idPaket) {
           produkArray.push(dataProduk)
         }
       }
-      // produkDocs.docs.forEach((produk) => {
-      //   produkArray.push({
-      //     id: produk.id,
-      //     ...produk.data()
-      //   })
-      // })
     }
 
     return {

@@ -1,11 +1,8 @@
 import AdminLayout from "@/components/dashboard/Layout"
 import { Icons } from "@/components/Icons"
 import { useNav } from "@/context/navigationContext"
-import { formatRupiah, formatTimestampLengkap } from "@/lib/helper"
-import {
-  getDetailPemesanan,
-  getDetailPemesananRealtime,
-} from "@/services/PemesananService"
+import { formatRupiah, formatTanggalLengkap, formatTimestampLengkap } from "@/lib/helper"
+import { getDetailPemesananRealtime } from "@/services/PemesananService"
 import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -59,7 +56,6 @@ function DetailPemesananPage() {
       </div>
       <div className="wrapper space-y-5">
         <section className="rounded-xl border bg-white" id="detail">
-          {/* <h3 className="p-6 text-lg font-bold">Detail Paket Wisata</h3> */}
           <div className="flex flex-col md:flex-row">
             <div className="w-full p-6 md:w-1/2">
               <div className="mb-6">
@@ -77,7 +73,7 @@ function DetailPemesananPage() {
               <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">Nama Pemesan</h5>
                 <p className="text-gray-700">
-                  {dataPemesanan.user?.nama || "-"}
+                  {dataPemesanan.user_nama || "-"}
                 </p>
               </div>
               <div className="mb-6">
@@ -85,13 +81,25 @@ function DetailPemesananPage() {
                   No. Telepon Pemesan
                 </h5>
                 <p className="text-gray-700">
-                  {dataPemesanan.user?.no_telp || "-"}
+                  {dataPemesanan.user_no_telp || "-"}
                 </p>
               </div>
               <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">Email Pemesan</h5>
                 <p className="text-gray-700">
-                  {dataPemesanan.user?.email || "-"}
+                  {dataPemesanan.user_email || "-"}
+                </p>
+              </div>
+              <div className="mb-6">
+              <h5 className="font-semibold text-gray-900">Tanggal Keberangkatan</h5>
+                <p className="text-gray-700">
+                  {formatTanggalLengkap(dataPemesanan.tanggal_keberangkatan) || "-"}
+                </p>
+              </div>
+              <div className="mb-6">
+              <h5 className="font-semibold text-gray-900">Jam Keberangkatan</h5>
+                <p className="text-gray-700">
+                  {dataPemesanan.jam_keberangkatan || "-"}
                 </p>
               </div>
               <div className="mb-6">
@@ -111,39 +119,46 @@ function DetailPemesananPage() {
               </div>
             </div>
             <div className="w-full p-6 md:w-1/2">
+            
+              <div className="mb-6">
+              <h5 className="font-semibold text-gray-900">Jam Keberangkatan</h5>
+                <p className="text-gray-700">
+                  {dataPemesanan.jam_keberangkatan || "-"}
+                </p>
+              </div>
               <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">
                   Nama Paket Wisata
                 </h5>
                 <p className="text-gray-700">
-                  {dataPemesanan.paket_wisata?.nama || "-"}
+                  {dataPemesanan.paket_wisata_nama || "-"}
                 </p>
               </div>
               <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">Jenis Kendaraan</h5>
                 <p className="text-gray-700">
-                  {dataPemesanan.jenis_kendaraan?.nama || "-"}
+                  {dataPemesanan.jenis_kendaraan_nama || "-"}
                 </p>
               </div>
               <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">Jumlah Seat</h5>
                 <p className="text-gray-700">
-                  {dataPemesanan.jenis_kendaraan?.jumlah_seat || "-"}
+                  {dataPemesanan.jenis_kendaraan_jumlah_seat || "-"}
                 </p>
               </div>
               <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">Harga</h5>
                 <p className="text-gray-700">
-                  {formatRupiah(dataPemesanan.produk?.harga) || "-"}
+                  {formatRupiah(dataPemesanan.produk_harga) || "-"}
                 </p>
               </div>
               <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">Promo</h5>
                 <p className="text-gray-700">
-                  <div>{dataPemesanan.promo?.nama || "-"}</div>
-                  <div>Kode Promo: {dataPemesanan.promo?.kode || "-"}</div>
-                  <div>Diskon (%): {dataPemesanan.promo?.persen || "0"}%</div>
-                  <div>Potongan: {formatRupiah(dataPemesanan.promo?.potongan) || "0"}</div>
+                  <div>{dataPemesanan.promo_nama || "-"}</div>
+                  <div>Kode Promo: {dataPemesanan.promo_kode || "-"}</div>
+                  <div>Diskon (%): {dataPemesanan.promo_persen || "0"}%</div>
+                  <div>Potongan: {formatRupiah(dataPemesanan.promo_potongan) || "0"}</div>
                 </p>
               </div>
               <div className="mb-6">
@@ -155,13 +170,13 @@ function DetailPemesananPage() {
               <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">Metode Pembayaran</h5>
                 <p className="text-gray-700">
-                  {dataPemesanan.pembayaran?.metode}
+                  {dataPemesanan.metode_bayar}
                 </p>
               </div>
               <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">Batas Pembayaran</h5>
                 <p className="text-gray-700">
-                  {formatTimestampLengkap(dataPemesanan.pembayaran?.batas_bayar)}
+                  {formatTimestampLengkap(dataPemesanan.batas_bayar) || "-"}
                 </p>
               </div>
               <div className="mb-6">
@@ -180,7 +195,7 @@ function DetailPemesananPage() {
                 <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">Tanggal Dibayar</h5>
                 <p className="text-gray-700">
-                  {formatTimestampLengkap(dataPemesanan.pembayaran?.tanggal_bayar)}
+                  {formatTimestampLengkap(dataPemesanan.tanggal_bayar) || "-"}
                 </p>
               </div>
               )}

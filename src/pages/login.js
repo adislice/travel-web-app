@@ -1,10 +1,12 @@
 import { Icons } from "@/components/Icons"
+import ModalResetPassword from "@/components/ModalResetPassword"
 import { useFirebaseAuth } from "@/context/FirebaseAuthContext"
 import { auth } from "@/lib/firebase"
 import { checkRole, logIn, logOut } from "@/services/AuthService"
 import { onAuthStateChanged } from "firebase/auth"
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react"
 import { Inter } from "next/font/google"
+import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
@@ -18,6 +20,7 @@ function LoginPage() {
   const router = useRouter()
   const [done, setDone] = useState(false)
   const [authUser, authUserData] = useFirebaseAuth()
+  const [modalResetOpened, setModalResetOpened] = useState(false)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -91,9 +94,13 @@ console.log("authuser: ", authUser, " authuserdata: ", authUserData)
       setLoading(false)
     }
   }
+  
 
   return (
     <>
+    <Head>
+      <title>Login Admin Kencana Wisata</title>
+    </Head>
     {(authUserData === undefined) ? (<div></div>) : (
       <div className={`flex h-screen min-h-screen items-center justify-center`}>
       <div className="m-5 flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
@@ -143,9 +150,13 @@ console.log("authuser: ", authUser, " authuserdata: ", authUserData)
                   )}
                   Login
                 </Button>
-                <Link className="text-center text-sm hover:underline" href="#">
-                  Lupa password?
-                </Link>
+                <div>
+                  <span>Lupa password? </span>
+                  <span  className="text-center hover:underline" onClick={(e) => {e.preventDefault();setModalResetOpened(true)}}>
+                  Reset password Anda
+                </span>
+                </div>
+                
               </div>
             </form>
           </FormProvider>
@@ -153,6 +164,9 @@ console.log("authuser: ", authUser, " authuserdata: ", authUserData)
       </div>
     </div>
     )}
+
+    <ModalResetPassword isModalOpened={modalResetOpened} setModalOpened={setModalResetOpened} />
+    
     
     </>
   )

@@ -9,9 +9,27 @@ export function formatTimestampLengkap(timestamp) {
   }
 }
 
+export function formatTanggalLengkap(timestamp) {
+  try {
+    return format(timestamp.toDate(), 'EEEE, dd MMMM yyyy', {locale: id})
+  } catch (error) {
+    return ""
+  }
+}
+
 export function formatTimestamp(timestamp) {
   try {
     return format(timestamp.toDate(), 'dd MMM yyyy, HH:mm', {locale: id})
+  } catch (error) {
+    return ""
+  }
+}
+
+
+
+export function formatTimestampLaporan(timestamp) {
+  try {
+    return format(timestamp.toDate(), 'dd/M/yyyy, HH:mm', {locale: id})
   } catch (error) {
     return ""
   }

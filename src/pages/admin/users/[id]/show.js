@@ -100,14 +100,9 @@ function UserDetailPage() {
                   <h5 className="font-semibold text-gray-900">
                     Bergabung Sejak
                   </h5>
-                  <p className="text-gray-800">{formatTimestampLengkap(userData.created_at)}</p>
+                  <p className="text-gray-800">{formatTimestampLengkap(userData.created_at) || "-"}</p>
                 </div>
-                <div className="mb-6">
-                  <h5 className="font-semibold text-gray-900">
-                    Nomor Telepon
-                  </h5>
-                  <p className="text-gray-800">{userData.no_telp || "-"}</p>
-                </div>
+                
               </div>
               
             </div>

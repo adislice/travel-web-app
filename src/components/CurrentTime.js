@@ -1,4 +1,7 @@
+
+import moment from "moment"
 import { useEffect, useState } from "react"
+import 'moment/locale/id'
 
 function CurrentTime() {
   const [time, setTime] = useState(new Date())
@@ -11,7 +14,7 @@ function CurrentTime() {
     return () => clearInterval(timer)
   }, [])
 
-  return <>{time?.toLocaleTimeString()}</>
+  return <>{moment(time).locale('id').format("DD MMMM YYYY, HH:mm:ss")}</>
 }
 
 export default CurrentTime

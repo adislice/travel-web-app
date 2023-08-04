@@ -31,6 +31,11 @@ const links = [
     icon: Icons.jeniskendaraan
   },
   {
+    title: "Promo / Diskon",
+    url: "/admin/promo",
+    icon: Icons.promo
+  },
+  {
     title: "Pemesanan",
     url: "/admin/pemesanan",
     icon: Icons.transaksi,

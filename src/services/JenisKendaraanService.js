@@ -1,6 +1,6 @@
 import { PAGE_MAX_ITEM } from "@/lib/constant"
 import { database } from "@/lib/firebase"
-import { collection, onSnapshot, query, or, and, where, limit, doc, Firestore, FirestoreError, serverTimestamp, addDoc, getDoc, updateDoc, deleteDoc } from "firebase/firestore"
+import { collection, onSnapshot, query, or, and, where, limit, doc, Firestore, FirestoreError, serverTimestamp, addDoc, getDoc, updateDoc, deleteDoc, documentId, setDoc } from "firebase/firestore"
 
 export function getAllJenisKendaraanRealtime(
   setDataState,
@@ -60,12 +60,15 @@ export function getAllJenisKendaraanRealtime(
 export async function addJenisKendaraan(formData) {
   try {
     const dbCol = collection(database, 'jenis_kendaraan')
+    const docData = doc(dbCol)
     const data = {
+      id: docData.id,
       nama: formData.nama,
       jumlah_seat: parseInt(formData.jumlah_seat),
       created_at: serverTimestamp()
     }
-    await addDoc(dbCol, data)
+
+    await setDoc(docData, data)
   } catch (error) {
     console.log("add jenis kendaraa: ", error)
     throw error

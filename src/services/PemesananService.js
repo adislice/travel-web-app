@@ -1,6 +1,6 @@
 import { PAGE_MAX_ITEM } from "@/lib/constant"
 import { database } from "@/lib/firebase"
-import { collection, and, Timestamp, query, orderBy, limit, onSnapshot, where, doc, getDoc } from "firebase/firestore"
+import { collection, and, Timestamp, query, orderBy, limit, onSnapshot, where, doc, getDoc, getDocs } from "firebase/firestore"
 
 export function getAllPemesananRealtime(
   setDataState,
@@ -45,8 +45,6 @@ export function getAllPemesananRealtime(
     q = query(q, where('status', '==', 'DIPROSES'))
   }
 
-  // console.log("searcing " + )
-
   const unsub = onSnapshot(q, (snapshot) => {
     if (snapshot.empty) {
       setDataState([])
@@ -82,4 +80,51 @@ export function getDetailPemesananRealtime(idPemesanan, setData, onError) {
 
   return unsubscribe
   
+}
+
+export async function getDataLaporan(tglAwal, tglAkhir, status) {
+  try {
+    console.log("get data laporan...")
+    const dbCol = collection(database, "pemesanan")
+    const fromDate = new Date(tglAwal)
+    const toDate = new Date(tglAkhir)
+    const timestampStart = Timestamp.fromDate(fromDate)
+    const timestampEnd = Timestamp.fromDate(toDate)
+    const dateQuery = and(
+      where("created_at", ">=", timestampStart),
+      where("created_at", "<=", timestampEnd)
+    )
+    let q = query(
+      dbCol,
+      and(
+        where("created_at", ">=", timestampStart),
+        where("created_at", "<=", timestampEnd)
+      ),
+      orderBy("created_at", "desc")
+    )
+
+    if (status == "SELESAI") {
+      q = query(
+        dbCol,
+        and(
+          where("created_at", ">=", timestampStart),
+          where("created_at", "<=", timestampEnd),
+          where('status', '==', 'SELESAI')
+        ),
+        orderBy("created_at", "desc")
+      )
+    }
+
+    const result = await getDocs(q)
+
+    const datas = result.docs.map(item => {
+      return item.data()
+    })
+    console.log(datas)
+
+    return datas
+    } catch (error) {
+      console.log(error)
+      throw error
+    } 
 }

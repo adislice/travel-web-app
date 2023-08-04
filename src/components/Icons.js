@@ -4,6 +4,8 @@ import { ChevronDown } from "lucide-react"
 import { ArrowDown } from "lucide-react"
 import { MapPin } from "lucide-react"
 import { Car } from "lucide-react"
+import { Percent } from "lucide-react"
+import { BadgePercent } from "lucide-react"
 import { Filter } from "lucide-react"
 import { Loader2 } from "lucide-react"
 import { LogOut } from "lucide-react"
@@ -53,5 +55,6 @@ export const Icons = {
   location: MapPin,
   user2: User2,
   filter: Filter,
-  jeniskendaraan: Car
+  jeniskendaraan: Car,
+  promo: Percent
 }

@@ -124,6 +124,7 @@ export async function addTempatWisata(formData) {
       return item.url
     })
     const data = {
+      id: id,
       nama: formData.nama,
       deskripsi: formData.deskripsi,
       provinsi: formData.provinsi,

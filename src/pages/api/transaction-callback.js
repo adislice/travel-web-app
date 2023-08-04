@@ -1,5 +1,5 @@
-import { database, storage } from "@/lib/firebase"
-import { collection, doc, getDoc, getDocs, query, Timestamp, updateDoc, where } from "firebase/firestore"
+import { database } from "@/lib/firebase"
+import { collection, getDocs, query, Timestamp, updateDoc, where } from "firebase/firestore"
 import moment from "moment-timezone"
 
 export default async function handler(req, res) {
@@ -29,6 +29,7 @@ export default async function handler(req, res) {
         msg: "Pemesanan tidak ditemukan!!"
       })
     }
+
     const pemesananRef = result.docs[0].ref
 
     if (transactionStatus == "pending") {
@@ -36,15 +37,13 @@ export default async function handler(req, res) {
       const utcDateTime = moment.tz(batasPembayaran, sourceTimeZone).utc();
       var date = utcDateTime.toDate()
       var timestampBatas = Timestamp.fromDate(date);
-      const detailPembayaran = {
-        metode: paymentType,
-        batas_bayar: timestampBatas
-      }
 
       await updateDoc(pemesananRef, {
         status: 'PENDING',
-        pembayaran: detailPembayaran
+        metode_bayar: paymentType,
+        batas_bayar: timestampBatas
       })
+
     } else if (transactionStatus == "settlement") {
       const sourceTimeZone = 'Asia/Jakarta';
       const utcDateTime = moment.tz(reqBody.settlement_time, sourceTimeZone).utc();
@@ -52,7 +51,7 @@ export default async function handler(req, res) {
       var tglBayar = Timestamp.fromDate(date)
       await updateDoc(pemesananRef, {
         status: "SELESAI",
-        'pembayaran.tanggal_bayar': tglBayar
+        tanggal_bayar: tglBayar
       })
     } else if (transactionStatus == "expire" || transactionStatus == "cancel") {
       await updateDoc(pemesananRef, {
@@ -69,6 +68,5 @@ export default async function handler(req, res) {
       msg: error.stack
     })
   }
-  
-  
+
 }
