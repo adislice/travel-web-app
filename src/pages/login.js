@@ -25,7 +25,8 @@ function LoginPage() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        router.push("/admin/dashboard")
+        // router.push("/admin/dashboard")
+        router.replace("/admin/dashboard")
       }
     })
 
