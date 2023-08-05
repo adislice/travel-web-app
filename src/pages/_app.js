@@ -10,6 +10,7 @@ import {
   Poppins,
 } from "next/font/google"
 import Modal from "react-modal"
+import NextNProgress from 'nextjs-progressbar';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -51,13 +52,12 @@ export default function App({ Component, pageProps }) {
           }
         `}
       </style>
-      {/* <AuthUserProvider> */}
       <FirebaseAuthProvider>
         <NavigationContextProvider>
+          <NextNProgress height={2} />
           <Component {...pageProps} />
         </NavigationContextProvider>
-        </FirebaseAuthProvider>
-      {/* </AuthUserProvider> */}
+      </FirebaseAuthProvider>
     </>
   )
 }
