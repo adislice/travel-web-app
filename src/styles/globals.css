@@ -21,10 +21,10 @@
 }
 
 @layer components {
-  input[type="text"],
+  /* input[type="text"],
   textarea {
     @apply !bg-transparent;
-  }
+  } */
 
   .bg-main-container {
     background-color: #eff2fb !important;
@@ -72,4 +72,18 @@
 .ReactModal__Content--after-open {
   padding: 0px!important;
   margin: 20px!important;
+}
+
+.DialogOverlay[data-state='open'],
+.DialogContent[data-state='open'] {
+  animation: fadeIn 300ms ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

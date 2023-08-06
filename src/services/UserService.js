@@ -1,8 +1,8 @@
 import { PAGE_MAX_ITEM } from "@/lib/constant"
 import { auth, database, storage } from "@/lib/firebase"
 import { FirebaseError } from "firebase/app"
-import { createUserWithEmailAndPassword, updateCurrentUser } from "firebase/auth"
-import { collection, onSnapshot, query, or, and, where, limit, doc, Firestore, FirestoreError, serverTimestamp, setDoc, getDocs } from "firebase/firestore"
+import { EmailAuthProvider, createUserWithEmailAndPassword, reauthenticateWithCredential, updateCurrentUser, updateEmail, updatePassword } from "firebase/auth"
+import { collection, onSnapshot, query, or, and, where, limit, doc, Firestore, FirestoreError, serverTimestamp, setDoc, getDocs, updateDoc, documentId } from "firebase/firestore"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 
 export function getAllUserRealtime(
@@ -41,7 +41,8 @@ export function getAllUserRealtime(
         where("nama", "<=", searchQuery.toLowerCase() + "\uf8ff")
       )
     ),
-    limit(PAGE_MAX_ITEM * pageNum)
+    
+    limit(PAGE_MAX_ITEM * pageNum),
   )
   console.log("searcing " + searchQuery)
 
@@ -53,8 +54,11 @@ export function getAllUserRealtime(
     const allData = snapshot.docs.map((item) => {
       return {id: item.id, ...item.data()}
     })
+    const filteredData = allData.filter((item) => {
+      return item.role?.toUpperCase() == "CUSTOMER"
+    })
     setLoadingNext(false)
-    setDataState(allData)
+    setDataState(filteredData)
     setLoading(false)
   })
 
@@ -86,43 +90,47 @@ export function getUserDetailRealtime(idUser, setData, onError) {
   return unsubscribe
 }
 
-export async function addAdmin(formData) {
-  try {
-    const daftarUserAuth = await daftarAuth(formData.email, formData.password)
-    if (!daftarUserAuth.status) {
-      return {status: false, msg: daftarUserAuth.msg}
-    }
 
-    const cek = await cekEmail(formData.email)
-    if (!cek) {
-      return {status: false, msg: "Email sudah digunakan"}
-    }
-    const dbCol = collection(database, "users")
-    const userRef = doc(dbCol, daftarUserAuth.user.uid)
-    const idUser = daftarUserAuth.user.uid
-    
-    let imgUrl = null
-    let data = {
+export async function editProfile(formData) {
+  try {
+    const uid = auth.currentUser.uid
+    let newData = {
       nama: formData.nama,
       email: formData.email,
       no_telp: formData.no_telp,
-      role: "ADMIN",
-      created_at: serverTimestamp()
     }
     if (formData.foto?.length > 0) {
-      const uploadUrl = await uploadFile(idUser, formData.foto[0])
-      imgUrl = uploadUrl
-      data['foto'] = uploadUrl
+      const uploadUrl = await uploadFile(uid, formData.foto[0])
+      newData['foto'] = uploadUrl
     }
-
-    const result = await setDoc(userRef, data)
-    return {status: true, msg: "Sukses"}
+    const dbCol = collection(database, "users")
+    const docRef = doc(dbCol, uid)
+    await updateEmail(auth.currentUser, formData.email)
+    const result = await updateDoc(docRef, newData)
+    return {status: true}
   } catch (error) {
-    console.log("add admin: ", error)
-    throw error
+    console.log(error)
+    return {status: false, msg: error.message}
   }
-  
 }
+
+export async function editPassword(oldPassword, newPassword) {
+  try {
+    const credentials = EmailAuthProvider.credential(auth.currentUser.email, oldPassword)
+    const reauth = await reauthenticateWithCredential(auth.currentUser, credentials)
+    if (reauth) {
+      const result = await updatePassword(auth.currentUser, newPassword)
+      return {status: true}
+    } else {
+      return {status: false, msg: "Password lama salah!"}
+    }
+    
+  } catch (error) {
+    console.log(error)
+    return {status: false, msg: "Silahkan cek kembali password lama anda!"}
+  }
+}
+
 
 async function cekEmail(email) {
   try {

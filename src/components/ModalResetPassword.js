@@ -6,6 +6,7 @@ import { Button } from "./Button"
 import { sendPasswordResetEmail } from "firebase/auth"
 import { auth } from "@/lib/firebase"
 import Swal from "sweetalert2"
+import { Icons } from "./Icons"
 
 export default function ModalResetPassword({ isModalOpened, setModalOpened }) {
   const methods = useForm({ mode: "onBlur" })
@@ -46,11 +47,14 @@ export default function ModalResetPassword({ isModalOpened, setModalOpened }) {
       onOpenChange={setModalOpened}
     >
       <Dialog.Portal>
-        <Dialog.Overlay className="data-[state=open]:animate-overlayShow fixed inset-0 z-[99] bg-black/60" />
-        <Dialog.Content className="data-[state=open]:animate-contentShow fixed left-[50%] top-[50%] z-[100] flex  w-[40vw] max-w-[60vw] translate-x-[-50%] translate-y-[-50%] flex-col rounded-[6px]  bg-white p-[25px] focus:outline-none ">
-          <Dialog.Title className="text-mauve12 m-0 mb-4 text-[17px] font-medium">
+        <Dialog.Overlay className="data-[state=open]:animate-overlayShow DialogOverlay fixed inset-0 z-[99] bg-black/60" />
+        <Dialog.Content className="data-[state=open]:animate-contentShow DialogContent fixed left-[50%] top-[50%] z-[100] flex  w-[40vw] max-w-[60vw] translate-x-[-50%] translate-y-[-50%] flex-col rounded-[6px]  bg-white p-[25px] focus:outline-none ">
+          <Dialog.Title className="m-0 mb-4 text-[17px] font-medium">
             Reset Password
           </Dialog.Title>
+          <button className="absolute right-0 top-0 p-5" onClick={() => setModalOpened(false)}>
+            <Icons.close className="h-5 w-5" />
+          </button>
           <div className="flex-1 overflow-auto rounded p-4">
             <FormProvider {...methods}>
               <form onSubmit={handleSubmit(submitForm)} className="flex flex-col items-start">

@@ -5,6 +5,9 @@ import { ArrowDown } from "lucide-react"
 import { MapPin } from "lucide-react"
 import { Car } from "lucide-react"
 import { Percent } from "lucide-react"
+import { CalendarClockIcon } from "lucide-react"
+import { ClockIcon } from "lucide-react"
+import { UserCog2Icon } from "lucide-react"
 import { BadgePercent } from "lucide-react"
 import { Filter } from "lucide-react"
 import { Loader2 } from "lucide-react"
@@ -56,5 +59,7 @@ export const Icons = {
   user2: User2,
   filter: Filter,
   jeniskendaraan: Car,
-  promo: Percent
+  promo: Percent,
+  userSetting: UserCog2Icon,
+  time: ClockIcon,
 }

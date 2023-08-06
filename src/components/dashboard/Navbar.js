@@ -97,15 +97,15 @@ const Navbar = ({ setSidebarOpened }) => {
                 >
                   <span className="sr-only">Open user menu</span>
                   {authUserData != null ? (
-                  <img
-                    className="h-8 w-8 rounded-full bg-gray-800 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
-                    src={authUserData?.foto}
-                    alt={`${authUserData?.nama} user photo`}
-                  />
+                    <img
+                      className="h-8 w-8 rounded-full bg-gray-800 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                      src={authUserData?.foto}
+                      alt={`${authUserData?.nama} user photo`}
+                    />
                   ) : (
-                    <UserPlaceholder nama={authUserData?.nama} className="h-8 w-8 my-0"/>
+                    <UserPlaceholder nama={authUserData?.nama} className="h-8 w-8 my-0" />
                   )}
-                  
+
                   <div className="hidden md:block">{authUserData?.nama}</div>
                   <Icons.chevronDown className="h-4 w-4" />
                 </button>
@@ -114,34 +114,32 @@ const Navbar = ({ setSidebarOpened }) => {
                 className="z-50 my-4 hidden list-none divide-y divide-gray-100 rounded-lg border border-gray-100 bg-white text-base shadow-xl dark:divide-gray-600 dark:bg-gray-700"
                 id="dropdown-user"
               >
-                <div className="px-4 py-3" role="none">
-                  <p
-                    className="text-sm text-gray-900 dark:text-white"
-                    role="none"
-                  >
-                    {authUserData?.displayName}
-                  </p>
-                  <p
-                    className="truncate text-sm text-gray-600 dark:text-gray-300"
-                    role="none"
-                  >
-                    {authUserData?.email}
-                  </p>
-                </div>
                 <ul className="py-1" role="none">
                   <li>
                     <div
-                      href="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                      className="px-4 py-2 text-sm flex items-center text-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
                     >
+                      <Icons.time className="h-4 w-4 mr-2" />
                       <CurrentTime />
                     </div>
                   </li>
                 </ul>
+                <div role="none">
+                  <Link
+                    className="truncate px-4 py-2 my-1 hover:bg-gray-100 text-sm text-gray-600 dark:text-gray-300 flex"
+                    role="none"
+                    href={"/admin/edit-profile"}
+                    title="Ubah Profil"
+                  >
+                    <Icons.userSetting className="h-5 w-5 mr-2" />
+                    {authUserData?.email}
+                  </Link>
+                </div>
+                
                 <ul className="py-1" role="none">
-                  
-                  
+
+
                   <li>
                     <a
                       href="#"

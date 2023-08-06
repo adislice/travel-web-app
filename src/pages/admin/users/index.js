@@ -9,7 +9,7 @@ import { useNav } from "@/context/navigationContext"
 import { PAGE_MAX_ITEM } from "@/lib/constant"
 import { database } from "@/lib/firebase"
 import { getAllUserRealtime } from "@/services/UserService"
-import { collection, getCountFromServer, limit, onSnapshot, query, startAfter } from "firebase/firestore"
+import { collection, getCountFromServer, limit, onSnapshot, query, startAfter, where } from "firebase/firestore"
 import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -56,7 +56,7 @@ function UsersIndexPage() {
 
     const fetchCount = async () => {
       try {
-        const countSnap = await getCountFromServer(collection(database, "users"))
+        const countSnap = await getCountFromServer(query(collection(database, "users"), where("role", "==", "CUSTOMER")))
         setTotalData(countSnap.data().count)
       } catch (error) {
         console.log(error)
