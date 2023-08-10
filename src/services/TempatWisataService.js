@@ -23,13 +23,13 @@ import {
   where,
 } from "firebase/firestore"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
-import { useState } from "react"
 
 export async function getTempatWisata() {
   try {
     const dbInstance = collection(database, "tempat_wisata")
+    let query = query(dbInstance, orderBy('nama', 'asc'))
     let result = []
-    let docs = await getDocs(dbInstance)
+    let docs = await getDocs(query)
 
     for (let index = 0; index < docs.docs.length; index++) {
       const element = docs.docs[index]

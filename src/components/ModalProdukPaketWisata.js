@@ -71,7 +71,7 @@ function ModalProdukPaketWisata({isModalOpened, setModalOpened, setAddedProduk, 
                     <div className="mb-2 block">
                       <Label
                         htmlFor="jenis_kendaraan_id"
-                        value="Jenis Kendaraan Kendaraan"
+                        value="Pilih Jenis Kendaraan"
                         className="mb-2 inline-block font-semibold"
                       />
 

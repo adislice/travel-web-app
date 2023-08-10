@@ -152,7 +152,7 @@ const AddPaketWisataPage = () => {
         if (success) {
           Swal.fire({
             title: "Sukses!",
-            text: "Berhasil menambah data tempat wisata",
+            text: "Berhasil menambah data paket wisata",
             icon: "success",
             showConfirmButton: true,
             confirmButtonText: "Baik",
@@ -520,7 +520,7 @@ const AddPaketWisataPage = () => {
                         No.
                       </th>
                       <th scope="col" className="px-4 py-3">
-                        Jenis Kendaraan Kendaraan
+                        Jenis Kendaraan
                       </th>
                       <th scope="col" className="px-4 py-3">
                         Harga

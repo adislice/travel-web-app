@@ -93,6 +93,10 @@ const EditTempatWisataPage = () => {
 
   const submitForm = (data, e) => {
     e.preventDefault()
+    Swal.fire({
+      title: "Menyimpan data...",
+    })
+    Swal.showLoading()
     setIsSubmitSuccess(false)
     data["images"] = imageArray
     editTempatWisata(id, data).then((success) => {

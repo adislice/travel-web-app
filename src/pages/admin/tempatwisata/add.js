@@ -82,6 +82,10 @@ const AddTempatWisataPage = () => {
   async function submitForm(data, e) {
     e.preventDefault()
     setIsSubmitSuccess(false)
+    Swal.fire({
+      title: "Menyimpan data...",
+    })
+    Swal.showLoading()
     data["images"] = imageArray
     const result = addTempatWisata(data)
     result

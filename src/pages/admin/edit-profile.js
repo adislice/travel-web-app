@@ -93,6 +93,10 @@ function EditProfilePage() {
           text: "Berhasil mengubah profil!",
           icon: "success",
           confirmButtonText: "OK"
+        }).then(({ isConfirmed }) => {
+          if (isConfirmed) {
+            window.location.reload()
+          }
         })
       } else {
         Swal.fire({
@@ -294,7 +298,7 @@ function EditProfilePage() {
                       htmlFor="password"
                       className="mb-2 inline-block font-semibold text-gray-900 dark:text-gray-300"
                     >
-                      Password
+                      Password Baru
                     </label>
                     <TextInput
                       id="password"
@@ -318,7 +322,7 @@ function EditProfilePage() {
                       htmlFor="password_c"
                       className="mb-2 inline-block font-semibold text-gray-900 dark:text-gray-300"
                     >
-                      Konfirmasi Password
+                      Konfirmasi Password Baru
                     </label>
                     <TextInput
                       id="password_c"

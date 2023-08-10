@@ -84,7 +84,7 @@ function ModalDestinasiWisata({isModalOpened, setModalOpened, allData, selectedD
                       <div className="flex flex-col">
                         <div>{item.nama}</div>
                         <div className="text-sm text-gray-600">
-                          {item.alamat}
+                          {item.kota}, {item.provinsi}
                         </div>
                       </div>
                     </div>
