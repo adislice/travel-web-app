@@ -78,15 +78,26 @@ const TempatWisataShowPage = () => {
             </div>
             <div className="flex-shrink flex-grow basis-1 space-y-6">
               <div>
-                <div className="mb-1 font-bold">Alamat</div>
-                <div className="text-gray-700">{tempatWisata.alamat}</div>
-              </div>
-              <div>
                 <div className="mb-1 font-bold">Lokasi Koordinat</div>
                 <div className="text-gray-700">
                   <p>Latitude: {tempatWisata.latitude}</p>
                   <p>Longitude: {tempatWisata.longitude}</p>
                 </div>
+              </div>
+              <div className="mb-6">
+                <h5 className="font-semibold text-gray-900">
+                  Peta Tempat Wisata
+                </h5>
+                <iframe
+                className="my-2"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  allowFullScreen=""
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyAr4xlzzVJARvrYjj-qE00fNqMv4D-LY-U&q=${tempatWisata.latitude},${tempatWisata.longitude}`}
+                  width="100%"
+                  height={350}
+                ></iframe>
               </div>
             </div>
           </div>

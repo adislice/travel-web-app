@@ -38,7 +38,7 @@ const LaporanPage = () => {
   const [searching, setSearching] = useState(false)
   const [navigation, setNavigation] = useNav()
   const [filterTglAwal, setFilterTglAwal] = useState(null)
-  const [filterStatus, setFilterStatus] = useState("SEMUA")
+  const [filterStatus, setFilterStatus] = useState("SELESAI")
   const [filterTglAkhir, setFilterTglAkhir] = useState(null)
   const [triggerFilter, setTriggerFilter] = useState(false)
   const [dateRangeValue, setDateRangeValue] = useState({

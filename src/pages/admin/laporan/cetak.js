@@ -8,6 +8,7 @@ import { formatRupiah, formatTimestampLaporan } from '@/lib/helper';
 import { Font } from '@react-pdf/renderer'
 import { useFirebaseAuth } from '@/context/FirebaseAuthContext';
 import { Image } from '@react-pdf/renderer';
+import Head from 'next/head';
 
 Font.registerHyphenationCallback(word => [word]);
 
@@ -49,6 +50,9 @@ function CetakLaporan() {
     <div>Loading...</div>
     ) : (          
     <PDFViewer className='w-full h-screen'>
+      <Head>
+        <title>Laporan Pemesanan Paket Wisata {formatIsoDate(tglAwal)} - {formatIsoDate(tglAkhir)}</title>
+      </Head>
       <MyDocument data={dataLaporan} 
       loggedUser={loggedUser} 
       tglAwal={formatIsoDate(tglAwal)} 
@@ -265,12 +269,10 @@ const tableCellStyle = {
 function formatIsoDate(isoDateString) {
   const date = new Date(isoDateString);
 
-  // Get the day, month, and year
   const day = date.getDate();
   const month = date.toLocaleDateString('id-ID', { month: 'long' });
   const year = date.getFullYear();
 
-  // Get the hours and minutes in 24-hour format
   const hours = date.getHours().toString().padStart(2, '0');
   const minutes = date.getMinutes().toString().padStart(2, '0');
 
@@ -280,12 +282,10 @@ function formatIsoDate(isoDateString) {
 function getCurrentDateTime() {
   const now = new Date();
 
-  // Get the day, month, and year
   const day = now.getDate();
   const month = now.toLocaleDateString('id-ID', { month: 'long' });
   const year = now.getFullYear();
 
-  // Get the hours and minutes in 24-hour format
   const hours = now.getHours().toString().padStart(2, '0');
   const minutes = now.getMinutes().toString().padStart(2, '0');
 

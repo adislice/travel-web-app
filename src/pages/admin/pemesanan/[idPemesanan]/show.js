@@ -84,12 +84,7 @@ function DetailPemesananPage() {
                   {dataPemesanan.user_no_telp || "-"}
                 </p>
               </div>
-              <div className="mb-6">
-                <h5 className="font-semibold text-gray-900">Email Pemesan</h5>
-                <p className="text-gray-700">
-                  {dataPemesanan.user_email || "-"}
-                </p>
-              </div>
+              
               <div className="mb-6">
               <h5 className="font-semibold text-gray-900">Tanggal Keberangkatan</h5>
                 <p className="text-gray-700">
@@ -155,9 +150,6 @@ function DetailPemesananPage() {
               <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">Promo</h5>
                 <p className="text-gray-700">
-                  <div>{dataPemesanan.promo_nama || "-"}</div>
-                  <div>Kode Promo: {dataPemesanan.promo_kode || "-"}</div>
-                  <div>Diskon (%): {dataPemesanan.promo_persen || "0"}%</div>
                   <div>Potongan: {formatRupiah(dataPemesanan.promo_potongan) || "0"}</div>
                 </p>
               </div>
@@ -182,13 +174,13 @@ function DetailPemesananPage() {
               <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">Status</h5>
                 {dataPemesanan.status == "SELESAI" && (
-                  <span class="bg-green-100 text-green-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">SELESAI</span>
+                  <span className="bg-green-100 text-green-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">SELESAI</span>
                 )}
                 {dataPemesanan.status == "PENDING" && (
-                  <span class="bg-yellow-100 text-yellow-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">PENDING</span>
+                  <span className="bg-yellow-100 text-yellow-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300">PENDING</span>
                 )}
                 {dataPemesanan.status == "DIBATALKAN" && (
-                  <span class="bg-red-100 text-red-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">DIBATALKAN</span>
+                  <span className="bg-red-100 text-red-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">DIBATALKAN</span>
                 )}
               </div>
               {dataPemesanan?.status == "SELESAI" && (

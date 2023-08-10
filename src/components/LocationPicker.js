@@ -1,5 +1,5 @@
 import AdminLayout from '@/components/dashboard/Layout'
-import { GEOCODER_API_KEY, GOOGLE_MAPS_LIBRARIES } from '@/lib/constant'
+import { GEOCODER_API_KEY, GEOCODER_URL, GOOGLE_MAPS_LIBRARIES } from '@/lib/constant'
 import {useJsApiLoader, GoogleMap, Marker, Autocomplete} from '@react-google-maps/api'
 import axios from 'axios'
 import { TextInput } from 'flowbite-react'
@@ -26,25 +26,25 @@ function LocationPicker({onAddressChanged, defaultLocation}) {
   }, [alamat])
 
   useEffect(() => {
-    console.log(defaultLocation)
-    if (defaultLocation?.lat && defaultLocation?.lng) {
+    console.log("def loc: ", defaultLocation)
+    if (defaultLocation?.latLng?.lat && defaultLocation?.latLng?.lng) {
       setSelectedLoc({
-        lat: Number(defaultLocation.lat),
-        lng: Number(defaultLocation.lng)
+        lat: Number(defaultLocation?.latLng?.lat),
+        lng: Number(defaultLocation?.latLng?.lng)
       })
       setCurrentCenter({
-        lat: Number(defaultLocation.lat),
-        lng: Number(defaultLocation.lng)
+        lat: Number(defaultLocation?.latLng?.lat),
+        lng: Number(defaultLocation?.latLng?.lng)
       })
     }
-    console.log(defaultLocation)
+    
   }, [])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const apiKey = GEOCODER_API_KEY;
-        const apiUrl = `https://revgeocode.search.hereapi.com/v1/revgeocode?at=${selectedLoc.lat},${selectedLoc.lng}&lang=id-ID&apiKey=${apiKey}`;
+        const apiUrl = `${GEOCODER_URL}?at=${selectedLoc.lat},${selectedLoc.lng}&lang=id-ID&apiKey=${apiKey}`;
 
         const response = await axios.get(apiUrl);
         const data = response.data;

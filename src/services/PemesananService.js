@@ -49,11 +49,17 @@ export function getAllPemesananRealtime(
     if (snapshot.empty) {
       setDataState([])
     } else {
-      const allData = snapshot.docs.map((item) => {
-        return {id: item.id, ...item.data()}
-      })
-      console.log("all data", allData)
-      setDataState(allData)
+      let allD = []
+      for (let idx = 0; idx < snapshot.docs.length; idx++) {
+        const item = snapshot.docs[idx];
+        let itemData = item.data()
+        itemData['id'] = item.id
+        getDoc(doc(collection(database, 'paket_wisata'), itemData.paket_wisata_id)).then((docSnap) => {
+          itemData['paket_wisata_nama'] = docSnap.data()['nama']
+          allD.push(itemData)
+          setDataState(allD)
+        })
+      }
     }
     setLoading(false)
   }, (error) => {
@@ -67,9 +73,20 @@ export function getDetailPemesananRealtime(idPemesanan, setData, onError) {
   const dbCol = collection(database, "pemesanan")
   const unsubscribe = onSnapshot(doc(dbCol, idPemesanan), (snapshot) => {
     if (snapshot.exists()) {
-      setData({
-        id: snapshot.id,
-        ...snapshot.data()
+      let dataPemesanan = snapshot.data()
+      dataPemesanan['id'] = snapshot.id
+      getDoc(doc(collection(database, 'paket_wisata'), dataPemesanan.paket_wisata_id)).then((docSnap) => {
+        dataPemesanan['paket_wisata_nama'] = docSnap.data()['nama']
+        getDoc(doc(collection(database, `paket_wisata/${dataPemesanan.paket_wisata_id}/produk`), dataPemesanan.produk_id)).then((docSnap) => {
+          dataPemesanan['produk_harga'] = docSnap.data()['harga']
+          getDoc(doc(collection(database, `jenis_kendaraan`), docSnap.data()['jenis_kendaraan_id'])).then((docSnapJk) => {
+            console.log("data jk", docSnapJk.data())
+            dataPemesanan['jenis_kendaraan_nama'] = docSnapJk.data()['nama']
+            dataPemesanan['jenis_kendaraan_jumlah_seat'] = docSnapJk.data()['jumlah_seat']
+          }).finally(() => {
+            setData(dataPemesanan)
+          })
+        })
       })
     } else {
       onError("Data tidak ditemukan!")
@@ -116,13 +133,24 @@ export async function getDataLaporan(tglAwal, tglAkhir, status) {
     }
 
     const result = await getDocs(q)
+    let allData = []
+    for (let index = 0; index < result.docs.length; index++) {
+      const item = result.docs[index];
+      let itemData = item.data()
+      const pw = await getDoc(doc(database, `paket_wisata/${itemData['paket_wisata_id']}`))
+      itemData['paket_wisata_nama'] = pw.data()['nama']
+      const produk = await getDoc(doc(database, `paket_wisata/${itemData['paket_wisata_id']}/produk/${itemData['produk_id']}`))
+      const jk = await getDoc(doc(database, `jenis_kendaraan/${produk.data()['jenis_kendaraan_id']}`))
+      itemData['jenis_kendaraan_nama'] = jk.data()['nama']
+      itemData['jenis_kendaraan_jumlah_seat'] = jk.data()['jumlah_seat']
+      allData.push(itemData)
+    }
+    // const datas = result.docs.map(item => {
+    //   return item.data()
+    // })
+    console.log(allData)
 
-    const datas = result.docs.map(item => {
-      return item.data()
-    })
-    console.log(datas)
-
-    return datas
+    return allData
     } catch (error) {
       console.log(error)
       throw error

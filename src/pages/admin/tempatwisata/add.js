@@ -297,7 +297,7 @@ const AddTempatWisataPage = () => {
       isModalOpen={isModalLokasiOpen}
       setModalOpen={setModalLokasiOpen}
       onLocationChanged={setLokasi}
-      location={lokasi}/>
+      defaultLocation={lokasi}/>
       
 
     </AdminLayout>

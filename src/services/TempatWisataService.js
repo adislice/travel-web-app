@@ -27,9 +27,9 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 export async function getTempatWisata() {
   try {
     const dbInstance = collection(database, "tempat_wisata")
-    let query = query(dbInstance, orderBy('nama', 'asc'))
+    let q = query(dbInstance, orderBy('nama', 'asc'))
     let result = []
-    let docs = await getDocs(query)
+    let docs = await getDocs(q)
 
     for (let index = 0; index < docs.docs.length; index++) {
       const element = docs.docs[index]

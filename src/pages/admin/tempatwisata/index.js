@@ -97,7 +97,7 @@ const TempatWisataPage = () => {
         cekPaketWisataExist(id).then((response) => {
           if (response.status) {
             const pwHtml = response.data.map((item) => {
-              return `<a class="underline" href='/admin/paketwisata/${item.id}'>${item.nama}</a>`
+              return `<a className="underline" href='/admin/paketwisata/${item.id}'>${item.nama}</a>`
             })
             Swal.fire({
               title: "Gagal Menghapus!",

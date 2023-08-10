@@ -466,7 +466,7 @@ const AddPaketWisataPage = () => {
                         </td>
                         <td className="px-4 py-4">{item.nama}</td>
 
-                        <td className="px-4 py-4">{item.alamat}</td>
+                        <td className="px-4 py-4">{item.kota}, {item.provinsi}</td>
                         <td className="px-4 py-4">
                           <div className="mr-2 w-fit rounded bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300">
                             Tujuan ke-{index + 1}
