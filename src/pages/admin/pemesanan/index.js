@@ -47,7 +47,10 @@ const TransaksiPage = () => {
 
   useEffect(() => {
     const unsubscribe = getAllPemesananRealtime(
-      setDataTransaksi,
+      (result) => {
+        setDataPemesanan(result)
+        setDataTransaksi(result)
+      },
       null,
       null,
       filterStatus,
