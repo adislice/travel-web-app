@@ -31,7 +31,7 @@ const lastDayOfMonth = new Date(
 const TransaksiPage = () => {
   const [dataTransaksi, setDataTransaksi] = useState([])
   const [dataPemesanan, setDataPemesanan] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [pageNum, setPageNum] = useState(1)
   const [isFetchingNewData, setFetchingNewData] = useState(false)
   const [totalData, setTotalData] = useState(0)
@@ -100,6 +100,7 @@ const TransaksiPage = () => {
   useEffect(() => {
     var tempData = dataTransaksi
     const getDataPw = async () => {
+      setLoading(true)
       let newArr = []
       for (let i = 0; i < tempData.length; i++) {
         let item = tempData[i]
@@ -110,6 +111,7 @@ const TransaksiPage = () => {
         console.log("tempDatanew: ", tempData)
       }
       setDataPemesanan(newArr)
+      setLoading(false)
     }
     getDataPw()
   }, [dataTransaksi])
