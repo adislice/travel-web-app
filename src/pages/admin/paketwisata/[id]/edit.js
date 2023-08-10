@@ -233,7 +233,7 @@ function EditPaketWisataPage() {
         if (success) {
           Swal.fire({
             title: "Sukses!",
-            text: "Berhasil mengubah data tempat wisata",
+            text: "Berhasil mengubah data paket wisata",
             icon: "success",
             showConfirmButton: true,
             confirmButtonText: "Baik",
