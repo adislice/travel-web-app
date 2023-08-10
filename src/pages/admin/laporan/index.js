@@ -7,6 +7,7 @@ import { useNav } from "@/context/navigationContext"
 import { PAGE_MAX_ITEM, StatusPemesanan } from "@/lib/constant"
 import { database } from "@/lib/firebase"
 import { formatRupiah, formatTimestamp } from "@/lib/helper"
+import { getDetailPaketWisata } from "@/services/PaketWisataService"
 import { getAllPemesananRealtime } from "@/services/PemesananService"
 import { collection, getCountFromServer } from "firebase/firestore"
 import Head from "next/head"
@@ -29,6 +30,7 @@ const lastDayOfMonth = new Date(
 
 const LaporanPage = () => {
   const [dataTransaksi, setDataTransaksi] = useState([])
+  const [dataPemesanan, setDataPemesanan] = useState([])
   const [loading, setLoading] = useState(false)
   const [pageNum, setPageNum] = useState(1)
   const [isFetchingNewData, setFetchingNewData] = useState(false)
@@ -120,6 +122,23 @@ const LaporanPage = () => {
       setFilterTglAkhir(null)
     }
   }, [dateRangeValue])
+
+  useEffect(() => {
+    var tempData = dataTransaksi
+    const getDataPw = async () => {
+      let newArr = []
+      for (let i = 0; i < tempData.length; i++) {
+        let item = tempData[i]
+        var idPw = item.paket_wisata_id
+        let res = await getDetailPaketWisata(idPw)
+        item['paket_wisata_nama'] = res?.data?.nama
+        newArr.push(item)
+      }
+      console.log("newarr: ", newArr)
+      setDataPemesanan(newArr)
+    }
+    getDataPw()
+  }, [dataTransaksi])
 
   return (
     <AdminLayout>
@@ -265,14 +284,14 @@ const LaporanPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {dataTransaksi.length == 0 && (
+                  {dataPemesanan.length == 0 && (
                     <tr>
                       <td colSpan={7} className="p-2 text-center border-b">
                         Data kosong!
                       </td>
                     </tr>
                   )}
-                  {dataTransaksi.map((item, index) => (
+                  {dataPemesanan.map((item, index) => (
                     <tr
                       key={index}
                       className="border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600"
@@ -333,7 +352,7 @@ const LaporanPage = () => {
           </div>
           <div className="flex flex-row items-center">
             <div className="m-2 px-3 text-sm font-semibold text-gray-600">
-              Menampilkan {dataTransaksi.length} dari {totalData} data
+              Menampilkan {dataPemesanan.length} dari {totalData} data
             </div>
             <Button
               className="m-2 ml-auto border border-gray-300 bg-white text-blue-600 hover:bg-gray-200"

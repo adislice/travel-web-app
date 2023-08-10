@@ -49,17 +49,14 @@ export function getAllPemesananRealtime(
     if (snapshot.empty) {
       setDataState([])
     } else {
-      let allD = []
+      let allData = []
       for (let idx = 0; idx < snapshot.docs.length; idx++) {
         const item = snapshot.docs[idx];
         let itemData = item.data()
         itemData['id'] = item.id
-        getDoc(doc(collection(database, 'paket_wisata'), itemData.paket_wisata_id)).then((docSnap) => {
-          itemData['paket_wisata_nama'] = docSnap.data()['nama']
-          allD.push(itemData)
-          setDataState(allD)
-        })
+        allData.push(itemData)
       }
+      setDataState(allData)
     }
     setLoading(false)
   }, (error) => {
@@ -68,6 +65,7 @@ export function getAllPemesananRealtime(
 
   return unsub
 }
+
 
 export function getDetailPemesananRealtime(idPemesanan, setData, onError) {
   const dbCol = collection(database, "pemesanan")
