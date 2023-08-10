@@ -131,7 +131,15 @@ function EditPaketWisataPage() {
   useEffect(() => {
     if (dataTempatWisata.length > 0 && dataPaketWisata != null) {
     const thirdArray = dataTempatWisata.filter((item) => dataPaketWisata?.tempat_wisata?.includes(item.id));
-    setTujuanWisata(thirdArray)
+    console.log("asli ", dataPaketWisata?.tempat_wisata)
+    console.log("filtered ", thirdArray)
+    let newArr = []
+    for (let index = 0; index < dataPaketWisata?.tempat_wisata.length; index++) {
+      const item = dataPaketWisata?.tempat_wisata[index]
+      let newItem = dataTempatWisata.find(o => o.id == item)
+      newArr.push(newItem)
+    }
+    setTujuanWisata(newArr)
     }
   }, [dataTempatWisata, dataPaketWisata])
 

@@ -95,6 +95,9 @@ dependencies:
   react-modal:
     specifier: ^3.16.1
     version: 3.16.1(react-dom@18.2.0)(react@18.2.0)
+  react-nl2br:
+    specifier: ^1.0.4
+    version: 1.0.4(react@18.2.0)
   react-tailwindcss-datepicker:
     specifier: ^1.6.3
     version: 1.6.3(dayjs@1.11.9)(react@18.2.0)
@@ -3252,6 +3255,14 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
       react-lifecycles-compat: 3.0.4
       warning: 4.0.3
+    dev: false
+
+  /react-nl2br@1.0.4(react@18.2.0):
+    resolution: {integrity: sha512-KQ+uwmjYk3B04xDl0hus2OeGoqkR8qkoyDBtsIqVacOUMNeaP0W+r/+anded2ehii/FlgFqEuu0T72CJLWFp4A==}
+    peerDependencies:
+      react: ^15.7.0 || ^16.14.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /react-remove-scroll-bar@2.3.4(react@18.2.0):

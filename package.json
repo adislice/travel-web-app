@@ -41,6 +41,7 @@
     "react-geocode": "^0.2.3",
     "react-hook-form": "^7.44.0",
     "react-modal": "^3.16.1",
+    "react-nl2br": "^1.0.4",
     "react-tailwindcss-datepicker": "^1.6.3",
     "sweetalert2": "^11.7.5",
     "tailwind-merge": "^1.13.0",

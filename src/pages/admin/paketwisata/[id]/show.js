@@ -8,6 +8,8 @@ import { Icons } from "@/components/Icons"
 import { getDetailPaketWisata } from "@/services/PaketWisataService"
 import Swal from "sweetalert2"
 import { LinkButton } from "@/components/Button"
+import nl2br from 'react-nl2br'
+import { formatRupiah } from "@/lib/helper"
 
 function PaketWisataShow() {
   const router = useRouter()
@@ -79,7 +81,7 @@ function PaketWisataShow() {
               </div>
               <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">Fasilitas</h5>
-                <p className="text-gray-800">{dataPaketWisata.fasilitas || "-"}</p>
+                <p className="text-gray-800">{nl2br(dataPaketWisata.fasilitas) || "-"}</p>
               </div>
               <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">
@@ -176,7 +178,7 @@ function PaketWisataShow() {
                             {/* </Href> */}
                           </td>
 
-                          <td className="px-4 py-4">{item.alamat}</td>
+                          <td className="px-4 py-4">{item.kota}, {item.provinsi}</td>
                           {/* <td className="px-4 py-4">{item.latitude}, {item.longitude}</td> */}
                           <td className="px-4 py-4">
                             <div className="mr-2 w-fit rounded bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300">
@@ -238,7 +240,7 @@ function PaketWisataShow() {
                         <td className="px-4 py-4">
                           {produk.jenis_kendaraan_data?.nama}
                         </td>
-                        <td className="px-4 py-4">{produk.harga}</td>
+                        <td className="px-4 py-4">{formatRupiah(produk.harga)}</td>
 
                         <td className="px-4 py-4">
                           {produk.jenis_kendaraan_data?.jumlah_seat} seat
