@@ -7,7 +7,7 @@ import { useNav } from "@/context/navigationContext"
 import { PAGE_MAX_ITEM, StatusPemesanan } from "@/lib/constant"
 import { database } from "@/lib/firebase"
 import { formatRupiah, formatTimestamp } from "@/lib/helper"
-import { getDetailPaketWisata } from "@/services/PaketWisataService"
+import { getDetailPaketWisata, getNamaPaketWisata } from "@/services/PaketWisataService"
 import { getAllPemesananRealtime } from "@/services/PemesananService"
 import { collection, getCountFromServer } from "firebase/firestore"
 import Head from "next/head"
@@ -106,7 +106,7 @@ const TransaksiPage = () => {
       for (let i = 0; i < tempData.length; i++) {
         let item = tempData[i]
         var idPw = item.paket_wisata_id
-        let res = await getDetailPaketWisata(idPw)
+        let res = await getNamaPaketWisata(idPw)
         item['paket_wisata_nama'] = res?.data?.nama 
         newArr.push(item)
         console.log("tempDatanew: ", tempData)

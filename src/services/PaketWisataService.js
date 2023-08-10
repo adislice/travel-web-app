@@ -339,3 +339,29 @@ export async function getDetailPaketWisata(idPaket) {
     throw error
   }
 }
+
+export async function getNamaPaketWisata(idPaket) {
+  try {
+    console.log("getting paket id:"+ idPaket)
+    const dbCol = collection(database, "paket_wisata")
+    const data = await getDoc(doc(dbCol, idPaket))
+    if (!data.exists()) {
+      return {
+        status: 1,
+        msg: "Data tidak ditemukan"
+      }
+    }
+
+    const dataPw = {...data.data(), id: data.id}
+
+    return {
+      status: 0,
+      data: {
+        ...dataPw
+      }
+    }
+
+  } catch (error) {
+    throw error
+  }
+}
