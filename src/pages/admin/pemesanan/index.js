@@ -105,11 +105,12 @@ const TransaksiPage = () => {
         let item = tempData[i]
         var idPw = item.paket_wisata_id
         let res = await getDetailPaketWisata(idPw)
-        item['paket_wisata_nama'] = res?.data?.nama
-        newArr.push(item)
+        setDataPemesanan(oldData => oldData.map(item2 => item2.id == idPw ? {...item2, paket_wisata_nama: res?.data?.nama} : item2))
+        // item['paket_wisata_nama'] = res?.data?.nama
+        // newArr.push(item)
       }
-      console.log("newarr: ", newArr)
-      setDataPemesanan(newArr)
+      // console.log("newarr: ", newArr)
+      // setDataPemesanan(newArr)
     }
     getDataPw()
   }, [dataTransaksi])
