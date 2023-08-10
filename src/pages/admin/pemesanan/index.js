@@ -32,6 +32,7 @@ const TransaksiPage = () => {
   const [dataTransaksi, setDataTransaksi] = useState([])
   const [dataPemesanan, setDataPemesanan] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadingPw, setLoadingPw] = useState(true)
   const [pageNum, setPageNum] = useState(1)
   const [isFetchingNewData, setFetchingNewData] = useState(false)
   const [totalData, setTotalData] = useState(0)
@@ -100,7 +101,7 @@ const TransaksiPage = () => {
   useEffect(() => {
     var tempData = dataTransaksi
     const getDataPw = async () => {
-      setLoading(true)
+      setLoadingPw(true)
       let newArr = []
       for (let i = 0; i < tempData.length; i++) {
         let item = tempData[i]
@@ -111,7 +112,7 @@ const TransaksiPage = () => {
         console.log("tempDatanew: ", tempData)
       }
       setDataPemesanan(newArr)
-      setLoading(false)
+      setLoadingPw(false)
     }
     getDataPw()
   }, [dataTransaksi])
@@ -285,7 +286,10 @@ const TransaksiPage = () => {
                       </td>
                       <td className="px-3 py-2">{item.user_nama}</td>
                       <td className="px-3 py-2">{formatTimestamp(item.created_at)}</td>
-                      <td className="px-3 py-2">{ item.paket_wisata_nama }</td>
+                      <td className="px-3 py-2">
+                      {loadingPw ? "loading..." : item.paket_wisata_nama }
+
+                      </td>
                       
                       <td className="px-3 py-2">
                         {formatRupiah(item.total_bayar)}
