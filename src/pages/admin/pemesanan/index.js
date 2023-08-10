@@ -105,16 +105,10 @@ const TransaksiPage = () => {
         let item = tempData[i]
         var idPw = item.paket_wisata_id
         let res = await getDetailPaketWisata(idPw)
-        setDataPemesanan((prevState) => {
-          console.log("prevState ", prevState)
-          return prevState.map((item2) => {
-            let newData = {...item2, paket_wisata_nama: res?.data?.nama}
-            console.log("newData ", newData)
-            console.log("id1 " + item2.id +", idpw " + idPw )
-            // console.log("istrue: ", item2.id == idPw)
-            return item2.id == idPw ? newData : item2
-        })
-        })
+        item['paket_wisata_nama'] = res?.data?.nama 
+        tempData[i] = item
+        console.log("tempDatanew: ", tempData)
+        setDataPemesanan(tempData)
         // item['paket_wisata_nama'] = res?.data?.nama
         // newArr.push(item)
       }
