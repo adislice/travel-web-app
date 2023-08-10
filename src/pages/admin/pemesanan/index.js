@@ -106,6 +106,7 @@ const TransaksiPage = () => {
         var idPw = item.paket_wisata_id
         let res = await getDetailPaketWisata(idPw)
         setDataPemesanan((prevState) => {
+          console.log("prevState ", prevState)
           return prevState.map((item2) => {
             return item2.id == idPw ? {...item2, paket_wisata_nama: res?.data?.nama} : item2
         })
