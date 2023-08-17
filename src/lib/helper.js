@@ -46,3 +46,15 @@ export function formatRupiah(value) {
   // Remove decimal separator and fractional digits
   return formattedValue.replace(/\.00$/, '');
 };
+
+export function hitungSelisihTanggal(a,b) {
+  try {
+    let timeDiff = Math.abs(a.setHours(0,0,0,0) - b.setHours(0,0,0,0));
+    let days = Math.round(timeDiff / (1000*3600*24));
+    console.log(a + " -> " + b + ": " + days + " days");
+    return days;
+  } catch (error) {
+    return undefined
+  }
+  
+}

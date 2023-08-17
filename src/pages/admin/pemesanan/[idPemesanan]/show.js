@@ -1,12 +1,14 @@
+import { Button } from "@/components/Button"
 import AdminLayout from "@/components/dashboard/Layout"
 import { Icons } from "@/components/Icons"
 import { useNav } from "@/context/navigationContext"
-import { formatRupiah, formatTanggalLengkap, formatTimestampLengkap } from "@/lib/helper"
-import { getDetailPemesananRealtime } from "@/services/PemesananService"
+import { formatRupiah, formatTanggalLengkap, formatTimestampLengkap, hitungSelisihTanggal } from "@/lib/helper"
+import { deletePemesanan, getDetailPemesananRealtime } from "@/services/PemesananService"
 import Head from "next/head"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
+import Swal from "sweetalert2"
 
 function DetailPemesananPage() {
   const [dataPemesanan, setDataPemesanan] = useState({})
@@ -38,6 +40,50 @@ function DetailPemesananPage() {
 
     return () => unsubs()
   }, [router.isReady])
+
+  const hitungPersenRefund = (tglBerangkat, tglBatal) => {
+    const result = hitungSelisihTanggal(tglBerangkat?.toDate(), tglBatal?.toDate()) 
+    console.log("selisih:", result, "todate:", tglBerangkat.toDate())
+    if (result < 5) {
+      return 0
+    } else {
+      return 60
+    }
+  }
+
+  const confirmPengembalianDana = () => {
+    Swal.fire({
+      title: "Konfirmasi Pengembalian Dana",
+      html: `Apakah anda yakin telah menyelesaikan pengembalian dana?<br />Data pemesanan ini akan dihapus setelah Anda menekan tombol Yakin.<br />Tindakan ini tidak dapat dibatalkan!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      cancelButtonText: "Batal",
+      confirmButtonText: "Yakin!",
+    }).then((result) => {
+      if (result.value) {
+        Swal.fire({
+          title: "Pengembalian dana...",
+        })
+        Swal.showLoading()
+        deletePemesanan(idPemesanan).then(() => {
+          Swal.fire({
+            title: "Sukses",
+            text: "Konfirmasi pengembalian dana berhasil dan data pemesanan berhasil dihapus!",
+            icon: "success"
+          })
+          router.push("/admin/pemesanan")
+        }).catch((error) => {
+          Swal.fire({
+            title: "Gagal",
+            text: "Terjadi kesalahan. Gagal mengembalian dana!",
+            icon: "error"
+          })
+        })
+      }
+    })
+  }
 
   return (
     <AdminLayout>
@@ -184,15 +230,26 @@ function DetailPemesananPage() {
                 )}
               </div>
               {dataPemesanan?.status == "SELESAI" && (
-                <div className="mb-6">
+              <div className="mb-6">
                 <h5 className="font-semibold text-gray-900">Tanggal Dibayar</h5>
                 <p className="text-gray-700">
                   {formatTimestampLengkap(dataPemesanan.tanggal_bayar) || "-"}
                 </p>
               </div>
               )}
+              {dataPemesanan?.status == "DIBATALKAN" && (
+              <div className="mb-6">
+                <h5 className="font-semibold text-gray-900">Konfirmasi Pengembalian Dana</h5>
+                <p className="text-gray-700">
+                  Pelanggan membatalkan pemesanan yang telah dibayar. Dibatalkan pada {formatTanggalLengkap(dataPemesanan.tanggal_pembatalan)}. 
+                  Sehingga dana yang perlu dikembalikan sebesar {hitungPersenRefund(dataPemesanan?.tanggal_keberangkatan, dataPemesanan.tanggal_pembatalan)}% x {formatRupiah(dataPemesanan?.total_bayar)} = <b>{formatRupiah(dataPemesanan?.total_bayar * hitungPersenRefund(dataPemesanan?.tanggal_keberangkatan, dataPemesanan.tanggal_pembatalan)/100)}</b>.<br /><br />
+                  Klik tombol di bawah ini jika Anda telah menyelesaikan pengembalian dana.<br />
+                </p>
+                <Button className="my-4" onClick={() => confirmPengembalianDana()}>Konfirmasi</Button>
+              </div>
+              )}
               
-              
+
             </div>
           </div>
           <div className="flex flex-col md:flex-row">

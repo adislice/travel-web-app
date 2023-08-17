@@ -1,5 +1,5 @@
 import { database } from "@/lib/firebase"
-import { collection, getDocs, query, Timestamp, updateDoc, where } from "firebase/firestore"
+import { collection, deleteDoc, getDocs, query, Timestamp, updateDoc, where } from "firebase/firestore"
 import moment from "moment-timezone"
 
 export default async function handler(req, res) {
@@ -54,9 +54,10 @@ export default async function handler(req, res) {
         tanggal_bayar: tglBayar
       })
     } else if (transactionStatus == "expire" || transactionStatus == "cancel") {
-      await updateDoc(pemesananRef, {
-        status: "DIBATALKAN"
-      })
+      // await updateDoc(pemesananRef, {
+      //   status: "DIBATALKAN"
+      // })
+      await deleteDoc(pemesananRef)
     }
 
     return res.status(200).json({

@@ -191,12 +191,9 @@ function handleHapus(idJenis) {
                         {index + 1}
                       </th>
                       <td className="px-4 py-3">
-                        <Href
-                          href={`${router.asPath}/${item.id}/show`}
-                          className="text-gray-900"
-                        >
+                        
                           {item.nama}
-                        </Href>
+                        
                       </td>
                       <td className="px-4 py-3">
                         {item.jumlah_seat} penumpang

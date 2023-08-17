@@ -123,6 +123,14 @@ const LaporanPage = () => {
     }
   }, [dateRangeValue])
 
+  const cetak = () => {
+    if (filterTglAwal && filterTglAkhir) {
+      window.open(linkCetak, "_blank")
+    } else {
+      alert("Silahkan isi filter periode tanggal!")
+    }
+  }
+
   useEffect(() => {
     var tempData = dataTransaksi
     const getDataPw = async () => {
@@ -246,9 +254,9 @@ const LaporanPage = () => {
             <Button onClick={() => setTriggerFilter((oldState) => !oldState)}>
               Lihat
             </Button>
-            <LinkButton href={linkCetak} rel="noopener noreferrer" target="_blank">
+            <Button onClick={() => cetak()}>
             Cetak
-            </LinkButton>
+            </Button>
           </div>
           <div className="relative overflow-x-auto">
             {loading ? (

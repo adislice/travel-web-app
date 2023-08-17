@@ -1,6 +1,6 @@
 import { PAGE_MAX_ITEM } from "@/lib/constant"
 import { database } from "@/lib/firebase"
-import { collection, and, Timestamp, query, orderBy, limit, onSnapshot, where, doc, getDoc, getDocs } from "firebase/firestore"
+import { collection, and, Timestamp, query, orderBy, limit, onSnapshot, where, doc, getDoc, getDocs, deleteDoc } from "firebase/firestore"
 
 export function getAllPemesananRealtime(
   setDataState,
@@ -118,17 +118,18 @@ export async function getDataLaporan(tglAwal, tglAkhir, status) {
       orderBy("created_at", "desc")
     )
 
-    if (status == "SELESAI") {
+    if (status == "SELESAI" || status == "PENDING" || status == "DIPROSES") {
       q = query(
         dbCol,
         and(
           where("created_at", ">=", timestampStart),
           where("created_at", "<=", timestampEnd),
-          where('status', '==', 'SELESAI')
+          where('status', '==', status)
         ),
         orderBy("created_at", "desc")
       )
     }
+    
 
     const result = await getDocs(q)
     let allData = []
@@ -155,4 +156,7 @@ export async function getDataLaporan(tglAwal, tglAkhir, status) {
     } 
 }
 
+export function deletePemesanan(idPemesanan) {
+  return deleteDoc(doc(database, "pemesanan", idPemesanan))
+}
 

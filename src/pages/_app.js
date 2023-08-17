@@ -54,7 +54,7 @@ export default function App({ Component, pageProps }) {
       </style>
       <FirebaseAuthProvider>
         <NavigationContextProvider>
-          <NextNProgress height={2} />
+          {/* <NextNProgress height={2} /> */}
           <Component {...pageProps} />
         </NavigationContextProvider>
       </FirebaseAuthProvider>
