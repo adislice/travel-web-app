@@ -14,12 +14,12 @@ export default async function handler(req, res) {
 
     // buat transporter
     const transporter  =  createTransport({
-      host: "",
-      port: ,
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
       secure: false,
       auth: {
-        user: "",
-        pass: ""
+        user: process.env.SMTP_USERNAME,
+        pass: process.env.SMTP_PASSWORD
       },
       tls: {
         ciphers: 'SSLv3'
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
 
     // kirim email berisi kode
     let result = await transporter.sendMail({
-      from: "",
+      from: process.env.SMTP_USERNAME,
       to: email,
       subject: "Kode Verifikasi",
       text: "Kode Verifikasi Akun Anda: " + kode
