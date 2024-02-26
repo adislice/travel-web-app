@@ -7,6 +7,15 @@ Case Study : Kencana Wisata
 - Firebase as Database, Auth Provider, and Storage
 - Mobile app built with Kotlin, [check here](https://github.com/adislice/travel-app)
 
+### Demo
+Visit [this link](https://kencana-admin.vercel.app/login)
+
+Login credentials: 
+
+Email : `kencanaadmin@gmail.com`
+
+Password : `kencana123`
+
 ### Run this project locally
  - Clone this project
 ```bash

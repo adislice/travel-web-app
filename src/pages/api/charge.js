@@ -3,7 +3,7 @@ import { collection, doc, getDocs, query, updateDoc, where } from "firebase/fire
 import { database, storage } from "@/lib/firebase"
 
 const isProduction = false
-const serverKey = ""
+const serverKey = process.env.MIDTRANS_SERVER_KEY
 
 export default async function handler(req, res) {
   const apiUrl = isProduction ? "https://app.midtrans.com/snap/v1/transactions" : "https://app.sandbox.midtrans.com/snap/v1/transactions"
